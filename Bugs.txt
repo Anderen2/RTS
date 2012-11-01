@@ -1,2 +1,0 @@
-Decals are rushed, poorly done and unoptimalized
-Wierd crash when making a waypoint with rightclick on the hill in the middle of the map twice (Problear explanation = The decal is higher up, so the raytrace hits it, but it has no "RTTI data"

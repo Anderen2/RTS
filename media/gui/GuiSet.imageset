@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Imageset Name="GuiSet" Imagefile="GuiSet.tga" NativeHorzRes="128" NativeVertRes="128" AutoScaled="true" >
+    <Image Name="user" XPos="70" YPos="66" Width="26" Height="32" />
+    <Image Name="build" XPos="70" YPos="33" Width="32" Height="32" />
+    <Image Name="batteryfull" XPos="1" YPos="65" Width="32" Height="32" />
+    <Image Name="arrowup" XPos="0" YPos="0" Width="32" Height="32" />
+    <Image Name="batteryempty" XPos="35" YPos="65" Width="32" Height="32" />
+    <Image Name="arrowdown" XPos="32" YPos="0" Width="32" Height="32" />
+    <Image Name="1346608463_arrow_sans_left_32.tga" XPos="64" YPos="0" Width="32" Height="32" />
+    <Image Name="1346608463_arrow_sans_right_32.tga" XPos="96" YPos="3" Width="32" Height="32" />
+    <Image Name="1346608672_text_align_center_32.png" XPos="0" YPos="32" Width="32" Height="32" />
+    <Image Name="bagdeinfo" XPos="45" YPos="43" Width="20" Height="20" />
+    <Image Name="1346608838_transportation_plane_32.png" XPos="96" YPos="68" Width="32" Height="32" />
+</Imageset>

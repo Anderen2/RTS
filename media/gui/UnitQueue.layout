@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="DefaultWindow" Name="Root/UnitInfo/BG/UnitQueue" >
+        <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+        <Window Type="DefaultWindow" Name="UnitQueue" >
+            <Property Name="Font" Value="Commonwealth-10" />
+            <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{0.9,1}}" />
+        </Window>
+        <Window Type="DefaultWindow" Name="Root/UnitInfo/BG/UnitQueue/RepeatBar" >
+            <Property Name="Font" Value="Commonwealth-10" />
+            <Property Name="UnifiedAreaRect" Value="{{0,0},{0.9,0},{1,0},{1,0}}" />
+            <Window Type="TaharezLook/Button" Name="Root/UnitInfo/BG/UnitQueue/RepeatBar/1" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" Value="1" />
+                <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{0.1,0},{1,0}}" />
+            </Window>
+            <Window Type="TaharezLook/Button" Name="Root/UnitInfo/BG/UnitQueue/RepeatBar/2" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" Value="2" />
+                <Property Name="UnifiedAreaRect" Value="{{0.1,0},{0,0},{0.2,0},{1,0}}" />
+            </Window>
+            <Window Type="TaharezLook/Button" Name="Root/UnitInfo/BG/UnitQueue/RepeatBar/3" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" Value="3" />
+                <Property Name="UnifiedAreaRect" Value="{{0.2,0},{0,0},{0.3,0},{1,0}}" />
+            </Window>
+            <Window Type="TaharezLook/Button" Name="Root/UnitInfo/BG/UnitQueue/RepeatBar/4" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" Value="4" />
+                <Property Name="UnifiedAreaRect" Value="{{0.3,0},{0,0},{0.4,0},{1,0}}" />
+            </Window>
+            <Window Type="TaharezLook/Button" Name="Root/UnitInfo/BG/UnitQueue/RepeatBar/INF" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" Value="INF" />
+                <Property Name="UnifiedAreaRect" Value="{{0.4,0},{0,0},{0.6,0},{1,0}}" />
+            </Window>
+            <Window Type="TaharezLook/Button" Name="Root/UnitInfo/BG/UnitQueue/RepeatBar/Rep" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" Value="REPEAT" />
+                <Property Name="UnifiedAreaRect" Value="{{0.6,0},{0,0},{1,0},{1,0}}" />
+            </Window>
+        </Window>
+    </Window>
+</GUILayout>

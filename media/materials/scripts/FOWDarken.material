@@ -1,0 +1,21 @@
+
+material FOWDarken
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      //separate_scene_blend_op add subtract
+      //depth_write off
+      //depth_check off
+      //transparent_sorting off
+      depth_bias 5
+      texture_unit
+      {
+        texture FOWDarken.png
+        scale 1 1
+      }
+    }
+  }
+}

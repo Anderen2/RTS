@@ -1,0 +1,18 @@
+
+material Move
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      depth_write on
+      depth_func always_pass
+      texture_unit
+      {
+        texture Move.png
+        scale 1 1
+      }
+    }
+  }
+}

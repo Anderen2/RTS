@@ -1,0 +1,21 @@
+1) Using the raycast you get the triangle you hit along with the point it hit (this will be used when offsetting the triangles texture coordinate)
+2) You will want to do some sort of additional hit detection to get all the possible triangles that the decal will cover ( I used a bounding box approach )
+    This will get you all the triangles the decal potentially will cover (the bounding box should be large enough to contain the decal at any rotation)
+3) now that you have all of the triangles and the offset you can begin setting up the texture coordinates
+4) First take the triangle that was hit by the raycast and convert it into 2d (texture coordinate)
+    This is done by:
+          a) Taking two sides of the triangle and getting their lengths.
+          b) taking these two vectors and getting the angle between them
+          c) Now you can plainly convert it into 2d (make one along the x axis (centered at 0) then rotate upwards the angle between them placing the second point)
+          d) Now you want to find that offset, this is done the same method as above but instead of using 2 points above, you use the one that you place on the x axis and the collision point
+          e) Focus this around the x-axis as you did with the original and now you have the point in the x,y plane where the collision point is
+          f) Now you have your raycast collision triangle in 2d and the point at which the raycast hit that triangle also in 2d
+          g) Use this as an offset and shift the (0,0) origin by the offset (After this you have 1 triangle created and correctly offsetted on the texture so that the texture is centered where the raycast hit)
+          h) Now you essentially just have to recursively do the same for triangles connected to the centered one and connect them to the texture coord of the original
+               i) This provides the problem of when converting to 2d you do not maintain the original orientation so you have to do the following:
+                    1) Find the two points that the connected triangles have in common.
+                    2) find the correct offset by 'attaching' one of the points of the new triangle to the one you already computed
+                    3) rotate the new triangle so that the second point (that was not attached) is correctly over the already computed ones equivalent
+          i) repeat 'h' until all connected triangles that were found during the bounding box detection have been created and texture coords were generated
+          j) Also, you will need to offset the created decal triangles by a value of their norm (so they are not directly over the other triangle but slightly in front)
+5) Done!

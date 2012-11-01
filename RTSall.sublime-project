@@ -1,0 +1,14 @@
+{
+	"folders":
+	[
+		{
+			"path": "engine"
+		},
+		{
+			"path": "Data"
+		},
+		{
+			"path": "media"
+		}
+	]
+}

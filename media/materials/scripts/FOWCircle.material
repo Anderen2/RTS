@@ -1,0 +1,22 @@
+
+material FOWCircle
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      //separate_scene_blend_op subtract add
+      //depth_write off
+      //depth_check off
+      //transparent_sorting off
+      //depth_func always_pass
+      //depth_bias 5
+      texture_unit
+      {
+        texture FOWCircle2.png
+        scale 1 1
+      }
+    }
+  }
+}

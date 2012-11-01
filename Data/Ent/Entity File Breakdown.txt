@@ -1,0 +1,136 @@
+plane				Engine name of the entity (Cannot contain any special characters or spaces)
+name=Ogre Plane: Razor		Human/Editor/Visible name of the entity
+
+version=1.0			Entityfileformat version (Float)
+
+mesh=plane.mesh			The mesh used for this entity
+
+shadows=True			Should this entity cast shadows? (Warning, may be expensive for heavy used entitys!)
+
+meshturret=none			A different mesh as turret? (Used mostly for vehicles)
+addmesh=0			Additional meshes?
+mesh1=none			Mesh 1 mesh
+
+moveeff=Examples/JetEngine1	Particle Effect used when moving (None/ParticleSystem)
+moveefftime=0.1			Move Particle Effect Lifetime
+moveeffpos=(4,1,-35)		Where shall this effect play? Position relative to meshpos
+moveeffrot=(90,0,0)		Rotation relative to meshrot (X, Y, Z / Pitch, Roll, Yaw)
+
+addmoveeff=1			Additional effects for moving?
+
+moveeff1=Examples/JetEngine1	If so, path for the effect
+moveefftime1=0.1		Lifespan
+moveeffpos1=(-10,1,-35)		Pos
+moveeffrot1=(90,0,0)		Rot (Notice that all extra effects has to be numbered!
+
+dieeff=Examples/Smoke
+dieefftime=0.1
+dieeffpos=(0,0,0)
+dieeffrot=(0,0,0)
+
+acteff=4			How many action effects does this entity have?
+acteff1=Examples/Smoke		Same as moveeff
+acteff2=Examples/JetEngine2
+acteff3=Examples/Explosion
+acteff4=Examples/PurpleFountain
+actefftime1=0.1
+actefftime2=0.2
+actefftime3=0.3
+actefftime4=0.4
+acteffpos1=(10,0,0)
+acteffpos2=(0,10,0)
+acteffpos3=(0,0,10)
+acteffpos4=(10,10,10)
+acteffrot1=(90,0,0)
+acteffrot2=(90,0,0)
+acteffrot3=(90,0,0)
+acteffrot4=(90,0,0)
+
+light=3				How many lights does this entity have? (Resource intensive!!)
+lightpos1=(0,0,0)		Position of light
+lightpos2=(0,0,0)
+lightpos3=(0,0,0)
+lightrot1=(90,0,0)
+lightrot2=(90,0,0)
+lightrot3=(90,0,0)
+
+animtime=0.5			Global Animation time/speed (None or float)
+
+moveanim=walk			Moving animation name (None or Name)
+idleanim=idle1			Main Idle animation name (None or Name)
+
+addidleanim=3			Additional idle animations? These animations will be played randomly when idle.
+idleanim1=idle1			Idle animation name (Name)
+idleanim2=idle2
+idleanim3=idle3
+
+idlehurtanim=hurt		Other animation when idle and hurt (None or Name)
+movehurtanim=hurtmove		Other animation when moving and hurt? (None or Name)
+
+deadanim=die			Animation when dead?
+
+actanim=3			How many action animations does this entity have?
+actanim1=none			Action animation name
+actanim2=none
+actanim3=none
+
+Template:
+robot
+name=robot
+version=1.0
+mesh=robot.mesh
+shadows=True
+meshturret=none
+addmesh=0
+mesh1=none
+moveeff=Examples/JetEngine1
+moveefftime=0.1
+moveeffpos=(4,1,-35)
+moveeffrot=(90,0,0)
+addmoveeff=1
+moveeff1=Examples/JetEngine1
+moveefftime1=0.1
+moveeffpos1=(-10,1,-35)
+moveeffrot1=(90,0,0)
+dieeff=Examples/Smoke
+dieefftime=0.1
+dieeffpos=(0,0,0)
+dieeffrot=(0,0,0)
+acteff=4
+acteff1=Examples/Smoke
+acteff2=Examples/JetEngine2
+acteff3=Examples/Explosion
+acteff4=Examples/PurpleFountain
+actefftime1=0.1
+actefftime2=0.2
+actefftime3=0.3
+actefftime4=0.4
+acteffpos1=(10,0,0)
+acteffpos2=(0,10,0)
+acteffpos3=(0,0,10)
+acteffpos4=(10,10,10)
+acteffrot1=(90,0,0)
+acteffrot2=(90,0,0)
+acteffrot3=(90,0,0)
+acteffrot4=(90,0,0)
+light=3
+lightpos1=(0,0,0)
+lightpos2=(0,0,0)
+lightpos3=(0,0,0)
+lightrot1=(90,0,0)
+lightrot2=(90,0,0)
+lightrot3=(90,0,0)
+animtime=0.001
+moveanim=walk
+idleanim=idle1
+deadanim=die
+addidleanim=3
+idleanim1=idle1
+idleanim2=idle2
+idleanim3=idle3
+idlehurtanim=hurt
+movehurtanim=hurtmove
+actanim=3
+actanim1=none
+actanim2=none
+actanim3=none

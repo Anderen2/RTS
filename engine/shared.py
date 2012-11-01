@@ -1,0 +1,61 @@
+#shared.py
+#This module is shared between all modules, and contains pointers to nessesary classes
+from time import localtime
+render=None
+
+renderRoot=None
+
+render3dScene=None
+render3dCamera=None
+render3dSelectStuff=None
+
+renderguiGUI=None
+
+renderioInput=None
+
+renderphysPhys=None
+
+unitManager=None
+unitHandeler=unitManager #Dirty Lazy Temporary Shitty Bad Workaround (Switched name, Manager sounded better)
+
+decHandeler=None
+
+EntityHandeler=None
+
+console=None
+
+ParseCommand=None
+
+Log2=open("logs/engine.log2", "r")
+Log3=open("logs/engine.log3", "w")
+Log3.write(Log2.read(100))
+Log3.close()
+Log2.close()
+
+Log1=open("logs/engine.log1", "r")
+Log2=open("logs/engine.log2", "w")
+Log2.write(Log1.read(100))
+Log2.close()
+Log1.close()
+
+Log=open("logs/engine.log", "r")
+Log1=open("logs/engine.log1", "w")
+Log1.write(Log.read(100))
+Log1.close()
+Log.close()
+
+LogFile=open("logs/engine.log", "w")
+LogSep="z_*"
+TimeSep="|"
+def DPrint(From, Warnlvl, Str):
+	#Debugprint, this function simplifies reading from the console + logging
+	#From = Numerical Index which says what the print is from ["main", "render", "render3d", "rendergui", "renderio", "renderphys", "unit"]
+	#Warnlvl = Numerical Index which says what warnlevel it is 0=Debugging, 1=Info > 5=Critical
+	foo=str(localtime()[3])
+	bar=str(localtime()[4])
+	fob=str(localtime()[5])
+	req=foo+TimeSep+bar+TimeSep+fob
+	preq="0"*(2-len(foo))+foo+":"+"0"*(2-len(bar))+bar+":"+"0"*(2-len(fob))+fob+" "
+	LogFile.write(req+LogSep+str(From)+LogSep+str(Warnlvl)+LogSep+Str+"\n")
+	LogFile.flush()
+	print(preq+Str)

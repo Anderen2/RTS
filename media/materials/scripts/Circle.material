@@ -1,0 +1,18 @@
+
+material Circle
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      depth_write on
+      depth_func always_pass
+      texture_unit
+      {
+        texture Circle.png
+        scale 1 1
+      }
+    }
+  }
+}

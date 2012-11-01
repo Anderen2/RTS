@@ -1,0 +1,12 @@
+material transparency {
+     technique {
+         pass {
+              diffuse vertexcolour
+              ambient vertexcolour
+              depth_write off
+     		  depth_func always_pass
+              scene_blend alpha_blend
+              lighting off
+         }
+     }
+}

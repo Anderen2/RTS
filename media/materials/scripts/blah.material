@@ -1,0 +1,17 @@
+
+material blah
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      depth_write off
+      texture_unit
+      {
+        texture Chrome.jpg
+        scale 1 1
+      }
+    }
+  }
+}

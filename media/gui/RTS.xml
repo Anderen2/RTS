@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="DefaultWindow" Name="Root" >
+        <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+        <Window Type="Vanilla/StaticImage" Name="Root/Map" >
+            <Property Name="Font" Value="Commonwealth-10" />
+            <Property Name="Tooltip" Value="Map" />
+            <Property Name="UnifiedAreaRect" Value="{{0.000195,0},{0.807292,0},{0.166016,0},{0.996094,0}}" />
+        </Window>
+        <Window Type="DefaultWindow" Name="Root/Options" >
+            <Property Name="Font" Value="Commonwealth-10" />
+            <Property Name="Tooltip" Value="Options" />
+            <Property Name="UnifiedAreaRect" Value="{{0.175781,0},{0.807292,0},{0.214844,0},{0.996,0}}" />
+        </Window>
+        <Window Type="DragContainer" Name="Root/UnitOpt" >
+            <Property Name="Font" Value="Commonwealth-10" />
+            <Property Name="Tooltip" Value="Unit Options" />
+            <Property Name="DragAlpha" Value="0.5" />
+            <Property Name="StickyMode" Value="False" />
+            <Property Name="DragThreshold" Value="8" />
+            <Property Name="UnifiedAreaRect" Value="{{0.224609,0},{0.833333,0},{0.771484,0},{0.996,0}}" />
+        </Window>
+        <Window Type="DragContainer" Name="Root/Power" >
+            <Property Name="Font" Value="Commonwealth-10" />
+            <Property Name="Tooltip" Value="Powerlevel" />
+            <Property Name="DragAlpha" Value="0.5" />
+            <Property Name="StickyMode" Value="False" />
+            <Property Name="DragThreshold" Value="8" />
+            <Property Name="UnifiedAreaRect" Value="{{0.224609,0},{0.807292,0},{0.771484,0},{0.820313,0}}" />
+        </Window>
+        <Window Type="DragContainer" Name="Root/Tactical" >
+            <Property Name="Font" Value="Commonwealth-10" />
+            <Property Name="Tooltip" Value="Tactical Strikes" />
+            <Property Name="DragAlpha" Value="0.5" />
+            <Property Name="StickyMode" Value="False" />
+            <Property Name="DragThreshold" Value="8" />
+            <Property Name="UnifiedAreaRect" Value="{{0.78125,0},{0.807292,0},{0.820313,0},{0.996,0}}" />
+        </Window>
+        <Window Type="DragContainer" Name="Root/UnitInfo" >
+            <Property Name="Font" Value="Commonwealth-10" />
+            <Property Name="Tooltip" Value="Unit Information" />
+            <Property Name="DragAlpha" Value="0.5" />
+            <Property Name="StickyMode" Value="False" />
+            <Property Name="DragThreshold" Value="8" />
+            <Property Name="UnifiedAreaRect" Value="{{0.830078,0},{0.807292,0},{0.986328,0},{0.996,0}}" />
+        </Window>
+    </Window>
+</GUILayout>

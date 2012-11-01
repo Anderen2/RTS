@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="DefaultWindow" Name="Con" >
+        <Property Name="Alpha" Value="0.5" />
+        <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+        <Window Type="DefaultWindow" Name="Con/BG" >
+            <Property Name="Font" Value="Commonwealth-10" />
+            <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+            <Window Type="Vanilla/Editbox" Name="Con/BG/Input" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="MaxTextLength" Value="1073741823" />
+                <Property Name="UnifiedAreaRect" Value="{{0,0},{0.87,0},{1,0},{1,0}}" />
+                <Property Name="MouseCursorImage" Value="set:TaharezLook image:MouseTextBar" />
+                <Property Name="TextParsingEnabled" Value="False" />
+            </Window>
+            <Window Type="Vanilla/MultiLineEditbox" Name="Con/BG/Log" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" >
+</Property>
+                <Property Name="MaxTextLength" Value="1073741823" />
+                <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{0.87,0}}" />
+                <Property Name="MouseCursorImage" Value="set:TaharezLook image:MouseTextBar" />
+                <Property Name="TextParsingEnabled" Value="False" />
+            </Window>
+        </Window>
+    </Window>
+</GUILayout>

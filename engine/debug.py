@@ -7,6 +7,9 @@ import shared
 AABB=True
 GUISTATS=True
 
+#COMMAND OPTIONS:
+CDict={}
+
 def ParseCommand(Txt):
 	global AABB, GUISTATS
 	CmdPar=split(Txt," ")
@@ -139,10 +142,29 @@ def ParseCommand(Txt):
 		elif CMD=="fow_sq":
 			shared.FOW.VisionSquare((int(PAR[0]),int(PAR[1])),(int(PAR[2]),int(PAR[3])))
 
-
 		else:
-			return "Invalid Command!"
+			#Check for additional commands:
+			if CDict.has_key(CMD):
+				if CDict[CMD]["args"]==-1 or CDict[CMD]["args"]==len(PAR):
+					CDict[CMD]["exec"](PAR)
+				else:
+					return "Invalid amount of arguments! \n"+CDict[CMD]["info"]
+			else:
+				return "Invalid Command!"
 		return ""
 
 	except:
 		return traceback.format_exc()
+
+def ACC(cmd, func, info="", args=-1):
+	CDict[cmd]={}
+	CDict[cmd]["info"]=info
+	CDict[cmd]["args"]=args
+	CDict[cmd]["exec"]=func
+
+def TestCommand(hey1=[]):
+	print "hay"+str(hey1)
+
+ACC("testcmd", TestCommand, info="A Testing Command")
+
+ACC("testcmd2", TestCommand, info="A Testing Command with req!", args=1)

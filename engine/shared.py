@@ -17,6 +17,7 @@ renderphysPhys=None
 
 unitManager=None
 unitHandeler=unitManager #Dirty Lazy Temporary Shitty Bad Workaround (Switched name, Manager sounded better)
+propManager=None
 
 decHandeler=None
 

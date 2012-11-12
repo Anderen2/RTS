@@ -5,7 +5,6 @@
 *.pyc
 *.exe
 *.o
-*.so
 *.rtf
 
 # Logs and databases #

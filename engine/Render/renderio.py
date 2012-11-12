@@ -208,7 +208,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 					shared.console.keyPressed(evt)
 
 		#Global Keys:
-		if evt.key==OIS.KC_GRAVE:
+		if evt.key==OIS.KC_F12: #Changed from GRAVE ( | ) due to linux compatibility
 			if shared.console.visible:
 				shared.console.hide()
 				self.CurrentKeyInterface=0

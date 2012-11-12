@@ -94,33 +94,21 @@ class Decoration():
 		shared.DPrint(1,5,"Decorator created! ID="+str(self.ID))
 
 	def _think(self):
-		# if self.entity.text:
-		# 	self.entity.text.update()
 		pass
 
 	def _selected(self):
+		#This should never run, as decs cannot be (de)selected
 		shared.DPrint(1,5,"Decorator selected: "+str(self.ID))
-		self.entity.text.enable(True)
-		if debug.AABB:
-			self.entity.node.showBoundingBox(True)
 
 	def _deselected(self):
+		#This should never run, as decs cannot be (de)selected
 		shared.DPrint(1,5,"Decorator deselected: "+str(self.ID))
-		self.entity.text.enable(False)
-		self.entity.node.showBoundingBox(False)
 
 	def _setPos(self):
 		pass
 
 	def _del(self):
 		shared.DPrint(1,5,"Decorator deleted: "+str(self.ID))
-
-		xExsist=None
-		for x in shared.render3dSelectStuff.CurrentSelection:
-			if self.node.getName() == x.getName():
-				xExsist=x
-		if xExsist!=None:
-			shared.render3dSelectStuff.CurrentSelection.remove(xExsist)
 
 		self.entity.Delete()
 		shared.unitHandeler.Delete(self.ID)

@@ -10,16 +10,16 @@ class zoneManager(FrameListener):
 		shared.DPrint(7,1,"Initializing Zone Handeler")
 		self.zones={}
 		self.dcount=0
-		debug.ACC("p_c", self.Create, info="Create a zone on the map", args=1)
+		debug.ACC("z_c", self.Create, info="Create a zone on the map", args=3)
 
 	def PowerUp(self):
 		pass
 
-	def Create(self, SubType):
+	def Create(self, x, y, z):
 		self.dcount=self.dcount+1
 		ID=self.dcount-1
 
-		pointer=Zone(ID, SubType)
+		pointer=Zone(ID, x, y, z)
 
 		self.zones[ID]=pointer
 
@@ -77,53 +77,35 @@ class zoneManager(FrameListener):
 
 #Zonegroup:
 class Zone():
-	def __init__(self, ID, subtype):
+	def __init__(self, ID, x, y, z):
 		#Setup constants
 		self.ID=ID
-		self.subtype=subtype
+		self.x=x
+		self.y=y
+		self.z=z
 		self.entity=None
 		self.node=None
 		self.text=None
-
-		#Start rendering the zone (self, Identifyer, Type, Team, Interactive)
-		#self.entity=shared.EntityHandeler.Create(self.ID, self.subtype, "zone", None) Zones should not be rendered
-
-		#Do some post-render stuff
-		#self.entity.RandomPlacement()
 
 		#Notify that we have successfuly created a zone!
 		shared.DPrint(1,5,"Zone created! ID="+str(self.ID))
 
 	def _think(self):
-		# if self.entity.text:
-		# 	self.entity.text.update()
 		pass
 
 	def _selected(self):
+		#This should never run, as Zones cannot be (de)selected
 		shared.DPrint(1,5,"Zone selected: "+str(self.ID))
-		self.entity.text.enable(True)
-		if debug.AABB:
-			self.entity.node.showBoundingBox(True)
 
 	def _deselected(self):
+		#This should never run, as Zones cannot be (de)selected
 		shared.DPrint(1,5,"Zone deselected: "+str(self.ID))
-		self.entity.text.enable(False)
-		self.entity.node.showBoundingBox(False)
 
 	def _setPos(self):
 		pass
 
 	def _del(self):
 		shared.DPrint(1,5,"Zone deleted: "+str(self.ID))
-
-		xExsist=None
-		for x in shared.render3dSelectStuff.CurrentSelection:
-			if self.node.getName() == x.getName():
-				xExsist=x
-		if xExsist!=None:
-			shared.render3dSelectStuff.CurrentSelection.remove(xExsist)
-
-		self.entity.Delete()
 		shared.zoneHandeler.Delete(self.ID)
 
 	def __del__(self):

@@ -1,7 +1,7 @@
 #Main
 #Submodules: Render, Networking, Gameplay, Other
 from engine.Render import render
-from engine.Object import unitmanager, prop, decorator
+from engine.Object import unitmanager, prop, decorator, zone
 from engine import shared, debug
 
 #Initialize stuff
@@ -13,6 +13,7 @@ shared.unitManager=unitmanager.UnitManager()
 shared.unitHandeler=shared.unitManager
 shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
+shared.zoneManager=zone.zoneManager()
 
 #CommandParser
 shared.ParseCommand=debug.ParseCommand

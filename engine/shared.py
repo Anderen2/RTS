@@ -1,6 +1,8 @@
 #shared.py
 #This module is shared between all modules, and contains pointers to nessesary classes
 from time import localtime
+
+#Its not nessesary to declare all these as none before declaring them to what they are. But it gives a quick overview over what the names are
 render=None
 
 renderRoot=None
@@ -18,6 +20,7 @@ renderphysPhys=None
 unitManager=None
 unitHandeler=unitManager #Dirty Lazy Temporary Shitty Bad Workaround (Switched name, Manager sounded better)
 propManager=None
+zoneManager=None
 
 decHandeler=None
 

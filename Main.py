@@ -1,7 +1,7 @@
 #Main
 #Submodules: Render, Networking, Gameplay, Other
 from engine.Render import render
-from engine.Object import unitmanager, prop, decorator, zone
+from engine.Object import unitmanager, prop, decorator, zone, directormanager
 from engine import shared, debug
 
 #Initialize stuff
@@ -17,6 +17,9 @@ shared.zoneManager=zone.zoneManager()
 
 #CommandParser
 shared.ParseCommand=debug.ParseCommand
+
+#DirectorManager
+shared.DirectorManager=directormanager.DirectorManager()
 
 #Power it up!
 shared.DPrint(0,1,"Powerin' up!..")

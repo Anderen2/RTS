@@ -17,6 +17,7 @@ class Infantry(Moveable):
 class Aircraft(Moveable):
 	def init(self):
 		self.type=4
+		self.entity.Translate(0,100,0)
 
 class Marine(Moveable):
 	def init(self):

@@ -1,6 +1,7 @@
 #Unitmanagermodule - Globalunit
 #This is the class which all units derive from and bases itself on
 from engine import shared, debug
+from engine.World import pathfinding
 
 class GlobalUnit():
 	def __init__(self, ID, faction, team, subtype):
@@ -59,8 +60,15 @@ class GlobalUnit():
 		self.entity.actDead(True)
 		self.entity.rotTurret(60)
 
-	def _setPos(self):
-		pass
+	def _setPos(self, x, y, z):
+		self.entity.SetPosition(x, y, z)
+
+	def _movetowards(self, x, y, z):
+		src=self.entity.node.getPosition()
+		src2d=(src[0], src[2])
+		xy=pathfinding.GetNextCoord(src, (x,z))
+		self._setPos(xy[0], src[1], xy[1])
+		return xy[2]
 
 	def _move(self):
 		pass

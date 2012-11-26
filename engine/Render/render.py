@@ -87,6 +87,7 @@ class RenderApplication(object):
 		self.root.addFrameListener(self.renderlistener)
 		self.root.addFrameListener(shared.renderioInput)
 		self.root.addFrameListener(shared.unitHandeler)
+		self.root.addFrameListener(shared.DirectorManager)
  
 	def startRenderLoop(self):
 		shared.DPrint(1,1,"Starting renderloop")

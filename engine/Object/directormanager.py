@@ -6,6 +6,7 @@ from ogre.renderer.OGRE import FrameListener
 
 class DirectorManager(FrameListener):
 	def __init__(self):
+		FrameListener.__init__(self)
 		shared.DPrint("dir",0, "Initializing Directors..")
 		
 		from directors import Simple
@@ -15,6 +16,7 @@ class DirectorManager(FrameListener):
 
 		debug.ACC("dirinit", self.Init, args=1, info="Initialize an director")
 		debug.ACC("diraction", self.Action, args=1, info="Start directing with an director")
+		self.Init("Simple")
 
 	def Init(self, director):
 		#Get Michael Bay ready to direct the scene
@@ -33,3 +35,7 @@ class DirectorManager(FrameListener):
 			self.DirNet.Action()
 		elif director=="Simple":
 			self.Simple.Action()
+
+	def frameRenderingQueued(self, evt):
+		self.Simple.Frame()
+		return True

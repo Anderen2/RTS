@@ -63,12 +63,12 @@ class GlobalUnit():
 	def _setPos(self, x, y, z):
 		self.entity.SetPosition(x, y, z)
 
-	def _movetowards(self, x, y, z):
+	def _movetowards(self, x, z):
 		src=self.entity.node.getPosition()
-		src2d=(src[0], src[2])
-		xy=pathfinding.GetNextCoord(src, (x,z))
-		self._setPos(xy[0], src[1], xy[1])
-		return xy[2]
+		src2d=(src[0], src[2]) #2D Coordinates (X, Z) or Longitude and Latitude (Not Altitude!)
+		xzd=pathfinding.GetNextCoord(src2d, (x,z)) #Returns next Xcoord, Zcoord and a measure of how much distance which is left (x, z, dist)
+		self._setPos(xzd[0], src[1], xzd[1])
+		return xzd[2]
 
 	def _move(self):
 		pass

@@ -281,6 +281,8 @@ class Entity():
 			try:
 				if EntImporter>self.filever:
 					DPrint(8,3,"Entity File is outdated! "+str(EntImporter)+">"+str(self.filever))
+				elif EntImporter<self.filever:
+					DPrint(8,3,"Are you from the future? This entity file has a newer version than this entity loader! Tell your local law enforcement that the creator of this file has broken the laws of timetraveling! "+str(EntImporter)+"<"+str(self.filever))
 				else:
 					DPrint(8,3,"Entity File has errors. Please nag the creator to fix it.")
 			except:
@@ -409,6 +411,15 @@ class Entity():
 		self.node.rotate((0,1,0),ogre.Degree(y))
 		self.node.rotate((0,0,1),ogre.Degree(z))
 		return self.node.getOrientation()
+
+	def LookAtZ(self, x, y, z):
+		self.node.setFixedYawAxis(True, ogre.Vector3().UNIT_Y)
+		#self.node.setFixedRollAxis(True, ogre.Vector3().UNIT_X)
+		self.node.lookAt((int(x), self.node.getPosition().y, int(z)), self.node.TS_PARENT, ogre.Vector3().UNIT_Z)
+		# direction=ogre.Vector3(int(x), int(y), int(z)) - self.node.getPosition()
+		# src = self.node.getOrientation() * ogre.Vector3().NEGATIVE_UNIT_Z
+		# quat = src.getRotationTo(direction)
+		# self.node.rotate(quat)
 
 	def Think(self):
 		if self.error!=True:

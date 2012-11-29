@@ -24,8 +24,9 @@ class Director():
 		self.gotoX=x
 		self.gotoZ=z
 
-	def UnitAim(self):
-		pass
+	def UnitAim(self, x, y, z):
+		for actor in self.Cast:
+			actor._look(x, y, z)
 
 	def UnitPri(self):
 		pass

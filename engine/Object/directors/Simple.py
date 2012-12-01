@@ -48,6 +48,8 @@ class Director():
 			for actor in self.Cast:
 				print actor
 				print (x, z)
-				print (int(x), int(z))
-				dist=actor._movetowards(int(x), int(z))
+				print (float(x), float(z))
+				dist=actor._movetowards(float(x), float(z))
+				if dist==0:
+					self.gotoX=None
 				print dist

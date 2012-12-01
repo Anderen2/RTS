@@ -48,8 +48,6 @@ class GlobalUnit():
 		self.entity.text.enable(True)
 		if debug.AABB:
 			self.entity.node.showBoundingBox(True)
-		self.entity.actNone()
-		self.entity.actMove(True)
 		self.entity.rotTurret(60)
 
 	def _deselected(self):
@@ -64,6 +62,8 @@ class GlobalUnit():
 		self.entity.SetPosition(x, y, z)
 
 	def _movetowards(self, x, z):
+		self.entity.actNone()
+		self.entity.actMove(True)
 		src=self.entity.node.getPosition()
 		src2d=(src[0], src[2]) #2D Coordinates (X, Z) or Longitude and Latitude (Not Altitude!)
 		xzd=pathfinding.GetNextCoord(src2d, (x,z)) #Returns next Xcoord, Zcoord and a measure of how much distance which is left (x, z, dist)

@@ -2,6 +2,7 @@
 #Module for finding the best path through the world towards a world point.
 
 from engine import shared, debug
+from math import floor
 
 # class Pathfinding():
 # 	def __init__(self):
@@ -37,7 +38,7 @@ def GetNextCoord(src, dst):
 		z=dst[1]
 
 	distance=abs((abs(src[0])+abs(src[1]))-(abs(dst[0])+abs(dst[1])))
-	return (x,z,distance)
+	return (x,z,floor(distance))
 
 def ConsoleFriendly(x, z, x2, z2, trig):
 	dist=999999

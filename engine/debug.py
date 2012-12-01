@@ -162,6 +162,9 @@ def ACC(cmd, func, info="", args=-1):
 	CDict[cmd]["args"]=args
 	CDict[cmd]["exec"]=func
 
+def RCC(cmd):
+	ParseCommand(cmd)
+
 def TestCommand(hey1=[]):
 	print "hay"+str(hey1)
 

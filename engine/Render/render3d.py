@@ -2,11 +2,12 @@
 #Classes for rendering 3d enviroment
 
 import render3dent, render3ddecal, render3dwaypoint, render3dwater
-from engine import shared
+from engine import shared, debug
 import ogre.renderer.OGRE as ogre
 from ogre.gui.CEGUI import MouseCursor
 from random import randrange
 from string import split
+from math import floor
 
 class Scene():
 	def __init__(self):
@@ -267,6 +268,7 @@ class SelectStuff():
 					# 	self.TestStuff=True
 					# break
 					shared.WaypointManager.Show(0, DecalPlace)
+					debug.RCC("dirgo "+str(floor(DecalPlace[0]))+" "+str(floor(DecalPlace[2])))
 					
 
 class SelectionRectangle(ogre.ManualObject):

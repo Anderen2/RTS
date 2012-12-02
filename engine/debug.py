@@ -1,6 +1,5 @@
 import traceback
 from string import split
-from ogre.renderer.OGRE import PM_WIREFRAME, PM_SOLID, PM_POINTS
 import shared
 
 #DEBUG OPTIONS:
@@ -107,16 +106,6 @@ def ParseCommand(Txt):
 			return str(shared.decHandeler.Amount(SubType=ARG[0], Type=ARG[3]))
 
 		#RENDER COMMANDS
-		elif CMD=="r_enablebw":
-			shared.render3dScene.PostFilterEnable("B&W")
-		elif CMD=="r_disablebw":
-			shared.render3dScene.PostFilterDisable("B&W")
-		elif CMD=="r_wireframe":
-			shared.render3dCamera.camera.setPolygonMode(PM_WIREFRAME)
-		elif CMD=="r_solid":
-			shared.render3dCamera.camera.setPolygonMode(PM_SOLID)
-		elif CMD=="r_points":
-			shared.render3dCamera.camera.setPolygonMode(PM_POINTS)
 		elif CMD=="water":
 			Water=shared.WaterManager.Create((float(PAR[0]),float(PAR[1]),float(PAR[2])),float(PAR[3]),float(PAR[4]))
 		elif CMD=="fow":

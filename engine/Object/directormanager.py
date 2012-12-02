@@ -9,14 +9,14 @@ class DirectorManager(FrameListener):
 		FrameListener.__init__(self)
 		shared.DPrint("dir",0, "Initializing Directors..")
 		
-		from directors import Simple
+		from directors import Simple, Net
 		#self.DirDemo=Demo.Director()
-		#self.DirNet=Net.Director()
+		self.DirNet=Net.Director()
 		self.Simple=Simple.Director()
 
 		debug.ACC("dirinit", self.Init, args=1, info="Initialize an director")
 		debug.ACC("diraction", self.Action, args=1, info="Start directing with an director")
-		self.Init("Simple")
+		#self.Init("Simple")
 
 	def Init(self, director):
 		#Get Michael Bay ready to direct the scene
@@ -38,4 +38,5 @@ class DirectorManager(FrameListener):
 
 	def frameRenderingQueued(self, evt):
 		self.Simple.Frame()
+		self.DirNet.Frame()
 		return True

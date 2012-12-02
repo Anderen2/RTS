@@ -94,13 +94,16 @@ class RenderApplication(object):
 		self.root.startRendering()
 		shared.unitHandeler.PowerUp()
  
-	def cleanUp(self):
+	def cleanUp(self): #This cleanup function needs to be cleaned up! No pun intended
 		shared.DPrint(1,2,"Cleaning up!")
-		self.inputManager.destroyInputObjectKeyboard(self.keyboard)
-		self.inputManager.destroyInputObjectMouse(self.mouse)
-		# self.inputManager.destroyInputObjectJoyStick(self.joystick)
-		OIS.InputManager.destroyInputSystem(self.inputManager)
-		self.inputManager = None
+		shared.renderioInput.inputManager.destroyInputObjectKeyboard(self.keyboard)
+		shared.renderioInput.inputManager.destroyInputObjectMouse(self.mouse)
+		try:
+			shared.renderioInput.inputManager.destroyInputObjectJoyStick(self.joystick)
+		except:
+			pass
+		#shared.renderioInput.InputManager.destroyInputSystem(shared.renderioInput.inputManager)
+		#self.inputManager = None
 
 class RenderListener(ogre.FrameListener):
 	#This class has functions which is needed/runs each frame

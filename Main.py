@@ -2,12 +2,15 @@
 #Submodules: Render, Networking, Gameplay, Other
 from engine.Render import render
 from engine.Object import unitmanager, prop, decorator, zone, directormanager
+from engine.Networking import client
 from engine import shared, debug
 
 #Initialize stuff
 shared.DPrint(0,1,"Initializing Modules...")
+
 #Render
 shared.render=render.RenderApplication()
+
 #Managers
 shared.unitManager=unitmanager.UnitManager()
 shared.unitHandeler=shared.unitManager
@@ -20,6 +23,9 @@ shared.ParseCommand=debug.ParseCommand
 
 #DirectorManager
 shared.DirectorManager=directormanager.DirectorManager()
+
+#Networking
+shared.NetClient=client.Client()
 
 #Power it up!
 shared.DPrint(0,1,"Powerin' up!..")

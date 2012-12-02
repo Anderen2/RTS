@@ -215,7 +215,7 @@ class Console(ogre.FrameListener):
 	promptCursor = property(_getPromptCursor)
  
 	def write(self, text):
-		if text!="" or text!=None:
+		if text!="" and text!=None:
 			for line in text.split("\n"):
 				while len(line) > 0:
 					self.outputHistory += [line[:Console.CONSOLE_LINE_LENGTH]]

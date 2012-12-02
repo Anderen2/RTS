@@ -135,7 +135,7 @@ def ParseCommand(Txt):
 			#Check for additional commands:
 			if CDict.has_key(CMD):
 				if CDict[CMD]["args"]==-1 or CDict[CMD]["args"]==len(PAR):
-					CDict[CMD]["exec"](*PAR)
+					return CDict[CMD]["exec"](*PAR)
 				else:
 					return "Invalid amount of arguments! \n"+CDict[CMD]["info"]
 			else:
@@ -152,7 +152,7 @@ def ACC(cmd, func, info="", args=-1):
 	CDict[cmd]["exec"]=func
 
 def RCC(cmd):
-	ParseCommand(cmd)
+	return ParseCommand(cmd)
 
 def TestCommand(hey1=[]):
 	print "hay"+str(hey1)

@@ -53,9 +53,9 @@ class Scene():
 		shared.DPrint(2,1,"WaterManager..")
 		shared.WaterManager=render3dwater.WaterManager()
 
-		shared.ACC("r_pfenable", self.PostFilterEnable, info="Enable a postfilter", args=1)
-		shared.ACC("r_pfdisable", self.PostFilterDisable, info="Disable a postfilter", args=1)
-		shared.ACC("r_polymode", self.PolygenMode, info="Change the polygenmode. 1 for points, 2 for wireframe, 3 for solid", args=1)
+		debug.ACC("r_pfenable", self.PostFilterEnable, info="Enable a postfilter", args=1)
+		debug.ACC("r_pfdisable", self.PostFilterDisable, info="Disable a postfilter", args=1)
+		debug.ACC("r_polymode", self.PolygenMode, info="Change the polygenmode. 1 for points, 2 for wireframe, 3 for solid", args=1)
 
 	def PostFilterEnable(self,PF):
 		ogre.CompositorManager.getSingleton().addCompositor(shared.render3dCamera.viewPort, PF)

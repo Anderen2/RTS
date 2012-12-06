@@ -6,6 +6,12 @@ from threading import Thread
 from traceback import format_exc
 import socket
 
+EOC=chr(5) #EndOfCommand Seperator (ENQ Ascii) Used between Command and arguments
+SOH=chr(1) #StartOfHeading Seperator (SOH Ascii) Used between arguments
+STX=chr(2) #StartofTeXt Seperator (STX Ascii) Used to indicate that the rest of the package should be in Unicode
+EOT=chr(4) #EndOfTransmission Seperator (EOT Ascii) Used to indicate that the transmission is complete
+ETB=chr(23) #EndofTransmissionBlock Seperator (ETB Ascii) Used to indicate that the package is complete, but the transmission is not
+
 class Client(Thread):
 	def __init__(self, channel, details, ID):
 		#PreInit
@@ -17,6 +23,16 @@ class Client(Thread):
 
 	def send(self, msg):
 		self.Sock.send(msg)
+
+	def csend(self, cmd, args):
+		foo=""
+		for x in args:
+			if args.index(x)!=len(args)-1:
+				foo=foo+x+SOH
+			else:
+				foo=foo+x+EOT
+		bar=cmd+EOC+foo
+		self.Sock.send(bar)
 
 	def run(self):
 		while self.alive:

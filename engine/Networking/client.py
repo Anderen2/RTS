@@ -4,6 +4,14 @@ from threading import Thread
 from engine.Networking import netent, sh_netcmd, cl_netcmd
 from engine import shared, debug
 from engine.shared import DPrint
+from string import split
+
+EOC=chr(5) #EndOfCommand Seperator (ENQ Ascii) Used between Command and arguments
+SOH=chr(1) #StartOfHeading Seperator (SOH Ascii) Used between arguments
+STX=chr(2) #StartofTeXt Seperator (STX Ascii) Used to indicate that the rest of the package should be in Unicode
+EOT=chr(4) #EndOfTransmission Seperator (EOT Ascii) Used to indicate that the transmission is complete
+ETB=chr(23) #EndofTransmissionBlock Seperator (ETB Ascii) Used to indicate that the package is complete, but the transmission is not
+
 
 class Client(Thread):
 	def __init__(self):
@@ -39,6 +47,9 @@ class Client(Thread):
 		DPrint("NET", 0, "Sending: "+str(msg))
 		self.Sock.send(msg)
 
+	def netPing(self):
+		pass
+
 	def chatSay(self, msg):
 		DPrint("NET", 0, "Saying: "+str(msg))
 
@@ -54,9 +65,19 @@ class Client(Thread):
 					DPrint("NET", 2, "Server unexpectedly closed connection!")
 
 				else:
-					if recv=="PING":
-						DPrint("NET", 0, "Ping recived, responding...")
-						self.Sock.send("PING")
-
+					if recv[len(recv)-1]==EOT:
+						recv=recv[0:len(recv)-1]
+						#got the whole transmission
+						ComPAR=split(recv, EOC)
+						print ComPAR
+						CMD=ComPAR[0]
+						PAR=split(ComPAR[1], SOH)
+						DPrint("rNET", 0, "Got Data!")
+						DPrint("rNET", 0, recv)
+						DPrint("rNET", 0, CMD)
+						DPrint("rNET", 0, PAR)
 					else:
-						DPrint("NET", 2, "Undefined response: "+recv)
+						DPrint("rNET", 0, "transmission not complete, waiting..")
+						DPrint("rNET", 0, recv)
+					# else:
+					# 	DPrint("NET", 2, "Undefined response: "+recv)

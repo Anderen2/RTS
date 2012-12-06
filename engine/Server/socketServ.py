@@ -5,7 +5,15 @@ from engine.shared import DPrint
 from engine.Server import socketClient as client
 from threading import Thread
 from traceback import format_exc
+from string import split
 import socket
+
+EOC=chr(5) #EndOfCommand Seperator (ENQ Ascii) Used between Command and arguments
+SOH=chr(1) #StartOfHeading Seperator (SOH Ascii) Used between arguments
+STX=chr(2) #StartofTeXt Seperator (STX Ascii) Used to indicate that the rest of the package should be in Unicode
+EOT=chr(4) #EndOfTransmission Seperator (EOT Ascii) Used to indicate that the transmission is complete
+ETB=chr(23) #EndofTransmissionBlock Seperator (ETB Ascii) Used to indicate that the package is complete, but the transmission is not
+
 
 class Server(Thread):
 	def __init__(self, ip, port):
@@ -18,11 +26,12 @@ class Server(Thread):
 		self.Conn=0 #Total connections since startup
 
 		debug.ACC("net_broadcast", self.svBroadcast, args=1, info="Broadcast data to all clients. Usage: \n net_broadcast message")
-		debug.ACC("net_send", self.clSend, args=2, info="Send data to client. Usage: \n net_send userid message")
+		debug.ACC("net_send", self.clSend, args=2, info="Send data to a client. Usage: \n net_send useruid message")
+		debug.ACC("net_cs", self.clCS, args=-1, info="Send data to a client. Usage: \n net_cs uuid command message")
 
 	def Init(self):
 		#Initialization
-		self.serverSock = socket.socket ( socket.AF_INET, socket.SOCK_STREAM ) #Creating a TCP Socket. I know this is considered bad for many multiplayer games. But I'll concentrate about ingame optimalisations, instead of wrapping my head around building my own overhead for UDP
+		self.serverSock = socket.socket ( socket.AF_INET, socket.SOCK_STREAM ) #Creating a TCP Socket. I know this is consuidered bad for many multiplayer games. But I'll concentrate about ingame optimalisations, instead of wrapping my head around building my own overhead for UDP
 		self.serverSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		self.serverSock.bind ( ( self.IP, self.PORT ) )
 		self.serverSock.settimeout(1)
@@ -49,19 +58,26 @@ class Server(Thread):
 			except socket.timeout:
 				pass
 
-	def rmClient(self, ID):
-		DPrint("Server", 0, "Client removed: "+str(ID)+" "+str(self.CList[ID].DETAILS))
-		del self.CList[ID]
+	def rmClient(self, uid):
+		DPrint("Server", 0, "Client removed: "+str(uid)+" "+str(self.CList[uid].DETAILS))
+		del self.CList[uid]
 
 	def svBroadcast(self, msg):
-		for idx, client in self.CList:
+		for uidx, client in self.CList:
 			client.send(msg)
 
-	def clSend(self, ID, msg):
+	def clSend(self, uid, msg):
 		try:
-			self.CList[int(ID)].send(msg)
+			self.CList[int(uid)].send(msg)
 		except:
 			return format_exc()
+
+	def clCS(self, uid, cmd, *args):
+		# print(msg)
+		# mesg="".join(msg)
+		# args=split(mesg, " ")
+		# print args
+		self.CList[int(uid)].csend(cmd, args)
 
 	def BroadcastSimple(self, msg):
 		pass

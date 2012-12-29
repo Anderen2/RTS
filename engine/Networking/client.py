@@ -76,6 +76,7 @@ class Client(Thread):
 						DPrint("rNET", 0, recv)
 						DPrint("rNET", 0, CMD)
 						DPrint("rNET", 0, PAR)
+						
 					else:
 						DPrint("rNET", 0, "transmission not complete, waiting..")
 						DPrint("rNET", 0, recv)

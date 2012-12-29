@@ -8,6 +8,8 @@ from traceback import format_exc
 from string import split
 import socket
 
+shared.logInit("server")
+
 EOC=chr(5) #EndOfCommand Seperator (ENQ Ascii) Used between Command and arguments
 SOH=chr(1) #StartOfHeading Seperator (SOH Ascii) Used between arguments
 STX=chr(2) #StartofTeXt Seperator (STX Ascii) Used to indicate that the rest of the package should be in Unicode
@@ -63,8 +65,8 @@ class Server(Thread):
 		del self.CList[uid]
 
 	def svBroadcast(self, msg):
-		for uidx, client in self.CList:
-			client.send(msg)
+		for uidx in self.CList:
+			self.CList[uidx].send(msg)
 
 	def clSend(self, uid, msg):
 		try:

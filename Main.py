@@ -6,6 +6,7 @@ from engine.Networking import client
 from engine import shared, debug
 
 #Initialize stuff
+shared.logInit("engine")
 shared.DPrint(0,1,"Initializing Modules...")
 
 #Render

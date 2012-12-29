@@ -3,6 +3,8 @@
 from engine import shared, debug
 from engine.Networking import client
 
+shared.logInit("nettest")
+
 NetClient=client.Client()
 
 debug.RCC("net_connect localhost 13370")

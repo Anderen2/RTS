@@ -3,12 +3,14 @@
 from engine import debug, shared
 from engine.shared import DPrint
 from engine.Server import socketClient as client
+from engine.Networking import netResp, netCMD
 from threading import Thread
 from traceback import format_exc
 from string import split
 import socket
 
-shared.logInit("server")
+netResp.Init(1)
+netCMD.Init(1)
 
 EOC=chr(5) #EndOfCommand Seperator (ENQ Ascii) Used between Command and arguments
 SOH=chr(1) #StartOfHeading Seperator (SOH Ascii) Used between arguments

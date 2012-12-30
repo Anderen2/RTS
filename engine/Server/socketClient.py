@@ -1,10 +1,13 @@
 #socketClient - Sockets based client
 
 from engine import debug, shared
-from engine.Networking import sh_netcmd, sv_netcmd
+from engine.Networking import netResp, netCMD
 from threading import Thread
 from traceback import format_exc
 import socket
+
+netResp.Init(1)
+netCMD.Init(1)
 
 EOC=chr(5) #EndOfCommand Seperator (ENQ Ascii) Used between Command and arguments
 SOH=chr(1) #StartOfHeading Seperator (SOH Ascii) Used between arguments

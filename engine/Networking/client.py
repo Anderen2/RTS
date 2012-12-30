@@ -1,10 +1,13 @@
 #Networking - Client
 import socket
 from threading import Thread
-from engine.Networking import netent, sh_netcmd, cl_netcmd
+from engine.Networking import netent, netResp, netCMD
 from engine import shared, debug
 from engine.shared import DPrint
 from string import split
+
+netResp.Init(2)
+netCMD.Init(2)
 
 EOC=chr(5) #EndOfCommand Seperator (ENQ Ascii) Used between Command and arguments
 SOH=chr(1) #StartOfHeading Seperator (SOH Ascii) Used between arguments
@@ -28,7 +31,7 @@ class Client(Thread):
 	
 	def Init(self, IP, PORT):
 		try:
-			DPrint("NET", 1, str(self.Sock.connect((str(IP),int(PORT)))))
+			self.Sock.connect((str(IP),int(PORT)))
 		except socket.error, e:
 			DPrint("NET", 3, e)
 			return str(e)
@@ -56,9 +59,7 @@ class Client(Thread):
 	def run(self):
 		DPrint("NET", 0, "RUNNING")
 		while self.alive:
-			DPrint("NET", 0, "TICK!")
 			recv=self.Sock.recv(1000)
-			DPrint("NET", 0, "TOCK!")
 
 			if self.alive:
 				if not recv:

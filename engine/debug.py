@@ -157,6 +157,14 @@ def RCC(cmd):
 def TestCommand(hey1=[]):
 	print "hay"+str(hey1)
 
+def listCMD():
+	Foo=""
+	for CMD in sorted(CDict):
+		Foo=Foo+CMD+": "+CDict[CMD]["info"]+"\n \n"
+	print Foo
+
+ACC("help", listCMD, info="Lists all commands in the console")
+
 ACC("testcmd", TestCommand, info="A Testing Command")
 
 ACC("testcmd2", TestCommand, info="A Testing Command with req!", args=1)

@@ -1,13 +1,14 @@
 #Main
 #Submodules: Render, Networking, Gameplay, Other
+
+#Initialize stuff
+from engine import shared, debug
+shared.logInit("engine")
+shared.DPrint(0,1,"Initializing Modules...")
+
 from engine.Render import render
 from engine.Object import unitmanager, prop, decorator, zone, directormanager
 from engine.Networking import client
-from engine import shared, debug
-
-#Initialize stuff
-shared.logInit("engine")
-shared.DPrint(0,1,"Initializing Modules...")
 
 #Render
 shared.render=render.RenderApplication()

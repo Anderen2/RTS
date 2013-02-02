@@ -7,7 +7,7 @@ from ogre.renderer.OGRE import FrameListener
 class zoneManager(FrameListener):
 	def __init__(self):
 		FrameListener.__init__(self)
-		shared.DPrint(7,1,"Initializing Zone Handeler")
+		shared.DPrint("zoneManager",1,"Initializing Zone Handeler")
 		self.zones={}
 		self.dcount=0
 		debug.ACC("z_c", self.Create, info="Create a zone on the map", args=3)
@@ -88,25 +88,25 @@ class Zone():
 		self.text=None
 
 		#Notify that we have successfuly created a zone!
-		shared.DPrint(1,5,"Zone created! ID="+str(self.ID))
+		shared.DPrint("zone",5,"Zone created! ID="+str(self.ID))
 
 	def _think(self):
 		pass
 
 	def _selected(self):
 		#This should never run, as Zones cannot be (de)selected
-		shared.DPrint(1,5,"Zone selected: "+str(self.ID))
+		shared.DPrint("zone",5,"Zone selected: "+str(self.ID))
 
 	def _deselected(self):
 		#This should never run, as Zones cannot be (de)selected
-		shared.DPrint(1,5,"Zone deselected: "+str(self.ID))
+		shared.DPrint("zone",5,"Zone deselected: "+str(self.ID))
 
 	def _setPos(self):
 		pass
 
 	def _del(self):
-		shared.DPrint(1,5,"Zone deleted: "+str(self.ID))
+		shared.DPrint("zone",5,"Zone deleted: "+str(self.ID))
 		shared.zoneHandeler.Delete(self.ID)
 
 	def __del__(self):
-		shared.DPrint(1,5,"Zone gc'd: "+str(self.ID))
+		shared.DPrint("zone",5,"Zone gc'd: "+str(self.ID))

@@ -14,7 +14,7 @@ import ogre.renderer.OGRE as ogre
 
 class EntityHandeler():
 	def ReadEntitys(self):
-		DPrint(8,1,"Reading Files..")
+		DPrint("Render3dEnt",1,"Reading Files..")
 		FilePath="Data/Ent"
 		Files=[]
 
@@ -41,7 +41,7 @@ class EntityHandeler():
 					print (Name+": "+Key+"="+str(Value)+str(type(Value)))			
 
 	def ParseLine(self,line):
-		DPrint(8,1,"Parsing Files..")
+		DPrint("Render3dEnt",1,"Parsing Files..")
 		ComPar=split(line, "=")
 		Key=ComPar[0]
 		Value=ComPar[1]
@@ -90,7 +90,7 @@ class EntityHandeler():
 		return self.EntDict[ent]
 
 	def Create(self, Identifyer, Type, Interactive, Team=None):
-		shared.DPrint(8,0,"Creating Entity: "+Type+" : "+str(Interactive))
+		shared.DPrint("Render3dEnt",0,"Creating Entity: "+Type+" : "+str(Interactive))
 		ent=Entity(Identifyer, Type, Team, Interactive)
 		return ent
 
@@ -105,12 +105,12 @@ class Entity():
  		self.Type=Type
  		self.text=None
 
- 		DPrint(8,0,"Loading Entity: "+str(self.Type))
+ 		DPrint("Entity",0,"Loading Entity: "+str(self.Type))
  		try:
  			self.params=shared.EntityHandeler.GetParams(self.Type)
  			self.filever=self.params["version"]
-	 		DPrint(8,0,"	EntityFile v."+str(self.filever))
-	 		DPrint(8,0,"	Mesh: "+str(self.params["mesh"]))
+	 		DPrint("Entity",0,"	EntityFile v."+str(self.filever))
+	 		DPrint("Entity",0,"	Mesh: "+str(self.params["mesh"]))
 			self.mesh=shared.render3dScene.sceneManager.createEntity(Interactive+str(Identifyer), self.params["mesh"])
 			self.shadows=self.params["shadows"]
 			self.mesh.setCastShadows(self.shadows)
@@ -119,7 +119,7 @@ class Entity():
 			self.meshturret=None
 			self.nodeturret=None
 			if not self.params["meshturret"]==None:
-				DPrint(8,0,"	MeshTurret")
+				DPrint("Entity",0,"	MeshTurret")
 				self.meshturret=shared.render3dScene.sceneManager.createEntity(Interactive+str(Identifyer)+"-turret", self.params["meshturret"])
 				self.meshturret.setCastShadows(self.shadows)
 				self.nodeturret=self.node.createChildSceneNode(Interactive+"Node-Turret_"+str(Identifyer))
@@ -130,7 +130,7 @@ class Entity():
 			if not self.params["addmesh"]==None:
 				for x in range(0, self.params["addmesh"]):
 					y=x+1
-					DPrint(8,0,"	AddMesh: "+str(y))
+					DPrint("Entity",0,"	AddMesh: "+str(y))
 					mesh=shared.render3dScene.sceneManager.createEntity(Interactive+str(Identifyer)+"-addmesh"+str(y), self.params["mesh"+str(y)])
 					mesh.setCastShadows(self.shadows)
 					node=self.node.createChildSceneNode(Interactive+"Node-Mesh"+str(y)+"_"+str(Identifyer))
@@ -140,7 +140,7 @@ class Entity():
 			self.movepart=[]
 			self.movepartnode=[]
 	 		if not self.params["moveeff"]==None:
-	 			DPrint(8,0,"	MoveEffect")
+	 			DPrint("Entity",0,"	MoveEffect")
 	 			movepart=shared.render3dScene.sceneManager.createParticleSystem("moveeff0-"+str(self.ID),self.params["moveeff"])
 				movepartnode=self.node.createChildSceneNode()
 				movepart.getEmitter(0).setTimeToLive(self.params["moveefftime"])
@@ -154,7 +154,7 @@ class Entity():
 				self.movepartnode.append(movepartnode)
 				for x in range(0,self.params["addmoveeff"]):
 					y=x+1
-					DPrint(8,0,"	AddMoveEffect: "+str(y))
+					DPrint("Entity",0,"	AddMoveEffect: "+str(y))
 					movepart=shared.render3dScene.sceneManager.createParticleSystem("moveeff"+str(y)+"-"+str(self.ID),self.params["moveeff"+str(y)])
 					movepartnode=self.node.createChildSceneNode()
 					movepart.getEmitter(0).setTimeToLive(self.params["moveefftime"+str(y)])
@@ -170,7 +170,7 @@ class Entity():
 			self.dieeff=None
 			self.dieeffnode=None
 			if not self.params["dieeff"]==None:
-				DPrint(8,0,"	DieEffect")
+				DPrint("Entity",0,"	DieEffect")
 				dieeff=shared.render3dScene.sceneManager.createParticleSystem("dieeff0-"+str(self.ID),self.params["dieeff"])
 				dieeffnode=self.node.createChildSceneNode()
 				dieeff.getEmitter(0).setTimeToLive(self.params["dieefftime"])
@@ -188,7 +188,7 @@ class Entity():
 			if not self.params["acteff"]==None:
 				for x in range(0, self.params["acteff"]):
 					y=x+1
-					DPrint(8,0,"	ActEffect: "+str(y))
+					DPrint("Entity",0,"	ActEffect: "+str(y))
 					actpart=shared.render3dScene.sceneManager.createParticleSystem("acteff"+str(y)+"-"+str(self.ID),self.params["acteff"+str(y)])
 					actpartnode=self.node.createChildSceneNode()
 					actpart.getEmitter(0).setTimeToLive(self.params["actefftime"+str(y)])
@@ -206,7 +206,7 @@ class Entity():
 			if not self.params["light"]==None:
 				for x in range(0, self.params["light"]):
 					y=x+1
-					DPrint(8,0,"	Light: "+str(y))
+					DPrint("Entity",0,"	Light: "+str(y))
 					light=shared.render3dScene.sceneManager.createLight("light"+str(y)+"-"+str(self.ID))
 					light.type = ogre.Light.LT_POINT
 					light.diffuseColour = (.5, .5, .0)
@@ -223,30 +223,30 @@ class Entity():
 
 			self.moveanim=None
 			if not self.params["moveanim"]==None:
-				DPrint(8,0,"	MoveAnimation")
+				DPrint("Entity",0,"	MoveAnimation")
 				self.moveanim=self.mesh.getAnimationState(self.params["moveanim"])
 				self.moveanim.setLoop(True)
 
 			self.deadanim=None
 			if not self.params["deadanim"]==None:
-				DPrint(8,0,"	DeadAnimation")
+				DPrint("Entity",0,"	DeadAnimation")
 				self.deadanim=self.mesh.getAnimationState(self.params["deadanim"])
 
 			self.idleanim=None
 			if not self.params["idleanim"]==None:
-				DPrint(8,0,"	IdleAnimation")
+				DPrint("Entity",0,"	IdleAnimation")
 				self.idleanim=self.mesh.getAnimationState(self.params["idleanim"])
 				self.idleanim.setLoop(True)
 
 			self.idlehurtanim=None
 			if not self.params["idlehurtanim"]==None:
-				DPrint(8,0,"	IdleHurtAnimation")
+				DPrint("Entity",0,"	IdleHurtAnimation")
 				self.idlehurtanim=self.mesh.getAnimationState(self.params["idlehurtanim"])
 				self.idlehurtanim.setLoop(True)
 
 			self.movehurtanim=None
 			if not self.params["movehurtanim"]==None:
-				DPrint(8,0,"	MoveHurtAnimation")
+				DPrint("Entity",0,"	MoveHurtAnimation")
 				self.movehurtanim=self.mesh.getAnimationState(self.params["movehurtanim"])
 				self.movehurtanim.setLoop(True)
 
@@ -254,7 +254,7 @@ class Entity():
 			if not self.params["addidleanim"]==None:
 				for x in range(0, self.params["addidleanim"]):
 					y=x+1
-					DPrint(8,0,"	AddIdleAnimation: "+str(y))
+					DPrint("Entity",0,"	AddIdleAnimation: "+str(y))
 					idleanim=self.mesh.getAnimationState(self.params["idleanim"+str(y)])
 					self.addidleanim.append(idleanim)
 
@@ -262,7 +262,7 @@ class Entity():
 			if not self.params["actanim"]==None:
 				for x in range(0, self.params["actanim"]):
 					y=x+1
-					DPrint(8,0,"	ActAnimation: "+str(y))
+					DPrint("Entity",0,"	ActAnimation: "+str(y))
 					actanim=self.mesh.getAnimationState(self.params["actanim"+str(y)])
 					self.actanim.append(actanim)
 
@@ -275,18 +275,18 @@ class Entity():
 
 			self.error=False
 		except:
-			DPrint(8,4,"Entity loading FAILED!")
-			DPrint(8,0,format_exc())
+			DPrint("Entity",4,"Entity loading FAILED!")
+			DPrint("Entity",0,format_exc())
 			self.error=True
 			try:
 				if EntImporter>self.filever:
-					DPrint(8,3,"Entity File is outdated! "+str(EntImporter)+">"+str(self.filever))
+					DPrint("Entity",3,"Entity File is outdated! "+str(EntImporter)+">"+str(self.filever))
 				elif EntImporter<self.filever:
-					DPrint(8,3,"Are you from the future? This entity file has a newer version than this entity loader! Tell your local law enforcement that the creator of this file has broken the laws of timetraveling! "+str(EntImporter)+"<"+str(self.filever))
+					DPrint("Entity",3,"Are you from the future? This entity file has a newer version than this entity loader! Tell your local law enforcement that the creator of this file has broken the laws of timetraveling! "+str(EntImporter)+"<"+str(self.filever))
 				else:
-					DPrint(8,3,"Entity File has errors. Please nag the creator to fix it.")
+					DPrint("Entity",3,"Entity File has errors. Please nag the creator to fix it.")
 			except:
-				DPrint(8,3,"Entity File is corrupt! Please try to redownload the entity, or contact the creator")
+				DPrint("Entity",3,"Entity File is corrupt! Please try to redownload the entity, or contact the creator")
 
  	def RandomPlacement(self):
  		x=randrange(1, 200, 1)
@@ -427,4 +427,4 @@ class Entity():
 				self.curranim.addTime(self.animtime)
 
 	def __del__(self):
-		shared.DPrint(1,5,"Entity gc'd: "+str(self.ID))
+		shared.DPrint("Entity",5,"Entity gc'd: "+str(self.ID))

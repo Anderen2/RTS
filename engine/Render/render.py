@@ -10,7 +10,7 @@ shared.DPrint(1,1,"Imported..")
 class RenderApplication(object):
 	#This class setups and starts all rendermodules
 	def __init__(self):
-		shared.DPrint(1,1,"Initializing")
+		shared.DPrint("Render",1,"Initializing")
 
 	def PowerUp(self):
 		self.createRoot()
@@ -27,12 +27,12 @@ class RenderApplication(object):
 		self.cleanUp()
 
 	def createRoot(self):
-		shared.DPrint(1,1,"Creating Root")
+		shared.DPrint("Render",1,"Creating Root")
 		self.root = ogre.Root()
 		shared.renderRoot=self.root
  
 	def defineResources(self):
-		shared.DPrint(1,1,"Defining Resources")
+		shared.DPrint("Render",1,"Defining Resources")
 		cf = ogre.ConfigFile()
 		cf.load("resources.cfg")
 
@@ -46,42 +46,42 @@ class RenderApplication(object):
 				ogre.ResourceGroupManager.getSingleton().addResourceLocation(archName, typeName, secName)
 
 	def setupRenderSystem(self):
-		shared.DPrint(1,1,"Setting up RenderSystem")
+		shared.DPrint("Render",1,"Setting up RenderSystem")
 		if not self.root.restoreConfig() and not self.root.showConfigDialog():
 			raise Exception("User canceled the config dialog! -> Application.setupRenderSystem()")
  
 	def createRenderWindow(self):
-		shared.DPrint(1,1,"Creating renderwindow")
+		shared.DPrint("Render",1,"Creating renderwindow")
 		self.root.initialise(True, "RTS Small Start")
  
 	def initializeResourceGroups(self):
-		shared.DPrint(1,1,"Initializing Resource Groups")
+		shared.DPrint("Render",1,"Initializing Resource Groups")
 		ogre.TextureManager.getSingleton().setDefaultNumMipmaps(5)
 		ogre.ResourceGroupManager.getSingleton().initialiseAllResourceGroups()
  
 	def setupScene(self):
-		shared.DPrint(1,1,"Setting up scene")
+		shared.DPrint("Render",1,"Setting up scene")
 		shared.render3dScene=render3d.Scene()
 		shared.render3dScene.Setup()
 		 
 	def setupInputSystem(self):
-		shared.DPrint(1,1,"Setting up I/O")
+		shared.DPrint("Render",1,"Setting up I/O")
 		shared.renderioInput=renderio.Input()
 		shared.renderioInput.Setup()
  
 	def setupCEGUI(self):
-		shared.DPrint(1,1,"Setting up GUI")
+		shared.DPrint("Render",1,"Setting up GUI")
 		shared.renderguiGUI=rendergui.GUI()
 		shared.renderguiGUI.Setup()
 
 	def setupDebuggingTools(self):
-		shared.DPrint(1,1,"Setting up DBGTools")
+		shared.DPrint("Render",1,"Setting up DBGTools")
 		shared.console = console.Console(self.root)
 		shared.console.addLocals({'root':self.root})
 		#shared.console.show()
  
 	def createFrameListener(self):
-		shared.DPrint(1,1,"Creating Framelisteners")
+		shared.DPrint("Render",1,"Creating Framelisteners")
 		self.renderlistener = RenderListener()
 		#self.pframeListener.showDebugOverlay(True)
 		self.root.addFrameListener(self.renderlistener)
@@ -90,12 +90,12 @@ class RenderApplication(object):
 		self.root.addFrameListener(shared.DirectorManager)
  
 	def startRenderLoop(self):
-		shared.DPrint(1,1,"Starting renderloop")
+		shared.DPrint("Render",1,"Starting renderloop")
 		self.root.startRendering()
 		shared.unitHandeler.PowerUp()
  
 	def cleanUp(self): #This cleanup function needs to be cleaned up! No pun intended
-		shared.DPrint(1,2,"Cleaning up!")
+		shared.DPrint("Render",2,"Cleaning up!")
 		shared.renderioInput.inputManager.destroyInputObjectKeyboard(self.keyboard)
 		shared.renderioInput.inputManager.destroyInputObjectMouse(self.mouse)
 		try:

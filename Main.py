@@ -4,11 +4,14 @@
 #Initialize stuff
 from engine import shared, debug
 shared.logInit("engine")
-shared.DPrint(0,1,"Initializing Modules...")
+shared.DPrint("Main",1,"Initializing Modules...")
 
 from engine.Render import render
 from engine.Object import unitmanager, prop, decorator, zone, directormanager
-from engine.Networking import client
+#from engine.Networking import client
+
+#Networking
+#client.Startup()
 
 #Render
 shared.render=render.RenderApplication()
@@ -26,14 +29,11 @@ shared.ParseCommand=debug.ParseCommand
 #DirectorManager
 shared.DirectorManager=directormanager.DirectorManager()
 
-#Networking
-shared.NetClient=client.Client()
-
 #Power it up!
-shared.DPrint(0,1,"Powerin' up!..")
-shared.DPrint(0,1,"PWR: UnitHandeler")
+shared.DPrint("Main",1,"Powerin' up!..")
+shared.DPrint("Main",1,"PWR: UnitHandeler")
 shared.unitHandeler.PowerUp()
-shared.DPrint(0,1,"PWR: Render")
+shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
 
 #Release tha clutch and start moving forward

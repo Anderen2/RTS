@@ -12,7 +12,7 @@ class GUI():
 		UDim=CEGUI.UDim
 
 	def Setup(self):
-		shared.DPrint(3,1,"Setting up CEGUI")
+		shared.DPrint("RenderGUI",1,"Setting up CEGUI")
 		#Setup varibles
 		self.MoveInterface=None
 		self.hackhz=1024
@@ -64,7 +64,7 @@ class GUI():
 		self.SetupGuiElements()
 
 	def CreateGuiElements(self):
-		shared.DPrint(3,1,"Creating GUI elements")
+		shared.DPrint("RenderGUI",1,"Creating GUI elements")
 		windowManager = CEGUI.WindowManager.getSingleton()
 		#Create "ActionButtons"
 		self.actionbuttons=range(14)
@@ -126,7 +126,7 @@ class GUI():
 			bar+=1
 
 	def SetupGuiElements(self):
-		shared.DPrint(3,1,"Setting up Gui Elements")
+		shared.DPrint("RenderGUI",1,"Setting up Gui Elements")
 		windowManager = CEGUI.WindowManager.getSingleton()
 		self.windowManager = CEGUI.WindowManager.getSingleton()
 		#Loop through all the windows to apply movement, and hover feedback functionality
@@ -307,7 +307,7 @@ class GUI():
 		#self.MoveInterface=True
 		if evt.button==CEGUI.MiddleButton:
 			CEGUI.System.getSingleton().setDefaultMouseCursor("TaharezLook", "MouseMoveCursor")
-			shared.DPrint(3,0,"Clicked: "+str(evt.window.getName()))
+			shared.DPrint("RenderGUI",0,"Clicked: "+str(evt.window.getName()))
 			if evt.window.getParent().getParent().getParent().getName()!="Root":
 				self.MoveInterface=evt.window.getParent().getParent().getParent()
 			else:
@@ -334,7 +334,7 @@ class GUI():
 	def W_Menter(self, evt):
 		self.IgnoreMe=["Root/UnitOpt/BG/Actions","Root/UnitOpt/BG/Upgrades"]
 		self.IgnoreMyParent=["Root/Chat/BG", "Root/Chat", "Root/GameInfo/BG", "Root/GameInfo"]
-		shared.DPrint(3,0,"Entered: "+str(evt.window.getName()))
+		shared.DPrint("RenderGUI",0,"Entered: "+str(evt.window.getName()))
 		#if evt.window.getName()!="Root/UnitOpt/BG/Actions" and evt.window.getName()!="Root/UnitOpt/BG/Upgrades" and evt.window.getParent().getName()!="Root/Chat/BG" and evt.window.getParent().getName()!="Root/Chat" and evt.window.getParent().getName()!="Root/GameInfo/BG" and evt.window.getParent().getName()!="Root/GameInfo":
 		if not evt.window.getName() in self.IgnoreMe:
 			if not evt.window.getParent().getName() in self.IgnoreMyParent:
@@ -454,7 +454,7 @@ class GUI():
 	def GameInfo_TitleClick(self, evt):
 		if evt.button==CEGUI.LeftButton:
 			print("This is a beta..")
-			shared.DPrint(3,0,"Beta: Wth?")
+			shared.DPrint("RenderGUI",0,"Beta: Wth?")
 		elif evt.button==CEGUI.RightButton:
 			if self.windowManager.getWindow("Root/GameInfo/BG").getAlpha()!=0:
 				self.windowManager.getWindow("Root/GameInfo/BG/History").hide()
@@ -469,7 +469,7 @@ class GUI():
 		exit()
 
 	def addevent(self, evt):
-		shared.DPrint(3,0,"Adding Unit")
+		shared.DPrint("RenderGUI",0,"Adding Unit")
 		self.UnitHandeler.CreateMov("robot")
 
 	def omgevent(self, evt):

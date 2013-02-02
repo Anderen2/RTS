@@ -14,43 +14,43 @@ class Scene():
 		self.root=shared.renderRoot
 
 	def Setup(self):
-		shared.DPrint(2,1,"Setting up terrain..")
+		shared.DPrint("Render3d",1,"Setting up terrain..")
 		self.sceneManager = self.root.createSceneManager(ogre.ST_EXTERIOR_CLOSE, "Default sceneManager")
 		self.sceneManager.setWorldGeometry ("terrain.cfg")
-		shared.DPrint(2,1,"Skybox..")
+		shared.DPrint("Render3d",1,"Skybox..")
 		self.sceneManager.setSkyBox (True, "Examples/SpaceSkyBox")
 
 		self.EntNode=self.sceneManager.getRootSceneNode().createChildSceneNode("EntNode",(0,0,0))
 		self.StatNode=self.sceneManager.getRootSceneNode().createChildSceneNode("StatNode",(0,0,0))
 
-		shared.DPrint(2,1,"Camera..")
+		shared.DPrint("Render3d",1,"Camera..")
 		shared.render3dCamera=Camera(self.root, self)
 		self.camera=shared.render3dCamera
 
-		shared.DPrint(2,1,"Particle Parameters")
+		shared.DPrint("Render3d",1,"Particle Parameters")
 		ogre.ParticleSystem.defaultNonVisibleUpdateTimeout=1
 
-		shared.DPrint(2,1,"SelectStuff..")
+		shared.DPrint("Render3d",1,"SelectStuff..")
 		shared.render3dSelectStuff=SelectStuff(self.root, self)
 
-		shared.DPrint(2,1,"EntityHandeler..")
+		shared.DPrint("Render3d",1,"EntityHandeler..")
 		shared.EntityHandeler=render3dent.EntityHandeler()
-		shared.DPrint(2,1,"	Loading entitys..")
+		shared.DPrint("Render3d",1,"	Loading entitys..")
 		shared.EntityHandeler.ReadEntitys()
-		shared.DPrint(2,1,"	Entitys successfuly loaded!")
+		shared.DPrint("Render3d",1,"	Entitys successfuly loaded!")
 
-		shared.DPrint(2,1,"DecalManager...")
+		shared.DPrint("Render3d",1,"DecalManager...")
 		shared.DecalManager=render3ddecal.DecalManager()
-		shared.DPrint(2,1,"	Defining decals..")
+		shared.DPrint("Render3d",1,"	Defining decals..")
 		shared.DecalManager.Declare()
-		shared.DPrint(2,1,"	Decals successfuly declared!")
+		shared.DPrint("Render3d",1,"	Decals successfuly declared!")
 
-		shared.DPrint(2,1,"WaypointManager..")
+		shared.DPrint("Render3d",1,"WaypointManager..")
 		shared.WaypointManager=render3dwaypoint.WaypointManager()
-		shared.DPrint(2,1,"	Loading Waypoints..")
+		shared.DPrint("Render3d",1,"	Loading Waypoints..")
 		shared.WaypointManager.Load()
 
-		shared.DPrint(2,1,"WaterManager..")
+		shared.DPrint("Render3d",1,"WaterManager..")
 		shared.WaterManager=render3dwater.WaterManager()
 
 		debug.ACC("r_pfenable", self.PostFilterEnable, info="Enable a postfilter", args=1)
@@ -70,7 +70,7 @@ class Scene():
 class Camera():
 	def __init__(self, root, scene):
 		self.root=root
-		shared.DPrint(2,1,"Camera: Creating camera")
+		shared.DPrint("Camera",1,"Camera: Creating camera")
 		self.camera = scene.sceneManager.createCamera("Camera")
 		self.camera.nearClipDistance = 2
 
@@ -118,7 +118,7 @@ class SelectStuff():
 		self.mStop = ogre.Vector2()
 		self.mRect = None
 		self.mSelecting = False
-		shared.DPrint(2,1,"SelectStuff: Defining Rectangles..")
+		shared.DPrint("SelectStuff",1,"SelectStuff: Defining Rectangles..")
 		self.mRect = SelectionRectangle("Selection SelectionRectangle")
 		scene.sceneManager.getRootSceneNode().createChildSceneNode().attachObject(self.mRect) #Adding a rectangle to the scene
 		self.mVolQuery = scene.sceneManager.createPlaneBoundedVolumeQuery(ogre.PlaneBoundedVolumeList()) #Doing shit to the rectangle in the scene
@@ -227,7 +227,7 @@ class SelectStuff():
 					for x in self.CurrentSelection:
 						if x.getName() == item.movable.getParentSceneNode().getName():
 							foosel.append(x)
-							shared.DPrint(2,0,"Selected: "+x.getName())
+							shared.DPrint("SelectStuff",0,"Selected: "+x.getName())
 					if len(foosel)==0:
 						unitID=int(split(item.movable.getParentSceneNode().getName(),"_")[1])
 						shared.unitHandeler.Get(unitID)._selected()
@@ -241,7 +241,7 @@ class SelectStuff():
 					#print("_____________________________________")
 					break # We found an existing object
 				elif item.worldFragment:
-					shared.DPrint(2,0,"Selection: World Selected")
+					shared.DPrint("SelectStuff",0,"Selection: World Selected")
 		if len(self.CurrentSelection):
 			for x in self.CurrentSelection:
 				#x.showBoundingBox(True)

@@ -7,7 +7,7 @@ from engine.shared import DPrint
 import ogre.renderer.OGRE as ogre
 
 def Line(Name, material, Start, End, Mesh=None):
-	DPrint(10,0,"Defining Line: "+Name+" with material "+material+" and pos: "+str(SizeX)+" -> "+str(SizeY))
+	DPrint("Render3dShapes",0,"Defining Line: "+Name+" with material "+material+" and pos: "+str(SizeX)+" -> "+str(SizeY))
 	line=ogre.ManualObject("Line")
 	line.begin(material, ogre.RenderOperation.OT_LINE_LIST)
 	line.position(Start)
@@ -18,7 +18,7 @@ def Line(Name, material, Start, End, Mesh=None):
 	return line
 
 def Path(Name, material, aPath, Mesh=None):
-	DPrint(10,0,"Defining Path: "+Name+" with material "+material+" and path: "+str(aPath))
+	DPrint("Render3dShapes",0,"Defining Path: "+Name+" with material "+material+" and path: "+str(aPath))
 	line=ogre.ManualObject("Path")
 	line.begin(material, ogre.RenderOperation.OT_LINE_LIST)
 	for x in aPath:
@@ -29,7 +29,7 @@ def Path(Name, material, aPath, Mesh=None):
 	return line
 
 def Quad(Name, material, SizeX, SizeZ, Mesh=None):
-	DPrint(10,0,"Defining Quad: "+Name+" with material "+material+" and size: "+str((SizeX,SizeY)))
+	DPrint("Render3dShapes",0,"Defining Quad: "+Name+" with material "+material+" and size: "+str((SizeX,SizeY)))
 	decal=ogre.ManualObject("Quad")
 	decal.begin(material, ogre.RenderOperation.OT_TRIANGLE_LIST)
 
@@ -62,7 +62,7 @@ def Quad(Name, material, SizeX, SizeZ, Mesh=None):
 	return decal
 
 def Tetra(Name, material, scale, Mesh=None):
-	DPrint(10,0,"Defining Tetrahedron: "+Name+" with material "+material+" and scale: "+str(scale))
+	DPrint("Render3dShapes",0,"Defining Tetrahedron: "+Name+" with material "+material+" and scale: "+str(scale))
 	shape=ogre.ManualObject("Tetra")
 
 	Vec=[0,0,0,0]

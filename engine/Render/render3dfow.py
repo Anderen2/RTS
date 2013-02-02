@@ -9,14 +9,14 @@ from random import randrange
 
 class FieldOfWar():
 	def __init__(self):
-		DPrint(11,0,"Initializing Field Of War")
+		DPrint("Render3dFOW",0,"Initializing Field Of War")
 
 		worldsize=1500
 		precision=10
-		DPrint(11,0,"World Size: "+str(worldsize))
-		DPrint(11,0,"Precision: "+str(precision))
+		DPrint("Render3dFOW",0,"World Size: "+str(worldsize))
+		DPrint("Render3dFOW",0,"Precision: "+str(precision))
 
-		DPrint(11,0,"Calculating Vertices")
+		DPrint("Render3dFOW",0,"Calculating Vertices")
 		self.XGrid=[]
 		for x in range(0,(worldsize+precision)/precision):
 			self.XGrid.append(x*precision)
@@ -26,11 +26,11 @@ class FieldOfWar():
 			self.YGrid.append(y*precision)
 
 		Vertcount=len(self.XGrid)*len(self.YGrid)
-		DPrint(11,0,"Vertice Count: "+str(Vertcount))
+		DPrint("Render3dFOW",0,"Vertice Count: "+str(Vertcount))
 		Tricount=Vertcount*2
-		DPrint(11,0,"Approx. Triangle Count: "+str(Tricount))
+		DPrint("Render3dFOW",0,"Approx. Triangle Count: "+str(Tricount))
 
-		DPrint(11,0,"Creating Plane...")
+		DPrint("Render3dFOW",0,"Creating Plane...")
 		self.plane=ogre.ManualObject("Quad")
 		self.plane.begin("transparency", ogre.RenderOperation.OT_TRIANGLE_LIST)
 		self.plane.setDynamic(True)
@@ -40,7 +40,7 @@ class FieldOfWar():
 
 		#May be slow to update with highpres fowplanes! 
 		#Todo: Sectionize based on presision
-		DPrint(11,0,"Creating Vertices")
+		DPrint("Render3dFOW",0,"Creating Vertices")
 		I=0
 		self.VertColour=[]
 		for x in self.XGrid:
@@ -60,7 +60,7 @@ class FieldOfWar():
 			for y in self.YGrid:
 				self.VertList.append((x,y))
 
-		DPrint(11,0,"Calculating triangles")
+		DPrint("Render3dFOW",0,"Calculating triangles")
 		#Create a list of all triangles (1)
 		self.TriList1=[]
 		for x in self.VertList:
@@ -87,9 +87,9 @@ class FieldOfWar():
 		for x in range(1,What):
 			self.TriList2.pop(len(self.TriList2)-1)
 
-		DPrint(11,0,"Total Triangle count: "+str(len(self.TriList1)+len(self.TriList2)))
+		DPrint("Render3dFOW",0,"Total Triangle count: "+str(len(self.TriList1)+len(self.TriList2)))
 
-		DPrint(11,0,"Creating triangles..")
+		DPrint("Render3dFOW",0,"Creating triangles..")
 		for x in self.TriList1:
 			self.plane.triangle(x[2],x[1],x[0])
 
@@ -111,7 +111,7 @@ class FieldOfWar():
 		# self.plane.triangle(0,1,2)
 		self.plane.end()
 
-		DPrint(11,0,"Plane created successfully")
+		DPrint("Render3dFOW",0,"Plane created successfully")
 
 		self.plane.setVisible(True)
 		self.FOWn=shared.render3dScene.sceneManager.getRootSceneNode().createChildSceneNode("FieldOfWar")

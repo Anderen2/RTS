@@ -16,10 +16,10 @@ class GlobalUnit():
 		self.entity=shared.EntityHandeler.Create(self.ID, self.subtype, "unit", self.team)
 		try:
 			if self.entity.error:
-				shared.DPrint(7,4,"Entity error! Unit creation aborted!")
+				shared.DPrint("Globalunit",4,"Entity error! Unit creation aborted!")
 				self._del()
 		except:
-			shared.DPrint(7,4,"Entity critical error! Unit creation aborted!")
+			shared.DPrint("Globalunit",4,"Entity critical error! Unit creation aborted!")
 			self._del()
 
 		#Do some post-render stuff
@@ -37,21 +37,21 @@ class GlobalUnit():
 		self.init()
 
 		#Notify that we have successfuly created a unit!
-		shared.DPrint(1,5,"Unit created! ID="+str(self.ID))
+		shared.DPrint("Globalunit",5,"Unit created! ID="+str(self.ID))
 
 	def _think(self):
 		self.entity.text.update()
 		self.entity.Think()
 
 	def _selected(self):
-		shared.DPrint(1,5,"Unit selected: "+str(self.ID))
+		shared.DPrint("Globalunit",5,"Unit selected: "+str(self.ID))
 		self.entity.text.enable(True)
 		if debug.AABB:
 			self.entity.node.showBoundingBox(True)
 		self.entity.rotTurret(60)
 
 	def _deselected(self):
-		shared.DPrint(1,5,"Unit deselected: "+str(self.ID))
+		shared.DPrint("Globalunit",5,"Unit deselected: "+str(self.ID))
 		self.entity.text.enable(False)
 		self.entity.node.showBoundingBox(False)
 		self.entity.actNone()
@@ -97,7 +97,7 @@ class GlobalUnit():
 		pass
 
 	def _del(self):
-		shared.DPrint(1,5,"Unit deleted: "+str(self.ID))
+		shared.DPrint("Globalunit",5,"Unit deleted: "+str(self.ID))
 
 		try:
 			xExsist=None
@@ -111,7 +111,7 @@ class GlobalUnit():
 				self.entity.Delete()
 			shared.unitHandeler.Delete(self.ID)
 		except:
-			shared.DPrint(7,5,"Unit Deletion Failed! Unit may still be in memory and/or in game world!")
+			shared.DPrint("Globalunit",5,"Unit Deletion Failed! Unit may still be in memory and/or in game world!")
 
 	def __del__(self):
-		shared.DPrint(1,5,"Unit gc'd: "+str(self.ID))
+		shared.DPrint("Globalunit",5,"Unit gc'd: "+str(self.ID))

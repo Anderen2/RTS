@@ -34,7 +34,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 	def Setup(self):
 		"""This function runs at SetupTime, and makes everything ready for Input/Output fun"""
 		#Try to use shared.DPrint as much as possible when debugging stuff. More info about this is in the module Shared
-		shared.DPrint(4,1,"Setting up OIS")
+		shared.DPrint("RenderIO",1,"Setting up OIS")
 		#The 4 lines below tells OIS what window to capture input from
 		renderWindow = self.root.getAutoCreatedWindow()
 		windowHandle = renderWindow.getCustomAttributeInt("WINDOW")
@@ -51,16 +51,16 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		#This tries to enable a joystic controller, if its availible (I havent worked at all at this, would be nice if it worked!)
 		try:
 			self.Joystick = self.inputManager.createInputObjectJoyStick(OIS.OISJoyStick, False)
-			shared.DPrint(4,1,"Joystick found and enabled")
+			shared.DPrint("RenderIO",1,"Joystick found and enabled")
 		except:
 			self.Joystick=False
-			shared.DPrint(4,1,"Joystick not found")
+			shared.DPrint("RenderIO",1,"Joystick not found")
 
 		#Setup Different Varibles
 		self.Settings()
 
 	def Settings(self):
-		shared.DPrint(4,1,"Defining Settings")
+		shared.DPrint("RenderIO",1,"Defining Settings")
 		self.rotate = 0.13
 		self.move = 250
 

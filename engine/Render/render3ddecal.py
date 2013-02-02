@@ -21,7 +21,7 @@ class DecalManager():
 		self.Define("Burnt","Burnt", 50, 50)
 
 	def Define(self, meshname, material, sizex, sizez):
-		DPrint(9,0,"Defining Decal: "+meshname+" with material "+material+" as an A2Decal")
+		DPrint("Render3dDecal",0,"Defining Decal: "+meshname+" with material "+material+" as an A2Decal")
 		self.decal=ogre.ManualObject("A2Decal")
 		self.decal.begin(material, ogre.RenderOperation.OT_TRIANGLE_LIST)
 
@@ -52,7 +52,7 @@ class DecalManager():
 		self.decal.convertToMesh("Decal"+meshname)
 
 	def Create(self, meshname, pos, rot):
-		DPrint(9,0,"Creating Decal"+meshname+" with id "+str(self.dcount)+" at "+str(pos)+" Rot: "+str(rot))
+		DPrint("Render3dDecal",0,"Creating Decal"+meshname+" with id "+str(self.dcount)+" at "+str(pos)+" Rot: "+str(rot))
 		self.dcount=self.dcount+1
 		return A2Decal(self.dcount,"Decal"+meshname, pos, rot)
 		
@@ -79,7 +79,7 @@ class A2Decal():
 		self.node.rotate((0,0,1),ogre.Degree(rot[2]))
 
 	def __del__(self):
-		DPrint(9,0,"Decal "+str(self.ID)+" gc'd")
+		DPrint("Render3dDecal",0,"Decal "+str(self.ID)+" gc'd")
 		#shared.render3dScene.sceneManager.destroyEntity(self.ent)
 		#shared.render3dScene.sceneManager.destroySceneNode(self.node)
 

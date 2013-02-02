@@ -7,7 +7,7 @@ from ogre.renderer.OGRE import FrameListener
 class propManager(FrameListener):
 	def __init__(self):
 		FrameListener.__init__(self)
-		shared.DPrint(7,1,"Initializing Prop Handeler")
+		shared.DPrint("propManager",1,"Initializing Prop Handeler")
 		self.props={}
 		self.dcount=0
 		debug.ACC("p_c", self.Create, info="Create a prop on the map", args=1)
@@ -92,27 +92,27 @@ class Prop():
 		self.entity.RandomPlacement()
 
 		#Notify that we have successfuly created a prop!
-		shared.DPrint(1,5,"Prop created! ID="+str(self.ID))
+		shared.DPrint("prop",5,"Prop created! ID="+str(self.ID))
 
 	def _think(self):
 		pass
 
 	def _selected(self):
 		#This should never run, as props cannot be (de)selected
-		shared.DPrint(1,5,"Prop selected: "+str(self.ID))
+		shared.DPrint("prop",5,"Prop selected: "+str(self.ID))
 
 	def _deselected(self):
 		#This should never run, as props cannot be (de)selected
-		shared.DPrint(1,5,"Prop deselected: "+str(self.ID))
+		shared.DPrint("prop",5,"Prop deselected: "+str(self.ID))
 
 	def _setPos(self):
 		pass
 
 	def _del(self):
-		shared.DPrint(1,5,"Prop deleted: "+str(self.ID))
+		shared.DPrint("prop",5,"Prop deleted: "+str(self.ID))
 
 		self.entity.Delete()
 		shared.propHandeler.Delete(self.ID)
 
 	def __del__(self):
-		shared.DPrint(1,5,"Prop gc'd: "+str(self.ID))
+		shared.DPrint("prop",5,"Prop gc'd: "+str(self.ID))

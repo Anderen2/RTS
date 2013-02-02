@@ -7,7 +7,7 @@ from ogre.renderer.OGRE import FrameListener
 class DecoratorHandeler(FrameListener):
 	def __init__(self):
 		FrameListener.__init__(self)
-		shared.DPrint(7,1,"Initializing New Decoration Handeler")
+		shared.DPrint("DecoratorHandeler",1,"Initializing New Decoration Handeler")
 		self.decorators={}
 		self.dcount=0
 
@@ -91,27 +91,27 @@ class Decoration():
 		self.entity.RandomPlacement()
 
 		#Notify that we have successfuly created a unit!
-		shared.DPrint(1,5,"Decorator created! ID="+str(self.ID))
+		shared.DPrint("Decoration",5,"Decorator created! ID="+str(self.ID))
 
 	def _think(self):
 		pass
 
 	def _selected(self):
 		#This should never run, as decs cannot be (de)selected
-		shared.DPrint(1,5,"Decorator selected: "+str(self.ID))
+		shared.DPrint("Decoration",5,"Decorator selected: "+str(self.ID))
 
 	def _deselected(self):
 		#This should never run, as decs cannot be (de)selected
-		shared.DPrint(1,5,"Decorator deselected: "+str(self.ID))
+		shared.DPrint("Decoration",5,"Decorator deselected: "+str(self.ID))
 
 	def _setPos(self):
 		pass
 
 	def _del(self):
-		shared.DPrint(1,5,"Decorator deleted: "+str(self.ID))
+		shared.DPrint("Decoration",5,"Decorator deleted: "+str(self.ID))
 
 		self.entity.Delete()
 		shared.unitHandeler.Delete(self.ID)
 
 	def __del__(self):
-		shared.DPrint(1,5,"Decorator gc'd: "+str(self.ID))
+		shared.DPrint("Decoration",5,"Decorator gc'd: "+str(self.ID))

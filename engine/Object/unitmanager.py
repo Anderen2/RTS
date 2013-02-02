@@ -10,7 +10,7 @@ from ogre.renderer.OGRE import FrameListener
 class UnitManager(FrameListener):
 	def __init__(self):
 		FrameListener.__init__(self)
-		shared.DPrint(6,1,"Initializing..")
+		shared.DPrint("UnitManager",1,"Initializing..")
 		self.units={}
 		self.ucount=0
 

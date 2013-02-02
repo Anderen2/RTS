@@ -1,48 +1,47 @@
 #TwistedClient
 import pickle
 from traceback import print_exc
+from random import randrange
 from string import split
 from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor, stdio
 from twisted.internet.defer import Deferred
 
 from engine import shared, debug
+import sh_netObject, sh_netMethod, TwCLI
+import cl_netPlayer, cl_netOPlayer
 
-import sh_netObject
 shared.objectManager=sh_netObject.ObjectManager()
-import TwCLI, sh_netMethod
 
 INTERFACE="client"
 
 class Service():
 	def __init__(self):
 		shared.objectManager.addEntry(0, 1, self)
+		debug.ACC("net_serverinfo", self.PrintNice, "Show server information", 0)
 
 	def ConnectionMade(self, proto):
 		#Handshake
-		proto.sendMethod(1, "HI", ["Anderen2"])
+		proto.sendMethod(1, "HI", ["Anderen2"+str(randrange(0,100,1))])
+		shared.DPrint("client",0,"Shaking hands with server")
 		reactor.callLater(0.1, lambda: proto.sendMethod(1, "PL", None))
 		reactor.callLater(0.2, lambda: proto.sendMethod(0, "SI", None))
-		reactor.callLater(0.5, self.PrintNice)
+
+	def ConnectionFailed(self, proto):
+		shared.DPrint("client",2,"Connection Failed")
+		reactor.stop()
 
 	def PrintNice(self):
-		print("""\nConnected to server: %s \n%s\nServer Location: %s / %s \nPlayers Connected: %d""" % (self.ServerInfo["name"], self.ServerInfo["desc"], self.ServerInfo["region"], self.ServerInfo["country"], len(self.playerlist)))
+		return ("""\nConnected to server: %s \n%s\nServer Location: %s / %s \nPlayers Connected: %d""" % (self.ServerInfo["name"], self.ServerInfo["desc"], self.ServerInfo["region"], self.ServerInfo["country"], len(self.playerlist)))
 
 	def PL(self, encoded, Protocol=None):
 		self.playerlist=pickle.loads(encoded+".")
-		print(self.playerlist)
+		shared.DPrint("client",1,"Got PlayerList")
 
 	def SI(self, encoded, Protocol=None):
 		self.ServerInfo=pickle.loads(encoded+".")
-		print(self.ServerInfo)
-		
-class Player():
-	def __init__(self):
-		shared.objectManager.addEntry(0, 2, self)
-
-	def HI(self, ID, Protocol=None):
-		self.ID=int(ID)
-		print("Got ID: "+str(ID))
+		shared.DPrint("client", 1, "Got ServerInfo")
+		#shared.DPrint("client",1,self.ServerInfo)
 
 class Unit():
 	def __init__(self, ID, team, utype):
@@ -88,7 +87,7 @@ class UnitManager():
 		shared.objectManager.addEntry(1000, len(self.clist), self.clist[len(self.clist)-1])	
 
 def Startup():
-	player=Player()
+	shared.SelfPlayer=cl_netPlayer.Player()
 	shared.Service=Service()
 	#cliFactory=TwCLI.CLIFactory()
 	unitManager=UnitManager()
@@ -97,5 +96,11 @@ def Startup():
 	# print(shared.objectManager.setVarible(2, "test", "fuckoff"))
 	# print(shared.objectManager.getVarible(shared.objectManager.getEntryByClass("UnitManager"), "test"))
 
-	reactor.connectTCP("localhost", 1337, sh_netMethod.MethodFactory())
+	reactor.connectTCP("localhost", 1337, sh_netMethod.MethodFactory(), 5)
+
+def Run():
 	reactor.run()
+
+def cleanUp():
+	pass
+	#reactor.disconnect()

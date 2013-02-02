@@ -64,6 +64,8 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		self.rotate = 0.13
 		self.move = 250
 
+		self.mousespeed = 1.2
+
 		self.CamStear=False
 		self.Delta=None
 
@@ -88,14 +90,14 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		self.hackhz=1024
 		self.hackvz=768
 
-	def frameRenderingQueued(self, evt):
+	def frameRenderingQueued(self, timesincelastframe):
 		"""This function has to be named this. Everything in this function gets called each frame, which means 60 times a secound, do not pollute it!"""
 		#Read the current mouse and keyboard state
 		self.Keyboard.capture()
 		self.Mouse.capture()
 
 		#Calculate movement with DeltaTime (Google it)
-		self.Delta=evt.timeSinceLastFrame
+		self.Delta=timesincelastframe
 
 		#Movement
 		transVector = Vector3(0, 0, 0)
@@ -114,7 +116,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			transVector.y -= self.move
 
 		#See render3d's Camera Class for more infomation about this
-		self.camera.SetPos(self.camera.camNode.orientation * transVector * self.Delta)
+		self.camera.SetPos(self.camera.camNode.orientation * transVector * (self.Delta)*50)
 
 		#The application will exit if this returns false, therefor ESC closes the game.
 		return not self.Keyboard.isKeyDown(OIS.KC_ESCAPE)
@@ -127,7 +129,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		
 		if self.CurrentMiceInterface==1:
 			#GUI Events
-			System.getSingleton().injectMouseMove(evt.get_state().X.rel, evt.get_state().Y.rel)
+			System.getSingleton().injectMouseMove(evt.get_state().X.rel*self.mousespeed, evt.get_state().Y.rel*self.mousespeed)
 
 			#Allows you to select multiple stuff by dragging (Moving mouse while holding LMB)
 			if self.LMBSel==True:

@@ -4,10 +4,7 @@ import render3d, rendergui, renderio, renderphys, console
 from twisted.internet import reactor
 from engine import shared
 from time import gmtime, sleep, time
-<<<<<<< HEAD
 from traceback import print_exc
-=======
->>>>>>> dd34fc3e589b68efcafaac9a17a710a19a2353cb
 import ogre.renderer.OGRE as ogre
 
 shared.DPrint(1,1,"Imported..")
@@ -99,47 +96,22 @@ class RenderApplication(object):
 		self.renderqueue.append(shared.DirectorManager)
 
 	def renderHook(self):
-<<<<<<< HEAD
 		self.deltatime=time()-self.alphatime
 		self.alphatime=time()
 		print(self.deltatime)
 
-		try:
-			for x in self.renderqueue:
-				if not x.frameRenderingQueued(self.deltatime):
-					reactor.stop()
-		except:
-			reactor.stop()
-			print_exc()
-
-		#if not self.root.window.isClosed():
-		if True:
-			self.weu.messagePump()
-
-=======
-		try:
-			if footime==None:
-				pass
-		except:
-			footime=time()
-
 		for x in self.renderqueue:
-			if not x.frameRenderingQueued(time()-footime):
+			if not x.frameRenderingQueued(self.deltatime):
 				reactor.stop()
 		#if not self.root.window.isClosed():
 		if True:
 			self.weu.messagePump()
->>>>>>> dd34fc3e589b68efcafaac9a17a710a19a2353cb
 			#if self.root.window.isActive():
 			if True:
 				self.root.renderOneFrame()
 		else:
 			reactor.stop()
 		#print(time()-footime)
-<<<<<<< HEAD
-=======
-		footime=time()
->>>>>>> dd34fc3e589b68efcafaac9a17a710a19a2353cb
 		reactor.callLater(0,self.renderHook)
 
 	def startRenderLoop(self):
@@ -149,11 +121,8 @@ class RenderApplication(object):
 		self.weu = ogre.WindowEventUtilities()
 		reactor.callLater(0.1,self.renderHook)
 
-<<<<<<< HEAD
 		self.alphatime=time()
 
-=======
->>>>>>> dd34fc3e589b68efcafaac9a17a710a19a2353cb
 		global QUITTIMER
 		if QUITTIMER!=0 or QUITTIMER!=None:
 			reactor.callLater(QUITTIMER, lambda: reactor.stop())

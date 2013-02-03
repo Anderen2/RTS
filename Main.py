@@ -8,10 +8,10 @@ shared.DPrint("Main",1,"Initializing Modules...")
 
 from engine.Render import render
 from engine.Object import unitmanager, prop, decorator, zone, directormanager
-#from engine.Networking import client
+from engine.Networking import client
 
 #Networking
-#client.Startup()
+client.Startup()
 
 #Render
 shared.render=render.RenderApplication()
@@ -37,4 +37,9 @@ shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
 
 #Release tha clutch and start moving forward
-#shared.render.startRenderLoop()
+shared.DPrint("Main", 1, "Starting Mainloop..")
+client.Run()
+
+#We have come to a stop, lets clean up after ourselves
+client.cleanUp()
+shared.render.cleanUp()

@@ -1,5 +1,6 @@
 import traceback
 from string import split
+from twisted.internet.reactor import stop
 import shared
 
 #DEBUG OPTIONS:
@@ -18,8 +19,8 @@ def ParseCommand(Txt):
 		#GLOBAL COMMANDS:
 		if CMD=="helloworld":
 			return "Hey"+str(PAR)
-		elif CMD=="exit":
-			exit()
+		elif CMD=="exit" or CMD=="stop":
+			stop()
 
 		#CONSOLE COMMANDS
 		elif CMD=="showconsole":

@@ -1,11 +1,14 @@
 #MainModule - Render
 #Submodules: render3d, rendergui, renderio, renderphys
 import render3d, rendergui, renderio, renderphys, console
+from twisted.internet import reactor
 from engine import shared
-from time import gmtime, sleep
+from time import gmtime, sleep, time
 import ogre.renderer.OGRE as ogre
 
 shared.DPrint(1,1,"Imported..")
+
+QUITTIMER=120 #Set this to a time in secounds if you want the game to automaticly quit. 0 or None disables it.
 
 class RenderApplication(object):
 	#This class setups and starts all rendermodules
@@ -24,7 +27,7 @@ class RenderApplication(object):
 		self.setupDebuggingTools()
 		self.createFrameListener()
 		self.startRenderLoop()
-		self.cleanUp()
+		#self.cleanUp()
 
 	def createRoot(self):
 		shared.DPrint("Render",1,"Creating Root")
@@ -79,25 +82,55 @@ class RenderApplication(object):
 		shared.console = console.Console(self.root)
 		shared.console.addLocals({'root':self.root})
 		#shared.console.show()
- 
+
 	def createFrameListener(self):
 		shared.DPrint("Render",1,"Creating Framelisteners")
 		self.renderlistener = RenderListener()
 		#self.pframeListener.showDebugOverlay(True)
-		self.root.addFrameListener(self.renderlistener)
-		self.root.addFrameListener(shared.renderioInput)
-		self.root.addFrameListener(shared.unitHandeler)
-		self.root.addFrameListener(shared.DirectorManager)
- 
+		self.renderqueue=[]
+
+		self.renderqueue.append(self.renderlistener)
+		self.renderqueue.append(shared.renderioInput)
+		self.renderqueue.append(shared.unitHandeler)
+		self.renderqueue.append(shared.DirectorManager)
+
+	def renderHook(self):
+		try:
+			if footime==None:
+				pass
+		except:
+			footime=time()
+
+		for x in self.renderqueue:
+			if not x.frameRenderingQueued(time()-footime):
+				reactor.stop()
+		#if not self.root.window.isClosed():
+		if True:
+			self.weu.messagePump()
+			#if self.root.window.isActive():
+			if True:
+				self.root.renderOneFrame()
+		else:
+			reactor.stop()
+		#print(time()-footime)
+		footime=time()
+		reactor.callLater(0,self.renderHook)
+
 	def startRenderLoop(self):
 		shared.DPrint("Render",1,"Starting renderloop")
-		self.root.startRendering()
+		#self.root.startRendering()
 		shared.unitHandeler.PowerUp()
+		self.weu = ogre.WindowEventUtilities()
+		reactor.callLater(0.1,self.renderHook)
+
+		global QUITTIMER
+		if QUITTIMER!=0 or QUITTIMER!=None:
+			reactor.callLater(QUITTIMER, lambda: reactor.stop())
  
 	def cleanUp(self): #This cleanup function needs to be cleaned up! No pun intended
 		shared.DPrint("Render",2,"Cleaning up!")
-		shared.renderioInput.inputManager.destroyInputObjectKeyboard(self.keyboard)
-		shared.renderioInput.inputManager.destroyInputObjectMouse(self.mouse)
+		shared.renderioInput.inputManager.destroyInputObjectKeyboard(shared.renderioInput.Keyboard)
+		shared.renderioInput.inputManager.destroyInputObjectMouse(shared.renderioInput.Mouse)
 		try:
 			shared.renderioInput.inputManager.destroyInputObjectJoyStick(self.joystick)
 		except:

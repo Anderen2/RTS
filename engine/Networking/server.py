@@ -3,9 +3,10 @@ import pickle
 from traceback import print_exc
 from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor, stdio
-import TwCLI, sh_netObject, sh_netMethod
 
 from engine import debug, shared
+import TwCLI, sh_netObject, sh_netMethod
+from sv_netPlayer import Player
 
 shared.objectManager=sh_netObject.ObjectManager()
 
@@ -26,21 +27,23 @@ class Server():
 
 
 class Service():
+	def __init__(self):
+		reactor.callLater(5, self.PingAll)
+		self.connections=[]
+
 	def ConnectionMade(self, proto):
-		pass
+		self.connections.append(proto)
 
-	def ConnectionLost(self, proto):
-		pass
+	def ConnectionLost(self, proto, reason):
+		shared.DPrint("Service", 1, "Connection to client lost: "+reason)
+		shared.playerManager.DCONN(proto)
+		self.connections.remove(proto)
 
-class Player():
-	def __init__(self, name, ID):
-		self.PlayerInfo={
-		'name':name,
-		'ID':ID,
-		'country':"Norway",
-		'faction':0,
-		'team':0
-		}
+	def PingAll(self):
+		for x in self.connections:
+			x.Ping()
+			reactor.callLater(2, lambda: shared.DPrint("Service", 0, x.player.name+": "+str(x.ping)))
+		reactor.callLater(5, self.PingAll)
 
 class PlayerManager():
 	def __init__(self):
@@ -65,7 +68,8 @@ class PlayerManager():
 		Protocol.sendMethod(1, "PL", [pickle.dumps(FooList)])
 
 	def DCONN(self, Protocol=None):
-		pass
+		shared.DPrint("PlayerManager", 1, "Player: "+Protocol.player.name+" disconnected")
+		del self.Players[Protocol.player.ID]
 
 
 class Unit():
@@ -78,7 +82,7 @@ def Startup():
 	shared.Server=Server()
 	shared.Service=Service()
 	cliFactory=TwCLI.CLIFactory()
-	playerManager=PlayerManager()
+	shared.playerManager=PlayerManager()
 	unitManager=UnitManager()
 
 	reactor.listenTCP(1337, sh_netMethod.MethodFactory())

@@ -79,7 +79,10 @@ class A2Decal():
 		self.node.rotate((0,0,1),ogre.Degree(rot[2]))
 
 	def __del__(self):
-		DPrint("Render3dDecal",0,"Decal "+str(self.ID)+" gc'd")
+		try:
+			shared.DPrint("Render3dDecal",0,"Decal "+str(self.ID)+" gc'd")
+		except:
+			print("Decal "+str(self.ID)+" gc'd")
 		#shared.render3dScene.sceneManager.destroyEntity(self.ent)
 		#shared.render3dScene.sceneManager.destroySceneNode(self.node)
 

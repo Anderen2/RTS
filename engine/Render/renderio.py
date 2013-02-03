@@ -67,7 +67,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		self.mousespeed = 1
 
 		self.CamStear=False
-		self.Delta=None
+		self.Delta=0
 
 		self.WHold=False
 		self.AHold=False

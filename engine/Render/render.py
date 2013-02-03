@@ -100,12 +100,18 @@ class RenderApplication(object):
 		self.alphatime=time()
 		print(self.deltatime)
 
-		for x in self.renderqueue:
-			if not x.frameRenderingQueued(self.deltatime):
-				reactor.stop()
+		try:
+			for x in self.renderqueue:
+				if not x.frameRenderingQueued(self.deltatime):
+					reactor.stop()
+		except:
+			reactor.stop()
+			print_exc()
+
 		#if not self.root.window.isClosed():
 		if True:
 			self.weu.messagePump()
+
 			#if self.root.window.isActive():
 			if True:
 				self.root.renderOneFrame()

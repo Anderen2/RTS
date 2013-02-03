@@ -64,10 +64,10 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		self.rotate = 0.13
 		self.move = 250
 
-		self.mousespeed = 1.2
+		self.mousespeed = 1
 
 		self.CamStear=False
-		self.Delta=None
+		self.Delta=0
 
 		self.WHold=False
 		self.AHold=False
@@ -116,7 +116,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			transVector.y -= self.move
 
 		#See render3d's Camera Class for more infomation about this
-		self.camera.SetPos(self.camera.camNode.orientation * transVector * (self.Delta)*50)
+		self.camera.SetPos(self.camera.camNode.orientation * transVector * (self.Delta))
 
 		#The application will exit if this returns false, therefor ESC closes the game.
 		return not self.Keyboard.isKeyDown(OIS.KC_ESCAPE)
@@ -129,7 +129,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		
 		if self.CurrentMiceInterface==1:
 			#GUI Events
-			System.getSingleton().injectMouseMove(evt.get_state().X.rel*self.mousespeed, evt.get_state().Y.rel*self.mousespeed)
+			System.getSingleton().injectMouseMove(evt.get_state().X.rel, evt.get_state().Y.rel)
 
 			#Allows you to select multiple stuff by dragging (Moving mouse while holding LMB)
 			if self.LMBSel==True:

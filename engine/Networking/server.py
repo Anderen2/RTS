@@ -68,7 +68,7 @@ class PlayerManager():
 		Protocol.sendMethod(1, "PL", [pickle.dumps(FooList)])
 
 	def DCONN(self, Protocol=None):
-		shared.DPrint("PlayerManager", 1, "Player: "+Protocol.player.name+" disconnected")
+		shared.DPrint("PlayerManager", 1, "Player: "+str(Protocol.player.ID)+" disconnected")
 		del self.Players[Protocol.player.ID]
 
 

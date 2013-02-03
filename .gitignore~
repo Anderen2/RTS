@@ -165,8 +165,5 @@ pip-log.txt
 ###############
 #RTS Spesific
 *.log
-*.log1
-*.log2
-*.log3
 *.rtf
 gmon.out

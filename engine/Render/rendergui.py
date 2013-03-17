@@ -15,8 +15,7 @@ class GUI():
 		shared.DPrint("RenderGUI",1,"Setting up CEGUI")
 		#Setup varibles
 		self.MoveInterface=None
-		self.hackhz=1024
-		self.hackvz=768
+		self.hackhz, self.hackvz = shared.render3dCamera.getDimensions()
 		self.globalpha=0.9
 		self.upperalpha=0.5
 

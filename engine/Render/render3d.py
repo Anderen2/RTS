@@ -65,7 +65,7 @@ class Scene():
 		ogre.CompositorManager.getSingleton().setCompositorEnabled(shared.render3dCamera.viewPort, PF, False)
 
 	def PolygenMode(self, PM):
-		shared.render3dCamera.camera.setPolygonMode(int(PM))
+		shared.render3dCamera.camera.setPolygonMode(shared.render3dCamera.camera, int(PM))
 
 class SelectStuff():
 	def __init__(self, root, scene):
@@ -90,9 +90,35 @@ class SelectStuff():
 		shared.DPrint(2,1,"SelectStuff: Setting up RayTrace")
 		self.raySceneQuery = self.scene.sceneManager.createRayQuery(ogre.Ray())
 
-		self.hackhz=1024
-		self.hackvz=768
+		self.hackhz, self.hackvz = shared.render3dCamera.getDimensions()
 		self.CurrentSelection=[]
+
+	def startSelection(self, mousePos):
+		self.mStart.x = mousePos.d_x / float(self.hackhz)
+		self.mStart.y = mousePos.d_y / float(self.hackvz)
+		self.mStop = ogre.Vector2(self.mStart.x+0.00001, self.mStart.y+0.00001)
+		self.mSelecting = True
+		self.mRect.clear()
+		self.mRect.setVisible(True)
+		self.mRect.setCorners(self.mStart, self.mStop)
+
+	def moveSelection(self, mousePos):
+		self.mStart.x = mousePos.d_x / float(self.hackhz)
+		self.mStart.y = mousePos.d_y / float(self.hackvz)
+		self.mRect.setCorners(self.mStart, self.mStop)
+
+	def clearSelection(self):
+		shared.DPrint("SelectStuff",0,"Cleared all selections")
+		for x in self.CurrentSelection:
+			unitID=int(split(x.getName(),"_")[1])
+			shared.unitHandeler.Get(unitID)._deselected()
+		self.CurrentSelection=[]
+
+	def endSelection(self):
+		self.performSelection(self.mStart, self.mStop)
+		self.mSelecting = False
+		self.mRect.setVisible(False)
+		self.LMBSel=False
 
 	def performSelection(self, vec2first, vec2second):
 		left =  vec2first.x
@@ -112,7 +138,7 @@ class SelectStuff():
 			self.LMBSel=False
 			self.LMBFuck=False
 			self.selectevent(None)
-			shared.DPrint(2,0,"Selection: Selection Too Small")
+			shared.DPrint("SelectStuff",0,"Selection: Selection Too Small")
 
  		else:
 			## Rays
@@ -167,7 +193,7 @@ class SelectStuff():
 	 
 				for queryResult in self.mVolQuery.execute():
 					if queryResult.movableObject is not None:
-						self.selectObject(queryResult.movableObject)
+						selfect(queryResult.movableObject)
 
 	def selectevent(self, evt):
 		#CurrentSelection Highlighting (Use a better solution lateron):

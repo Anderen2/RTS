@@ -8,6 +8,7 @@ import ogre.io.OIS as OIS
 from string import split
 
 def convertButton(oisID):
+	"""Convert mousebutton ID from OIS to CEGUI"""
 	if oisID == OIS.MB_Left:
 		return LeftButton
 	elif oisID == OIS.MB_Right:
@@ -29,7 +30,6 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		self.scene=shared.render3dScene
 		self.camera=shared.render3dCamera
 		self.selectobj=shared.render3dSelectStuff
-		self.UnitHandeler=shared.unitHandeler
 
 	def Setup(self):
 		"""This function runs at SetupTime, and makes everything ready for Input/Output fun"""
@@ -61,21 +61,16 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 
 	def Settings(self):
 		shared.DPrint("RenderIO",1,"Defining Settings")
+		self.camkeys={"forward":OIS.KC_W, "backward":OIS.KC_S, "left":OIS.KC_A, "right":OIS.KC_D, "up":OIS.KC_Q, "down":OIS.KC_E}
+		self.keys=self.camkeys
+		self.keys.update({"camstear":OIS.KC_LMENU, "multisel":OIS.KC_LCONTROL, "console":OIS.KC_F12})
 		self.rotate = 0.13
-		self.move = 250
 
 		self.mousespeed = 1
 
-		self.CamStear=False
 		self.Delta=0
 
-		self.WHold=False
-		self.AHold=False
-		self.SHold=False
-		self.DHold=False
-		self.QHold=False
-		self.EHold=False
-		self.CtrlHold=False
+		self.CtrlHold=False #Multiselection
 		self.LMBSel=False
 
 		#The current active interface for Keyboard (0=Render, 1=Gui, 2=Console)
@@ -87,8 +82,8 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		##!!HACKISH SOLUTION!!##
 		#Window height and length
 		#Needs to be replaced with a real solution
-		self.hackhz=1024
-		self.hackvz=768
+		shared.DPrint("renderio", 0, str(self.camera.getDimensions()))
+		self.hackhz, self.hackvz = self.camera.getDimensions()
 
 	def frameRenderingQueued(self, timesincelastframe):
 		"""This function has to be named this. Everything in this function gets called each frame, which means 60 times a secound, do not pollute it!"""
@@ -99,24 +94,25 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		#Calculate movement with DeltaTime (Google it)
 		self.Delta=timesincelastframe
 
-		#Movement
-		transVector = Vector3(0, 0, 0)
+		#Camera movement
+		if self.CurrentKeyInterface==0:
+			for x, y in self.camkeys.iteritems():
+				if self.Keyboard.isKeyDown(y):
+					if x=="forward":
+						shared.render3dCamera.Move((0,0,-1), self.Delta)
+					elif x=="backward":
+						shared.render3dCamera.Move((0,0,1), self.Delta)
+					elif x=="left":
+						shared.render3dCamera.Move((-1,0,0), self.Delta)
+					elif x=="right":
+						shared.render3dCamera.Move((1,0,0), self.Delta)
+					elif x=="up":
+						shared.render3dCamera.Move((0,1,0), self.Delta)
+					elif x=="down":
+						shared.render3dCamera.Move((0,-1,0), self.Delta)
 
-		if self.WHold:
-			transVector.z -= self.move
-		if self.SHold:
-			transVector.z += self.move
-		if self.AHold:
-			transVector.x -= self.move
-		if self.DHold:
-			transVector.x += self.move
-		if self.QHold:
-			transVector.y += self.move
-		if self.EHold:
-			transVector.y -= self.move
-
-		#See render3d's Camera Class for more infomation about this
-		self.camera.SetPos(self.camera.camNode.orientation * transVector * (self.Delta))
+		#Multiselection
+		self.CtrlHold=self.Keyboard.isKeyDown(self.keys["multisel"])
 
 		#The application will exit if this returns false, therefor ESC closes the game.
 		return not self.Keyboard.isKeyDown(OIS.KC_ESCAPE)
@@ -124,45 +120,28 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 	def mouseMoved(self, evt):
 		#Allows you to manually control the camera with the mouse if you hold the Alt key down
 		if self.CurrentMiceInterface==0:
-			self.camera.camNode.yaw(Degree(-self.rotate * evt.get_state().X.rel).valueRadians())
-			self.camera.camNode.getChild(0).pitch(Degree(-self.rotate * evt.get_state().Y.rel).valueRadians())
+			self.camera.Rotate((evt.get_state().X.rel, evt.get_state().Y.rel))
 		
 		if self.CurrentMiceInterface==1:
-			#GUI Events
-			System.getSingleton().injectMouseMove(evt.get_state().X.rel, evt.get_state().Y.rel)
+			System.getSingleton().injectMouseMove(evt.get_state().X.rel*self.mousespeed, evt.get_state().Y.rel*self.mousespeed) #GUI Events
 
 			#Allows you to select multiple stuff by dragging (Moving mouse while holding LMB)
 			if self.LMBSel==True:
-				mousePos = MouseCursor.getSingleton().getPosition()
-				self.selectobj.mStart.x = mousePos.d_x / float(self.hackhz)
-				self.selectobj.mStart.y = mousePos.d_y / float(self.hackvz)
-				self.selectobj.mRect.setCorners(self.selectobj.mStart, self.selectobj.mStop)
+				self.selectobj.moveSelection(MouseCursor.getSingleton().getPosition())
+
 
 	def mousePressed(self, evt, id):
 		if self.CurrentMiceInterface==1:
-			#GUI Events
-			System.getSingleton().injectMouseButtonDown(convertButton(id))
+			System.getSingleton().injectMouseButtonDown(convertButton(id)) #GUI Events
 
 			#Selectionstuff
 			if id==OIS.MB_Left:
 				if not self.CtrlHold:
-					#Removes everything thats currently selected if you use LMB without holding down Ctrl
-					shared.DPrint(4,0,"Cleared all selections")
-					for x in self.selectobj.CurrentSelection:
-						unitID=int(split(x.getName(),"_")[1])
-						shared.unitHandeler.Get(unitID)._deselected()
-					self.selectobj.CurrentSelection=[]
+					self.selectobj.clearSelection() #Removes everything thats currently selected if you use LMB without holding down Ctrl
 
 				#Starts selection process
 				self.LMBSel=True
-				mousePos = MouseCursor.getSingleton().getPosition()
-				self.selectobj.mStart.x = mousePos.d_x / float(self.hackhz)
-				self.selectobj.mStart.y = mousePos.d_y / float(self.hackvz)
-				self.selectobj.mStop = Vector2(self.selectobj.mStart.x+0.00001, self.selectobj.mStart.y+0.00001)
-				self.selectobj.mSelecting = True
-				self.selectobj.mRect.clear()
-				self.selectobj.mRect.setVisible(True)
-				self.selectobj.mRect.setCorners(self.selectobj.mStart, self.selectobj.mStop)
+				self.selectobj.startSelection(MouseCursor.getSingleton().getPosition())
 
 			if id==OIS.MB_Right:
 				mousePos = MouseCursor.getSingleton().getPosition()
@@ -170,34 +149,15 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 
 	def mouseReleased(self, evt, id):
 		if self.CurrentMiceInterface==1:
-			#GUI Events
-			System.getSingleton().injectMouseButtonUp(convertButton(id))
+			System.getSingleton().injectMouseButtonUp(convertButton(id)) #GUI Events
 
 			if id==OIS.MB_Left:
-				#Ends selection process
 				MouseCursor.getSingleton().show()
 				if self.LMBSel:
-					self.selectobj.performSelection(self.selectobj.mStart, self.selectobj.mStop)
-					self.selectobj.mSelecting = False
-					self.selectobj.mRect.setVisible(False)
-					self.selectobj.LMBSel=False
+					self.selectobj.endSelection() #Ends selection process
+					self.LMBSel=False
 
 	def keyPressed(self, evt):
-		if self.CurrentKeyInterface==0:
-			#Camera movement
-			if evt.key==OIS.KC_W:
-				self.WHold=True
-			if evt.key==OIS.KC_S:
-				self.SHold=True
-			if evt.key==OIS.KC_A:
-				self.AHold=True
-			if evt.key==OIS.KC_D:
-				self.DHold=True
-			if evt.key==OIS.KC_Q:
-				self.QHold=True
-			if evt.key==OIS.KC_E:
-				self.EHold=True
-				
 		if self.CurrentKeyInterface==1:
 			#GUI Events
 			ceguiSystem = System.getSingleton()
@@ -205,12 +165,13 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			ceguiSystem.injectChar(evt.text)
 
 		if self.CurrentKeyInterface==2:
+			#Console Events
 			if shared.console.visible:
-				if evt.key!=OIS.KC_GRAVE:
+				if evt.key!=self.keys["console"]:
 					shared.console.keyPressed(evt)
 
 		#Global Keys:
-		if evt.key==OIS.KC_F12: #Changed from GRAVE ( | ) due to linux compatibility
+		if evt.key==self.keys["console"]:
 			if shared.console.visible:
 				shared.console.hide()
 				self.CurrentKeyInterface=0
@@ -218,39 +179,16 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 				shared.console.show()
 				self.CurrentKeyInterface=2
 
-		if evt.key==OIS.KC_LMENU:
+		if evt.key==self.keys["camstear"]:
 			self.CurrentMiceInterface=0
 			MouseCursor.getSingleton().hide()
 
-		#Global Render Keys
-		if evt.key==OIS.KC_LCONTROL:
-			self.CtrlHold=True
 
 	def keyReleased(self, evt):
 		#GUI Events
 		if self.CurrentKeyInterface==1:
 			System.getSingleton().injectKeyUp(evt.key)
 
-		#Camera movement
-		if self.CurrentKeyInterface==0:
-			if evt.key==OIS.KC_W:
-				self.WHold=False
-			if evt.key==OIS.KC_S:
-				self.SHold=False
-			if evt.key==OIS.KC_A:
-				self.AHold=False
-			if evt.key==OIS.KC_D:
-				self.DHold=False
-			if evt.key==OIS.KC_Q:
-				self.QHold=False
-			if evt.key==OIS.KC_E:
-				self.EHold=False
-
-		#Global Render Keys
-		if evt.key==OIS.KC_LCONTROL:
-			self.CtrlHold=False
-
-		if evt.key==OIS.KC_LMENU:
+		if evt.key==self.keys["camstear"]:
 			self.CurrentMiceInterface=1
-			#Show mousecursor
-			MouseCursor.getSingleton().show()
+			MouseCursor.getSingleton().show() #Show mousecursor

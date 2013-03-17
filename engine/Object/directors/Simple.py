@@ -39,7 +39,7 @@ class Director():
 		pass
 
 	def UnitAdd(self, name):
-		self.Cast.append(shared.unitManager.CreateMov(4, 0, 0, "plane"))
+		self.Cast.append(shared.unitManager.CreateMov(4, 0, 0, name))
 
 	def UnitDelAll(self):
 		pass

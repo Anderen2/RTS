@@ -9,7 +9,7 @@ import ogre.renderer.OGRE as ogre
 
 shared.DPrint(1,1,"Imported..")
 
-QUITTIMER=120 #Set this to a time in secounds if you want the game to automaticly quit. 0 or None disables it.
+QUITTIMER=360 #Set this to a time in secounds if you want the game to automaticly quit. 0 or None disables it.
 
 class RenderApplication(object):
 	#This class setups and starts all rendermodules
@@ -56,7 +56,7 @@ class RenderApplication(object):
  
 	def createRenderWindow(self):
 		shared.DPrint("Render",1,"Creating renderwindow")
-		self.root.initialise(True, "RTS Small Start")
+		self.root.initialise(True, "YARTS: v. alpha-alpha")
  
 	def initializeResourceGroups(self):
 		shared.DPrint("Render",1,"Initializing Resource Groups")
@@ -98,7 +98,7 @@ class RenderApplication(object):
 	def renderHook(self):
 		self.deltatime=time()-self.alphatime
 		self.alphatime=time()
-		print(self.deltatime)
+		#print(self.deltatime)
 
 		try:
 			for x in self.renderqueue:
@@ -117,7 +117,6 @@ class RenderApplication(object):
 				self.root.renderOneFrame()
 		else:
 			reactor.stop()
-		#print(time()-footime)
 		reactor.callLater(0,self.renderHook)
 
 	def startRenderLoop(self):

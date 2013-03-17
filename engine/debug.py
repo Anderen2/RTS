@@ -107,8 +107,6 @@ def ParseCommand(Txt):
 			return str(shared.decHandeler.Amount(SubType=ARG[0], Type=ARG[3]))
 
 		#RENDER COMMANDS
-		elif CMD=="water":
-			Water=shared.WaterManager.Create((float(PAR[0]),float(PAR[1]),float(PAR[2])),float(PAR[3]),float(PAR[4]))
 		elif CMD=="fow":
 			import Render.render3dfow
 			shared.FOW=Render.render3dfow.FieldOfWar()

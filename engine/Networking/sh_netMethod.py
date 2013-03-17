@@ -6,7 +6,8 @@ from twisted.internet import reactor
 from string import split
 from engine import shared, debug
 
-VERBOSE=False
+VERBOSE=True
+PVERBOSE=False
 
 class MethodProtocol(Protocol):
 	def __init__(self, factory):
@@ -33,11 +34,11 @@ class MethodProtocol(Protocol):
 		try:
 			if data=="PONG":
 				self.Pong()
-				if VERBOSE:
+				if PVERBOSE:
 					print("Got Pong")
 			elif data=="PING":
 				self.Pingback()
-				if VERBOSE:
+				if PVERBOSE:
 					print("Got Ping")
 			else:
 				Foo=split(data, chr(1))
@@ -47,7 +48,7 @@ class MethodProtocol(Protocol):
 				method=Bar[0]
 				arg=split(Bar[1], chr(3))
 				if VERBOSE:
-					print("Object: " + obj + "\nMethod: " + method + "\nArguments: " + str(arg))
+					print("Object: " + obj + "\nMethod: " + method + "\nArguments: " + str(type(arg)))
 
 				obj=int(obj)
 				method=str(method)
@@ -64,7 +65,7 @@ class MethodProtocol(Protocol):
 		self.oldping=self.ping
 		self.pingtime=time()
 		self.sendData("PING")
-		reactor.callLater(2, self.Timeout)
+		reactor.callLater(5, self.Timeout)
 
 	def Pong(self):
 		self.ping=time()-self.pingtime
@@ -105,7 +106,7 @@ class MethodProtocol(Protocol):
 
 			method=str(obj)+chr(1)+str(func)+chr(2)+args
 			if VERBOSE:
-				print(method.replace(chr(1), ".").replace(chr(2), "-").replace(chr(3), "/"))
+				print(split(method.replace(chr(1), ".").replace(chr(2), "-").replace(chr(3), "/"), "-")[0])
 			self.transport.write(method)
 		except:
 			print_exc()

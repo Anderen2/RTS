@@ -395,7 +395,7 @@ material SkyBox
 		{
 			lighting off
 			depth_write off
-			depth_check off
+			depth_check on
 
 			texture_unit
 			{

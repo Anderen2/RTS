@@ -21,11 +21,13 @@ class ObjectManager():
 				return 1
 			except:
 				print("Invalid object: "+str(obj))
+				print_exc()
 				return 3
 
 		except AttributeError:
 			if obj in self.olist:
 				print("Invalid method: "+str(obj)+"."+method)
+				print_exc()
 				return 2
 			else:
 				print_exc()

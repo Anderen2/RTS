@@ -14,15 +14,20 @@ class WaterManager():
 		self.wcount=self.wcount+1
 		return Water(self.wcount,Pos, Height, Width)
 
+def ConsoleFriendly(X, Y, Z, L, H):
+	shared.WaterManager.Create((float(X),float(Y),float(Z)),float(L),float(H))
+
+debug.ACC("water", ConsoleFriendly, args=5, info="Create a waterplane. \nUsage: water X Y Z Length Width")
+
 class Water():
-	def __init__(self, ID, Pos, Height, Width):
+	def __init__(self, ID, Pos, Length, Width):
 		plane=ogre.Plane((0,1,0),0)
 		MeshManager=ogre.MeshManager.getSingleton()
-		MeshManager.createPlane("Water", "General", plane, Height, Width, 100, 100, True, 1, 100, 100, (0,0,1))
+		MeshManager.createPlane("Water", "General", plane, Width, Length, 100, 100, True, 1, 100, 100, (0,0,1))
 		self.Entity=shared.render3dScene.sceneManager.createEntity("Water"+str(ID),"Water")
 		self.Entity.setMaterialName("OceanHLSL_GLSL")
 		self.Entity.setCastShadows(False)
-		self.Entity.setRenderQueueGroup(ogre.RENDER_QUEUE_SKIES_LATE)
+		#self.Entity.setRenderQueueGroup(ogre.RENDER_QUEUE_SKIES_LATE)
 		self.node=shared.render3dScene.sceneManager.getRootSceneNode().createChildSceneNode()
 		self.node.attachObject(self.Entity)
 		self.node.setPosition(Pos)

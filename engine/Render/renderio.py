@@ -1,6 +1,7 @@
 #Rendermodule - renderio
 #Handles Input/Output devices
 
+from time import time
 from engine import shared
 from ogre.renderer.OGRE import FrameListener, Degree, Vector3, Vector2
 from ogre.gui.CEGUI import System, MouseCursor, LeftButton, RightButton, MiddleButton
@@ -69,6 +70,8 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		self.mousespeed = 1
 
 		self.Delta=0
+		self.dclicktimer=0
+		self.dclickpos=0
 
 		self.CtrlHold=False #Multiselection
 		self.LMBSel=False
@@ -129,23 +132,40 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			if self.LMBSel==True:
 				self.selectobj.moveSelection(MouseCursor.getSingleton().getPosition())
 
+		shared.render3dCamera.Move((0, evt.get_state().Z.rel/480, 0), 1)
+
+		shared.DPrint("renderio", 0, evt.get_state().Z.rel)
+
 
 	def mousePressed(self, evt, id):
+		mousePos = MouseCursor.getSingleton().getPosition()
 		if self.CurrentMiceInterface==1:
 			System.getSingleton().injectMouseButtonDown(convertButton(id)) #GUI Events
 
 			#Selectionstuff
 			if id==OIS.MB_Left:
-				if not self.CtrlHold:
-					self.selectobj.clearSelection() #Removes everything thats currently selected if you use LMB without holding down Ctrl
+				if self.dclicktimer>time()-0.2 and self.dclickpos==mousePos.d_x:
+					shared.DPrint("renderio", 0 ,"Doubleclick")
+					self.dclicktimer=0
+					self.dclickpos=0
+				else:
+					shared.DPrint("renderio", 0, "Leftmouse")
+					self.dclicktimer=time()
+					self.dclickpos=mousePos.d_x
 
-				#Starts selection process
-				self.LMBSel=True
-				self.selectobj.startSelection(MouseCursor.getSingleton().getPosition())
+					if not self.CtrlHold:
+						self.selectobj.clearSelection() #Removes everything thats currently selected if you use LMB without holding down Ctrl
+
+					#Starts selection process
+					self.LMBSel=True
+					self.selectobj.startSelection(MouseCursor.getSingleton().getPosition())
 
 			if id==OIS.MB_Right:
-				mousePos = MouseCursor.getSingleton().getPosition()
+				shared.DPrint("renderio", 0, "Rightmouse")
 				self.selectobj.actionClick(mousePos.d_x / float(self.hackhz), mousePos.d_y / float(self.hackvz))
+
+			if id==OIS.MB_Middle:
+				shared.DPrint("renderio", 0, "Middlemouse")
 
 	def mouseReleased(self, evt, id):
 		if self.CurrentMiceInterface==1:

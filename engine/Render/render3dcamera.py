@@ -30,9 +30,9 @@ class Camera():
 		transVector.y = direction[1]*self.move
 		transVector.z = direction[2]*self.move
 
-		print(direction[2]*self.move)
-		print(direction)
-		print(transVector)
+		# print(direction[2]*self.move)
+		# print(direction)
+		# print(transVector)
 
 		self.camNode.translate(self.camNode.orientation * transVector * delta)
 

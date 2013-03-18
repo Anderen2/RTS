@@ -37,12 +37,6 @@ def ParseCommand(Txt):
 			shared.renderguiGUI.GuiStats(GUISTATS)
 			return str(GUISTATS)
 
-		#GUI COMMANDS
-		elif CMD=="gui_hideall":
-			shared.renderguiGUI.HideAll()
-		elif CMD=="gui_showall":
-			shared.renderguiGUI.ShowAll()
-
 		#UNIT HANDLER COMMANDS
 		elif CMD=="u_create":
 			shared.unitHandeler.CreateMov(3,1,1,"robot")
@@ -153,17 +147,34 @@ def ACC(cmd, func, info="", args=-1):
 def RCC(cmd):
 	return ParseCommand(cmd)
 
-def TestCommand(hey1=[]):
-	print "hay"+str(hey1)
-
 def listCMD():
 	Foo=""
 	for CMD in sorted(CDict):
 		Foo=Foo+CMD+": "+CDict[CMD]["info"]+"\n \n"
 	print Foo
 
+def findCMD(src):
+	Foo=""
+	for CMD in sorted(CDict):
+		if src in CMD:
+			Foo=Foo+CMD+": "+CDict[CMD]["info"]+"\n \n"
+	return Foo
+
+def runFile(filesrc):
+	with open(filesrc, "r") as foofile:
+		for command in foofile:
+			command=command.replace("\n", "")
+			shared.DPrint("debug",0,command)
+			shared.DPrint("debug",1,ParseCommand(command))
+
+#EXTRA COMMANDS
 ACC("help", listCMD, info="Lists all commands in the console")
+ACC("find", findCMD, info="Searchs for a command with the letters in it \nUsage: find something, ex. find gui", args=1)
 
-ACC("testcmd", TestCommand, info="A Testing Command")
+def echo(*kwargs):
+	foovar=""
+	for x in kwargs:
+		foovar=foovar+" "+x
+	return(foovar)
 
-ACC("testcmd2", TestCommand, info="A Testing Command with req!", args=1)
+ACC("echo", echo, info="Prints the arguments")

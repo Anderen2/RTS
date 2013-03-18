@@ -36,6 +36,13 @@ shared.unitHandeler.PowerUp()
 shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
 
+#Autoexec
+shared.DPrint("Main",1,"Executing autoexec")
+try:
+	debug.runFile("./autoexec")
+except:
+	shared.DPrint("Main",2,"No autoexec file exsists!")
+
 #Release tha clutch and start moving forward
 shared.DPrint("Main", 1, "Starting Mainloop..")
 client.Run()

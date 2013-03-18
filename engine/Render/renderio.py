@@ -132,9 +132,10 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			if self.LMBSel==True:
 				self.selectobj.moveSelection(MouseCursor.getSingleton().getPosition())
 
+		#Scrollwheel zoom
 		shared.render3dCamera.Move((0, evt.get_state().Z.rel/480, 0), 1)
 
-		shared.DPrint("renderio", 0, evt.get_state().Z.rel)
+		#shared.DPrint("renderio", 0, evt.get_state().Z.rel)
 
 
 	def mousePressed(self, evt, id):

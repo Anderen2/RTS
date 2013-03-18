@@ -1,6 +1,6 @@
 #MainModule - Render
 #Submodules: render3d, rendergui, renderio, renderphys
-import render3d, rendergui, renderio, renderphys, console
+import render3d, rendergui, renderio, renderphys, renderconsole
 from twisted.internet import reactor
 from engine import shared
 from time import gmtime, sleep, time
@@ -80,7 +80,7 @@ class RenderApplication(object):
 
 	def setupDebuggingTools(self):
 		shared.DPrint("Render",1,"Setting up DBGTools")
-		shared.console = console.Console(self.root)
+		shared.console = renderconsole.Console(self.root)
 		shared.console.addLocals({'root':self.root})
 		#shared.console.show()
 

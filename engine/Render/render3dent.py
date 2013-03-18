@@ -2,7 +2,7 @@
 #Classes for handeling Entitys
 #Lowlevel Module (Text)
 
-import text
+import render3dtext as text
 from engine import shared, debug
 from engine.shared import DPrint
 from os import listdir

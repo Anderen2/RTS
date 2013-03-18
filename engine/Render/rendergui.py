@@ -480,6 +480,9 @@ class GUI():
 	def ShowAll(self):
 		self.windowManager.getWindow("Root").show()
 
+	debug.ACC("gui_hideall", HideAll, info="Hide all the gui elements", args=0)
+	debug.ACC("gui_showall", ShowAll, info="Show all the gui elements", args=0)
+
 	def GuiStats(self, foo):
 		if foo:
 			self.windowManager.getWindow("FPScounter").show()

@@ -26,6 +26,7 @@ class DirectorManager(FrameListener):
 			self.DirNet.Init()
 		elif director=="Simple":
 			self.Simple.Init()
+		shared.DPrint("dir",1,"Director "+director+" Initialized")
 
 	def Action(self, director):
 		#Action! Start directing the scene
@@ -35,6 +36,7 @@ class DirectorManager(FrameListener):
 			self.DirNet.Action()
 		elif director=="Simple":
 			self.Simple.Action()
+		shared.DPrint("dir",1,"Director "+director+" actionized")
 
 	def frameRenderingQueued(self, evt):
 		self.Simple.Frame()

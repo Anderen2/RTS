@@ -1,9 +1,11 @@
 #ObjectManager
 from traceback import print_exc
+from engine import shared, debug
 
 class ObjectManager():
 	def __init__(self):
 		self.olist={}
+		shared.objectManager=self
 
 	def addEntry(self, otype, ID, obj):
 		self.olist[otype+ID]=obj
@@ -11,9 +13,13 @@ class ObjectManager():
 	def runMethod(self, prot, obj, method, arg):
 		try:
 			if arg!=None:
-				return getattr(self.olist[obj], method)(Protocol=prot, *arg)
+				ret=getattr(self.olist[obj], method)(Protocol=prot, *arg)
+				if ret!=None:
+					prot.sendMethod(0, method, ret)
 			else:
-				return getattr(self.olist[obj], method)(Protocol=prot)
+				ret=getattr(self.olist[obj], method)(Protocol=prot)
+				if ret!=None:
+					prot.sendMethod(0, method, ret)
 
 		except KeyError:
 			try:

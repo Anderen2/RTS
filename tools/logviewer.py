@@ -2,8 +2,10 @@
 
 from __future__ import division
 import wx
+import wx.lib.mixins.listctrl as listmix
 
 import functions as f
+import parser
 import shared
 
 Multipiler=1.25
@@ -11,11 +13,9 @@ Mp=Multipiler
 WXApp=wx.App(False)
 
 
-class MainWindow(wx.Frame):
+class MainWindow(wx.Frame, listmix.ColumnSorterMixin):
 	def __init__(self,parent,title):
 		wx.Frame.__init__(self, parent, style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER, title=title, size=(640*Mp,480*Mp))
-		CurrSel=None
-
 		GlobalColor='#FFFFF'
 
 		#Filemenu:
@@ -69,8 +69,22 @@ class MainWindow(wx.Frame):
 		#self.Bind(wx.EVT_LISTBOX, f.selection, shared.LISTprojectlist)
 
 		#Projectsettings:
-		logfile=open("../logs/engine.log", "r")
-		shared.console2=wx.TextCtrl(Pprojectsettings, 801, logfile.read(), (0,0), (490*Mp, 430*Mp), style = wx.TE_MULTILINE | wx.TE_READONLY)
+		#logfile=open("../logs/engine.log", "r")
+		#shared.console2=wx.TextCtrl(Pprojectsettings, 801, logfile.read(), (0,0), (490*Mp, 430*Mp), style = wx.TE_MULTILINE | wx.TE_READONLY)
+		shared.console2=wx.ListCtrl(Pprojectsettings, 801, (0,0), (490*Mp, 430*Mp), name="Fap", style=wx.LC_REPORT|wx.BORDER_SUNKEN|wx.LC_SORT_ASCENDING)
+		shared.console2.InsertColumn(0, "Time", format=wx.LIST_FORMAT_LEFT, width=-1)
+		shared.console2.InsertColumn(1, "Urgency")
+		shared.console2.InsertColumn(2, "Module")
+		shared.console2.InsertColumn(3, "Message")
+
+		parser.parsefile("../logs/engine.log")
+		parser.printNice(parser.Lines)
+		parser.printListctl(parser.Lines, shared.console2)
+
+		self.itemDataMap = parser.Lines
+		listmix.ColumnSorterMixin.__init__(self, 4)
+		self.Bind(wx.EVT_LIST_COL_CLICK, self.OnColClick, shared.console2)
+		#self.SortListItems(2, 1)
 
 		#Stdin
 		shared.stdin=wx.TextCtrl(Pstdin, 801, "", (0,0*Mp), (490*Mp, 20*Mp), style=wx.TE_PROCESS_ENTER)
@@ -79,6 +93,13 @@ class MainWindow(wx.Frame):
 		##__________________________________________________________________
 		##End!
 		self.Show(True)
+
+	def GetListCtrl(self):
+		return shared.console2
+
+	def OnColClick(self, event):
+		event.Skip()
+		print("Ouch!")
 
 shared.MainWindowI=MainWindow(None, "YARTS TOOL - LogDebugger")
 WXApp.MainLoop()

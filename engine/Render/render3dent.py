@@ -34,11 +34,11 @@ class EntityHandeler():
 				elif line==Lines[len(Lines)-1]:
 					Key, Value = self.ParseLine(line[:len(line)])
 					self.EntDict[Name][Key]=Value
-					print (Name+": "+Key+"="+str(Value)+str(type(Value)))
+					shared.DPrint("Render3dEnt",0,Name+": "+Key+"="+str(Value)+str(type(Value)))
 				else:
 					Key, Value = self.ParseLine(line[:len(line)-1])
 					self.EntDict[Name][Key]=Value
-					print (Name+": "+Key+"="+str(Value)+str(type(Value)))			
+					shared.DPrint("Render3dEnt",0,Name+": "+Key+"="+str(Value)+str(type(Value)))			
 
 	def ParseLine(self,line):
 		DPrint("Render3dEnt",1,"Parsing Files..")

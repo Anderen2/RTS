@@ -7,7 +7,9 @@ from string import split
 from engine import shared, debug
 
 VERBOSE=True
-PVERBOSE=False
+PVERBOSE=True
+HUMANOSE=True #Warning, this means that the server will read in Humanose form. It will break everything!
+PHUMANOSE=True #Warning, this means that the server will transmitt in Humanose form. It will break everything!
 
 class MethodProtocol(Protocol):
 	def __init__(self, factory):
@@ -29,9 +31,32 @@ class MethodProtocol(Protocol):
 
 	def dataReceived(self, data):
 		global VERBOSE
+		global PVERBOSE
+		global HUMANOSE
+		global PHUMANOSE
 		#OBJECT.METHOD-ARG/ARG/ARG
 		# chr 1^ chr 2^  chr 3^
+		if HUMANOSE:
+			dot="."
+			dash="-"
+			slash="/"
+		else:
+			dot=chr(1)
+			dash=chr(2)
+			slash=chr(3)
+
+		if PHUMANOSE:
+			rdot="."
+			rdash="-"
+			rslash="/"
+		else:
+			rdot=chr(1)
+			rdash=chr(2)
+			rslash=chr(3)
+
 		try:
+			if HUMANOSE:
+				data=split(data, "\n")[0]
 			if data=="PONG":
 				self.Pong()
 				if PVERBOSE:
@@ -41,14 +66,16 @@ class MethodProtocol(Protocol):
 				if PVERBOSE:
 					print("Got Ping")
 			else:
-				Foo=split(data, chr(1))
-				Bar=split(Foo[1], chr(2))
+				Foo=split(data, dot)
+				Bar=split(Foo[1], dash)
 				
 				obj=Foo[0]
 				method=Bar[0]
-				arg=split(Bar[1], chr(3))
+				arg=split(Bar[1], slash)
 				if VERBOSE:
-					print("Object: " + obj + "\nMethod: " + method + "\nArguments: " + str(type(arg)))
+					print("Object: " + obj + "\nMethod: " + method + "\nArgument: " + str(type(arg)))
+				if PVERBOSE:
+					print("Arguments:\n"+str(arg))
 
 				obj=int(obj)
 				method=str(method)
@@ -81,6 +108,16 @@ class MethodProtocol(Protocol):
 		self.transport.write(data)
 
 	def sendMethodHuman(self, hummeth):
+		global VERBOSE, PHUMANOSE
+		if PHUMANOSE:
+			rdot="."
+			rdash="-"
+			rslash="/"
+		else:
+			rdot=chr(1)
+			rdash=chr(2)
+			rslash=chr(3)
+
 		Foo=split(hummeth, ".")
 		obj=Foo[0]
 		Bar=split(Foo[1], "-")
@@ -88,23 +125,35 @@ class MethodProtocol(Protocol):
 		
 		try:
 			args=split(Bar[1], "/")
-			arg=chr(3).join(args)
+			arg=rslash.join(args)
 		except:
 			arg=""
 
-		method=obj+chr(1)+func+chr(2)+arg
+		method=obj+rdot+func+rdash+arg
 		if VERBOSE:
 			print(method.replace(chr(1), ".").replace(chr(2), "-").replace(chr(3), "/"))
 		self.transport.write(method)
 
 	def sendMethod(self, obj, func, arg):
+		global VERBOSE, PHUMANOSE
+		if PHUMANOSE:
+			rdot="."
+			rdash="-"
+			rslash="/"
+			rend="\n"
+		else:
+			rdot=chr(1)
+			rdash=chr(2)
+			rslash=chr(3)
+			rend=""
+
 		try:
 			if arg!=None:
-				args=chr(3).join(arg)
+				args=rslash.join(arg)
 			else:
 				args=""
 
-			method=str(obj)+chr(1)+str(func)+chr(2)+args
+			method=str(obj)+rdot+str(func)+rdash+args+rend
 			if VERBOSE:
 				print(split(method.replace(chr(1), ".").replace(chr(2), "-").replace(chr(3), "/"), "-")[0])
 			self.transport.write(method)
@@ -124,17 +173,17 @@ class MethodFactory(Factory):
 	def buildProtocol(self, addr):
 		print("Connected.")
 		protocol=MethodProtocol(self)
-		reactor.callLater(0.1, lambda: shared.Service.ConnectionMade(protocol))
+		reactor.callLater(0, lambda: shared.Service.ConnectionMade(protocol))
 		return protocol
 
 	def clientConnectionLost(self, connector, reason):
 		shared.DPrint("netMethod",2,"Lost connection: "+str(reason.getErrorMessage()))
-		reactor.callLater(0.1, lambda: shared.Service.ConnectionLost(reason))
+		reactor.callLater(0, lambda: shared.Service.ConnectionLost(reason))
 
 	def clientConnectionFailed(self, connector, reason):
 		shared.DPrint("netMethod",2,"Failed connection: "+str(reason))
-		reactor.callLater(0.1, lambda: shared.Service.ConnectionFailed(reason))
+		reactor.callLater(0, lambda: shared.Service.ConnectionFailed(reason))
 
 	def ConnectionLost(self, proto, reason):
 		shared.DPrint("netMethod",2,"Lost connection: "+str(reason))
-		reactor.callLater(0.1, lambda: shared.Service.ConnectionLost(proto, reason))
+		reactor.callLater(0, lambda: shared.Service.ConnectionLost(proto, reason))

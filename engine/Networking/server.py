@@ -7,47 +7,6 @@ from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor, stdio
 from traceback import print_exc
 
-# class Server():
-# 	def __init__(self):
-# 		shared.objectManager.addEntry(0,0,self)
-# 		self.ServerInfo={
-# 		'name':"YARTS-Server",
-# 		'desc':"Yet Another RTS Server",
-# 		'region':'Europe',
-# 		'country':'Norway'
-# 		}
-
-# 	#Connection/Factory spesific functions
-# 	def ConnectionMade(self, proto):
-# 		self.connections.append(proto)
-
-# 	def ConnectionLost(self, proto, reason):
-# 		shared.DPrint("Service", 1, "Connection to client lost: "+reason)
-# 		try:
-# 			shared.playerManager.DCONN(proto)
-# 			self.connections.remove(proto)
-# 		except KeyError:
-# 			shared.DPrint("Service", 1, "Client not exsisting!")
-# 		#proto.loseConnection()
-
-# 	#Global client functions
-# 	def PingAll(self):
-# 		for x in self.connections:
-# 			x.Ping()
-# 			try:
-# 				shared.DPrint("Service", 0, x.player.name+": "+str(x.ping))
-# 			except:
-# 				shared.DPrint("Service", 0, "UNINITIALIZED"+": "+str(x.ping))
-# 		reactor.callLater(5, self.PingAll)
-
-
-# 	#Network Responses
-# 	def SI(self, Protocol=None):
-# 		Protocol.sendMethod(1, "SI", [pickle.dumps(self.ServerInfo)])
-
-# 	def firstPlayer(self):
-
-
 class Service():
 	def __init__(self):
 		#reactor.callLater(5, self.PingAll)
@@ -99,10 +58,20 @@ class PlayerManager():
 		self.PDict={}
 
 	def HI(self, Username, PickledExtras, Protocol=None):
-		self.PlayerCount+=1
-		self.Broadcast(2, "HI", [Username, str(self.PlayerCount), PickledExtras])
-		self.PDict[self.PlayerCount]=Player(self.PlayerCount, Username, Protocol, PickledExtras)
-		Protocol.sendMethod(2, "HI", [str(self.PlayerCount)])
+		if not self.getFromProto(Protocol):
+			self.PlayerCount+=1
+			self.Broadcast(2, "HI", [Username, str(self.PlayerCount), PickledExtras])
+			self.PDict[self.PlayerCount]=Player(self.PlayerCount, Username, Protocol, PickledExtras)
+			Protocol.sendMethod(2, "HI", [str(self.PlayerCount)])
+		else:
+			Protocol.sendMethod(3, "SA", ["-1", "0", "You are already in the game."])
+
+	def LP(self, Protocol=None):
+		foolist=[]
+		for x in self.PDict:
+			foolist.append({"uid":self.PDict[x].UID, "username":self.PDict[x].username, "info":self.PDict[x].PlayerInfo})
+
+		Protocol.sendMethod(2, "LP", pickle.dumps(foolist))
 
 	def Broadcast(self, obj, method, args):
 		for x in self.PDict:
@@ -119,13 +88,14 @@ class PlayerManager():
 			for x in self.PDict:
 				if self.PDict[x].Protocol==proto:
 					return self.PDict[x]
-			return None
+			return False
 		except:
 			return None
 
 class Player():
 	def __init__(self, UID, Username, Protocol, PickledExtras):
 		#self.PlayerInfo=pickle.loads(PickledExtras)
+		self.PlayerInfo={"Land":"Of the dead"}
 		self.UID=UID
 		self.username=Username
 		self.Protocol=Protocol

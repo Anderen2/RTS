@@ -160,6 +160,12 @@ def findCMD(src):
 			Foo=Foo+CMD+": "+CDict[CMD]["info"]+"\n \n"
 	return Foo
 
+def whichCMD(cmd):
+	return str(CDict[cmd]["exec"])
+
+def manCMD(cmd):
+	return str(CDict[cmd]["info"])
+
 def runFile(filesrc):
 	with open(filesrc, "r") as foofile:
 		for command in foofile:
@@ -168,8 +174,10 @@ def runFile(filesrc):
 			shared.DPrint("debug",1,ParseCommand(command))
 
 #EXTRA COMMANDS
-ACC("help", listCMD, info="Lists all commands in the console")
+ACC("man", manCMD, info="Prints the commands manual/infostring\nUsage: ex. man man", args=1)
+ACC("help", listCMD, info="Lists all commands in the console", args=0)
 ACC("find", findCMD, info="Searchs for a command with the letters in it \nUsage: find something, ex. find gui", args=1)
+ACC("which", whichCMD, info="Returns the name of the function which the command executes\nUsage: ex. which which", args=1)
 
 def echo(*kwargs):
 	foovar=""

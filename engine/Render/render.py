@@ -124,7 +124,7 @@ class RenderApplication(object):
 		#self.root.startRendering()
 		shared.unitHandeler.PowerUp()
 		self.weu = ogre.WindowEventUtilities()
-		reactor.callLater(0.1,self.renderHook)
+		reactor.callLater(0,self.renderHook)
 
 		self.alphatime=time()
 

@@ -11,6 +11,8 @@ from engine.Object import unitmanager, prop, decorator, zone, directormanager
 from engine.Networking import client
 
 #Networking
+shared.client=client
+shared.reactor=client.reactor
 client.Startup()
 
 #Render

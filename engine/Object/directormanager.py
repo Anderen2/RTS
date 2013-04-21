@@ -9,10 +9,12 @@ class DirectorManager(FrameListener):
 		FrameListener.__init__(self)
 		shared.DPrint("dir",0, "Initializing Directors..")
 		
-		from directors import Simple, Net
+		from directors import Net, Simple
 		#self.DirDemo=Demo.Director()
 		self.DirNet=Net.Director()
 		self.Simple=Simple.Director()
+
+		self.CurrentDirector=None
 
 		debug.ACC("dirinit", self.Init, args=1, info="Initialize an director")
 		debug.ACC("diraction", self.Action, args=1, info="Start directing with an director")
@@ -32,13 +34,28 @@ class DirectorManager(FrameListener):
 		#Action! Start directing the scene
 		if director=="Demo":
 			self.DirDemo.Action()
+			self.CurrentDirector=self.DirDemo
 		elif director=="Net":
 			self.DirNet.Action()
+			self.CurrentDirector=self.DirNet
 		elif director=="Simple":
 			self.Simple.Action()
+			self.CurrentDirector=self.Simple
 		shared.DPrint("dir",1,"Director "+director+" actionized")
 
+	def SelectedEvent(self, sellist):
+		shared.DPrint("dir", 0, "Updating Selections...")
+		self.CurrentDirector.evt_selected(sellist)
+		if debug.AABB:
+			pass
+
+	def MovementEvent(self, pos):
+		self.CurrentDirector.evt_moveclick(pos)
+		shared.WaypointManager.ShowTime(0, pos, 1)
+
+	def ActionEvent(self, data):
+		self.CurrentDirector.evt_actionclick(data)
+
 	def frameRenderingQueued(self, evt):
-		self.Simple.Frame()
-		self.DirNet.Frame()
+		self.CurrentDirector.Frame()
 		return True

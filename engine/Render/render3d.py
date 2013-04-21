@@ -121,6 +121,7 @@ class SelectStuff():
 		self.LMBSel=False
 
 	def performSelection(self, vec2first, vec2second):
+		# I am the one who makes everything ready before you may start selecting stuff
 		left =  vec2first.x
 		right = vec2second.x
 		top = vec2first.y
@@ -196,12 +197,7 @@ class SelectStuff():
 						selfect(queryResult.movableObject)
 
 	def selectevent(self, evt):
-		#CurrentSelection Highlighting (Use a better solution lateron):
-		# if len(self.CurrentSelection) and not self.CtrlHold:
-		# 	for x in self.CurrentSelection:
-		# 		x.showBoundingBox(False)
-		# 	self.CurrentSelection=[]
-
+		# I get called each time you click on an unit, ( Not when you drag a box over them )
 		mousePos = MouseCursor.getSingleton().getPosition()
 		mouseRay = self.camera.camera.getCameraToViewportRay(mousePos.d_x / float(self.hackhz),
 													  mousePos.d_y / float(self.hackvz))
@@ -227,6 +223,9 @@ class SelectStuff():
 					foosel=[]
 					#print(self.CurrentSelection)
 					#print("_____________________________________")
+
+					shared.DirectorManager.SelectedEvent(self.CurrentSelection)
+
 					break # We found an existing object
 				elif item.worldFragment:
 					shared.DPrint("SelectStuff",0,"Selection: World Selected")
@@ -236,6 +235,7 @@ class SelectStuff():
 				print(x.getName())
 
 	def actionClick(self, mX, mY):
+		# I get called each time you rightclick on the terrain, or over an unit
 		mouseRay=self.camera.camera.getCameraToViewportRay(mX, mY)
 		self.raySceneQuery.setRay(mouseRay)
 		self.raySceneQuery.setSortByDistance(True)
@@ -250,7 +250,7 @@ class SelectStuff():
 					#item.movable.getParentSceneNode().showBoundingBox(True)
 					res2=mouseRay.intersects(item.movable.getWorldBoundingBox())
 					posRclicked=mouseRay.getPoint(res2.second)
-					DecalPlace=(posRclicked[0],posRclicked[1],posRclicked[2])
+					ClickPosition=(posRclicked[0],posRclicked[1],posRclicked[2])
 					#Decal=TerrainMDecal() #posRclicked,200, "rnad", True
 					#TerrainMDecal.makeMaterialReceiveDecal(item.movable.getMaterialName())
 					#Ent=shared.EntityHandeler.Create(8000+randrange(1,100), "robot", "No")
@@ -262,11 +262,17 @@ class SelectStuff():
 					# 	self.Decal=shared.DecalManager.Create("MCircle", DecalPlace, (270,0,0))
 					# 	self.TestStuff=True
 					# break
-					shared.WaypointManager.Show(0, DecalPlace)
-					debug.RCC("dirgo "+str(floor(DecalPlace[0]))+" "+str(floor(DecalPlace[2])))
+					
+					#shared.WaypointManager.Show(0, DecalPlace)
+					#debug.RCC("dirgo "+str(floor(DecalPlace[0]))+" "+str(floor(DecalPlace[2])))
+
+					shared.DirectorManager.MovementEvent(ClickPosition)
+
+					break
 					
 
 class SelectionRectangle(ogre.ManualObject):
+	# I am the visual reprensation of the selection box
 	##===============================================================================##
 	##   Selection Rectangle Class
 	##===============================================================================##
@@ -310,6 +316,7 @@ class SelectionRectangle(ogre.ManualObject):
 		self.setBoundingBox(box)
  
 class PlaneQueryListener(ogre.SceneQueryListener):
+	# I get called each time you multiselect stuff, aka. if you drag a box over units 
 	##===============================================================================##
 	##   Subclassed Scene Query Listener
 	##===============================================================================##
@@ -334,6 +341,9 @@ class PlaneQueryListener(ogre.SceneQueryListener):
 				shared.unitHandeler.Get(unitID)._deselected()
 				del self.SelStf.CurrentSelection[self.SelStf.CurrentSelection.index(x)]
 			foosel=[]
+
+			shared.DirectorManager.SelectedEvent(self.SelStf.CurrentSelection)
+
 			#print(self.SelStf.CurrentSelection)
 			#print("_____________________________________")
 			#print type(firstMovable)

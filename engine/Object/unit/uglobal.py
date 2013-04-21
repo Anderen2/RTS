@@ -33,6 +33,9 @@ class GlobalUnit():
 		#Phys:
 		#self.phys=shared.PhysicsEntMgr.Create
 
+		#Movement
+		self.nextwaypoint=None
+
 		#Start unit-dependant shit:
 		self.init()
 
@@ -42,6 +45,10 @@ class GlobalUnit():
 	def _think(self):
 		self.entity.text.update()
 		self.entity.Think()
+		if self.nextwaypoint!=None:
+			if self._movetowards(self.nextwaypoint[0], self.nextwaypoint[2])<1:
+				self.nextwaypoint=None
+		
 
 	def _selected(self):
 		shared.DPrint("Globalunit",5,"Unit selected: "+str(self.ID))
@@ -67,10 +74,13 @@ class GlobalUnit():
 		src=self.entity.node.getPosition()
 		src2d=(src[0], src[2]) #2D Coordinates (X, Z) or Longitude and Latitude (Not Altitude!)
 		xzd=pathfinding.GetNextCoord(src2d, (x,z)) #Returns next Xcoord, Zcoord and a measure of how much distance which is left (x, z, dist)
-		if xzd[0]!=src[0] or xzd[1]!=src[2]:
+		if xzd[0]>src[0]-1 or xzd[1]>src[2]-1 or xzd[0]<src[0]+1 or xzd[1]<src[2]+1:
 			self._look(xzd[0], src[1], xzd[1])
 		self._setPos(xzd[0], src[1], xzd[1])
 		return xzd[2]
+
+	def _setwaypoint(self, pos):
+		self.nextwaypoint=pos
 
 	def _move(self):
 		pass

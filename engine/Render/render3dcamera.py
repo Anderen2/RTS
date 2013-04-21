@@ -37,7 +37,7 @@ class Camera():
 		self.camNode.translate(self.camNode.orientation * transVector * delta)
 
 	def SetPos(self, array):
-		#Sets the camera's scenenode position. Translate is used to translate relative movement to world coordinates (I think.)
+		#Sets the camera's scenenode position. Translate is used to translate relative movement to world coordinates
 		self.camNode.translate(array)
 
 	def Rotate(self, relativemousepos):

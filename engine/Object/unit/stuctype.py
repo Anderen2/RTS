@@ -3,10 +3,13 @@ from structure import Structure
 
 #Structure Type-dependant Unitgroups
 class Buildable(Structure):
-	pass
+	def init(self):
+		self.type=1
 
 class Bunker(Structure):
-	pass
+	def init(self):
+		self.type=2
 
 class Tech(Structure):
-	pass
+	def init(self):
+		self.type=3

@@ -4,6 +4,7 @@
 
 from engine import shared, debug
 from engine.shared import DPrint
+from engine.Lib import YModConfig
 from unit import movtype, stuctype
 from ogre.renderer.OGRE import FrameListener
 
@@ -15,38 +16,61 @@ class UnitManager(FrameListener):
 		self.ucount=0
 
 	def PowerUp(self):
-		pass
+		#Load Unitfiles
+		self.parser=YModConfig.Parser("Data/Unit/", "unit")
+		self.UnitDict=self.parser.start()
+		if self.UnitDict==False:
+			shared.DPrint("UnitManager", 3, "Parsing files failed!")
 
-	def CreateMov(self, Type, Faction, Team, SubType):
-		ID=self.ucount
-		self.ucount=self.ucount+1
+	def GetParam(self, ent, key):
+		return self.UnitDict[ent][key]
 
-		if Type==1:
-			pointer=movtype.Worker(ID, Faction, Team, SubType)
-		elif Type==2:
-			pointer=movtype.Vehicle(ID, Faction, Team, SubType)
-		elif Type==3:
-			pointer=movtype.Infantry(ID, Faction, Team, SubType)
-		elif Type==4:
-			pointer=movtype.Aircraft(ID, Faction, Team, SubType)
-		elif Type==5:
-			pointer=movtype.Marine(ID, Faction, Team, SubType)
+	def GetParams(self, ent):
+		return self.UnitDict[ent]
+
+	def Create(self, team, name):
+		if name in self.UnitDict:
+			if self.UnitDict[name]["movable"]==0:
+				return self.CreateStuc(self.UnitDict[name]["type"], self.UnitDict[name]["faction"], name, self.UnitDict[name]["ent"])
+			elif self.UnitDict[name]["movable"]==1:
+				return self.CreateMov(self.UnitDict[name]["type"], self.UnitDict[name]["faction"], name, self.UnitDict[name]["ent"])
 		else:
-			pointer=movtype.Other(ID, Faction, Team, SubType)
+			shared.DPrint("UnitManager",3,"Tried to create nonexsitant unit: "+str(name))
+			return False
 
-		self.units[ID]=pointer
-		return pointer
-
-	def CreateStuc(self, Type, Faction, Team, SubType):
+	def CreateStuc(self, Type, Team, SubType, ent):
 		ID=self.ucount
 		self.ucount+=1
 
 		if Type==1:
-			pointer=stuctype.Buildable(ID, Faction, Team, SubType)
+			pointer=stuctype.Buildable(ID, Team, SubType, ent)
 		elif Type==2:
-			pointer=stuctype.Bunker(ID, Faction, Team, SubType)
+			pointer=stuctype.Bunker(ID, Team, SubType, ent)
 		elif Type==3:
-			pointer=stuctype.Tech(ID, Faction, Team, SubType)
+			pointer=stuctype.Tech(ID, Team, SubType, ent)
+
+		self.units[ID]=pointer
+		return pointer
+
+	def CreateMov(self, Type, Team, SubType, ent):
+		ID=self.ucount
+		self.ucount=self.ucount+1
+
+		if Type==1:
+			pointer=movtype.Worker(ID, Team, SubType, ent)
+		elif Type==2:
+			pointer=movtype.Vehicle(ID, Team, SubType, ent)
+		elif Type==3:
+			pointer=movtype.Infantry(ID, Team, SubType, ent)
+		elif Type==4:
+			pointer=movtype.Aircraft(ID, Team, SubType, ent)
+		elif Type==5:
+			pointer=movtype.Marine(ID, Team, SubType, ent)
+		else:
+			pointer=movtype.Other(ID, Team, SubType, ent)
+
+		self.units[ID]=pointer
+		return pointer
 
 	def Delete(self, ID):
 		del self.units[ID]

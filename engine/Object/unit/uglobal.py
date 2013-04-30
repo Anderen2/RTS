@@ -4,16 +4,17 @@ from engine import shared, debug
 from engine.World import pathfinding
 
 class GlobalUnit():
-	def __init__(self, ID, faction, team, subtype):
+	def __init__(self, ID, team, name, ent):
 		#Setup constants
 		self.ID=ID
-		self.faction=faction
+		self.name=name
 		self.team=team
-		self.subtype=subtype
+		self.ent=ent
 		self.entity=None
+		self.hname=shared.unitManager.GetParam(self.name, "name")
 
 		#Start rendering the unit (self, Identifyer, Type, Team, Interactive)
-		self.entity=shared.EntityHandeler.Create(self.ID, self.subtype, "unit", self.team)
+		self.entity=shared.EntityHandeler.Create(self.ID, self.ent, "unit", self.team)
 		try:
 			if self.entity.error:
 				shared.DPrint("Globalunit",4,"Entity error! Unit creation aborted!")
@@ -25,7 +26,7 @@ class GlobalUnit():
 		#Do some post-render stuff
 		self.entity.CreateTextOverlay()
 		self.entity.RandomPlacement()
-		self.entity.text.setText(subtype+" "+str(ID))
+		self.entity.text.setText(self.name+" "+str(ID))
 
 		#Sound:
 		#self.snd=shared.SoundEntMgr.Create
@@ -119,7 +120,7 @@ class GlobalUnit():
 
 			if not entity.error:
 				self.entity.Delete()
-			shared.unitHandeler.Delete(self.ID)
+			shared.unitManager.Delete(self.ID)
 		except:
 			shared.DPrint("Globalunit",5,"Unit Deletion Failed! Unit may still be in memory and/or in game world!")
 

@@ -1,0 +1,11 @@
+robot
+name=The Terminator v1337
+version=1.0
+tip=Ill be back
+ent=robot
+movable=1
+type=3
+faction=0
+action0=stop
+action1=attackmove
+action2=guardarea

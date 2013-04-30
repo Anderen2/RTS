@@ -41,7 +41,7 @@ class Director():
 		pass
 
 	def UnitAdd(self, name):
-		self.Cast.append(shared.unitManager.CreateMov(4, 0, 0, name))
+		self.Cast.append(shared.unitManager.Create(0, name))
 
 	def UnitDelAll(self):
 		pass
@@ -59,8 +59,10 @@ class Director():
 			x._setwaypoint(pos)
 			shared.DPrint("SimpleDir", 0, "Moving unit: "+str(x))
 
-	def evt_actionclick(self, pos):
-		pass
+	def evt_actionclick(self, data):
+		for x in self.CurrentSelection:
+			x.entity.node.showBoundingBox(True)
+			shared.reactor.callLater(1, lambda: x.entity.node.showBoundingBox(False))
 
 	def Frame(self):
 		#This will get executed each frame

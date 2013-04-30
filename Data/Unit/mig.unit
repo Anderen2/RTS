@@ -1,0 +1,11 @@
+mig
+name=Chinese MIG1337 Aircraft
+tip=We fight from high place
+version=1.0
+ent=plane
+movable=1
+type=4
+faction=0
+action0=stop
+action1=attackmove
+action2=guardarea

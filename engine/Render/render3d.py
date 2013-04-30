@@ -223,7 +223,6 @@ class SelectStuff():
 					foosel=[]
 					#print(self.CurrentSelection)
 					#print("_____________________________________")
-
 					shared.DirectorManager.SelectedEvent(self.CurrentSelection)
 
 					break # We found an existing object
@@ -245,7 +244,9 @@ class SelectStuff():
 				if item.movable and item.movable.getParentSceneNode().getName()[:8]=="unitNode":
 					unitID=int(split(item.movable.getParentSceneNode().getName(),"_")[1])
 					unitRclicked=shared.unitHandeler.Get(unitID)
+					shared.DirectorManager.ActionEvent(unitRclicked)
 					break
+
 				elif item.movable and item.movable.getName()[0:5] == "tile[":
 					#item.movable.getParentSceneNode().showBoundingBox(True)
 					res2=mouseRay.intersects(item.movable.getWorldBoundingBox())

@@ -1,0 +1,11 @@
+house
+name=Commandcenter!
+tip=China will grow larger!
+version=1.0
+ent=house
+movable=0
+type=1
+faction=0
+action0=Sell
+action1=Upgrade
+action2=Fun!

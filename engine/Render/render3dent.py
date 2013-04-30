@@ -5,83 +5,17 @@
 import render3dtext as text
 from engine import shared, debug
 from engine.shared import DPrint
-from os import listdir
-from os.path import isfile, join
-from string import split
+from engine.Lib import YModConfig
 from random import randrange
 from traceback import format_exc
 import ogre.renderer.OGRE as ogre
 
 class EntityHandeler():
 	def ReadEntitys(self):
-		DPrint("Render3dEnt",1,"Reading Files..")
-		FilePath="Data/Ent"
-		Files=[]
-
-		for f in listdir(FilePath):
-			if isfile(join(FilePath,f)):
-				if f[len(f)-3:]=="ent":
-					Files.append(f)
-
-		self.EntDict={}
-		for x in Files:
-			f=open(join(FilePath,x),"r")
-			Lines=f.readlines()
-			for line in Lines:
-				if line==Lines[0]:
-					Name=line[:len(line)-1]
-					self.EntDict[Name]={}
-				elif line==Lines[len(Lines)-1]:
-					Key, Value = self.ParseLine(line[:len(line)])
-					self.EntDict[Name][Key]=Value
-					shared.DPrint("Render3dEnt",0,Name+": "+Key+"="+str(Value)+str(type(Value)))
-				else:
-					Key, Value = self.ParseLine(line[:len(line)-1])
-					self.EntDict[Name][Key]=Value
-					shared.DPrint("Render3dEnt",0,Name+": "+Key+"="+str(Value)+str(type(Value)))			
-
-	def ParseLine(self,line):
-		DPrint("Render3dEnt",1,"Parsing Files..")
-		ComPar=split(line, "=")
-		Key=ComPar[0]
-		Value=ComPar[1]
-		#Parsing Vector3:
-		if Value[0]=="(" and Value[len(Value)-1]==")":
-			Value=split(Value[1:len(Value)-1],",")
-			#print Value
-			Value=(int(Value[0]),int(Value[1]),int(Value[2]))
-
-		#Parsing Lists:
-		elif Value[0]=="[" and Value[len(Value)-1]=="]":
-			Value=split(Value[1:len(Value)-1],",")
-			print("Shit..")
-
-		#Parsing Boolean:
-		elif Value.lower()=="true":
-			Value=True
-		elif Value.lower()=="false":
-			Value=False
-
-		#Parsing None:
-		elif Value.lower()=="none":
-			Value=None
-
-		#Parsing numbers
-		else:
-			#Parsing Integer
-			try:
-				Value=int(Value)
-			except ValueError:
-				pass
-
-			#Parsing Float
-			if type(Value)!=int:
-				try:
-					Value=float(Value)
-				except ValueError:
-					pass
-
-		return Key, Value
+		self.parser=YModConfig.Parser("Data/Ent/","ent")
+		self.EntDict=self.parser.start()
+		if self.EntDict==False:
+			shared.DPrint("Render3dEnt", 3, "Parsing files failed!")
 
 	def GetParam(self, ent, key):
 		return self.EntDict[ent][key]

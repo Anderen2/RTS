@@ -1,0 +1,11 @@
+tank
+name=Random Tank
+version=1.0
+tip=Locked and loaded heheheheheh
+ent=tank
+movable=1
+type=2
+faction=0
+action0=stop
+action1=attackmove
+action2=guardarea

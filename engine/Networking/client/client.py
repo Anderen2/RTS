@@ -7,7 +7,7 @@ from twisted.internet.defer import Deferred
 
 from engine import shared, debug
 from engine.Networking import sh_netObject, sh_netMethod
-from engine.Networking.client import selfplayer
+from engine.Networking.client import selfplayer, playermanager
 
 class Service():
 	def __init__(self):
@@ -38,8 +38,11 @@ class Service():
 
 	def ConnectionMade(self, protocol):
 		shared.DPrint("Service", 0, "A connection has been made")
-		shared.Tjener=Tjener(protocol)
 		shared.protocol=protocol
+		shared.Tjener=Tjener(protocol)
+
+	def ConnectionLost(self, reason):
+		shared.DPrint("Service", 2, "Connection was lost, Reason: "+str(reason))
 
 	def RetMeBack(self, function, method):
 		self.RetBackQueue[method]=function
@@ -68,11 +71,10 @@ class Tjener():
 		protocol.sendMethod(1, "SI", [])
 		shared.client.RetMeBack(self.GimmeServerInfo, "SI")
 
-		#shared.SelfPlayer=selfplayer.SelfPlayer()
+		shared.PlayerManager=playermanager.PlayerManager()
 
-	def GimmeServerInfo(self, *serverinfo):
-		print(serverinfo[1])
-		self.ServerInfo=pickle.loads(serverinfo[1])
+	def GimmeServerInfo(self, method, serverinfo):
+		self.ServerInfo=pickle.loads(serverinfo)
 		shared.DPrint("Tjener", 0, "Got serverinfo")
 
 	def PrintNice(self):

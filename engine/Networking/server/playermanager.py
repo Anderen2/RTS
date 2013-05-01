@@ -1,5 +1,8 @@
 #Serverside Playermanager
+import pickle
+
 from engine import debug, shared
+from player import Player
 
 class PlayerManager():
 	def __init__(self):
@@ -22,7 +25,7 @@ class PlayerManager():
 		for x in self.PDict:
 			foolist.append({"uid":self.PDict[x].UID, "username":self.PDict[x].username, "info":self.PDict[x].PlayerInfo})
 
-		Protocol.sendMethod(2, "LP", pickle.dumps(foolist))
+		return pickle.dumps(foolist)
 
 	def Broadcast(self, obj, method, args):
 		for x in self.PDict:

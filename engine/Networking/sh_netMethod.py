@@ -18,9 +18,12 @@ class MethodProtocol(Protocol):
 		self.player=None
 		self.pingtime=0
 		self.ping=0
+		self.queue=[]
 		debug.ACC("net_senddata", self.sendData, "Send networked data", 1)
 		debug.ACC("net_dumpdata", self.DataDump, "Dump networkdata to console\nTrue/False", 1)
 		debug.ACC("net_sendmethod", self.sendMethodHuman, "Send networked method\nUsage: net_sendmethod object.function-arg1/arg2/arg3", 1)
+
+		reactor.callLater(0, self.Frame)
 
 	def DataDump(self, state):
 		global VERBOSE
@@ -135,7 +138,7 @@ class MethodProtocol(Protocol):
 			print(method.replace(chr(1), ".").replace(chr(2), "-").replace(chr(3), "/"))
 		self.transport.write(method)
 
-	def sendMethod(self, obj, func, arg):
+	def txMeth(self, obj, func, arg):
 		global VERBOSE, PHUMANOSE
 		if PHUMANOSE:
 			rdot="."
@@ -168,6 +171,16 @@ class MethodProtocol(Protocol):
 		except:
 			print_exc()
 			return 1
+
+	def Frame(self):
+		if len(self.queue)!=0:
+			first=self.queue.pop()
+			print first
+			self.txMeth(first[0], first[1], first[2])
+		reactor.callLater(0, self.Frame)
+
+	def sendMethod(self, obj, func, arg):
+		self.queue.append([obj, func, arg])
 
 class MethodFactory(Factory):
 	protocol=MethodProtocol

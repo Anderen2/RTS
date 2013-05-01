@@ -11,8 +11,24 @@ from chat import ChatManager
 
 class Service():
 	def __init__(self):
-		#reactor.callLater(5, self.PingAll)
+		shared.objectManager.addEntry(0, 0, self)
+		self.RetBackQueue={}
 		self.connections=[]
+
+	def RetMeBack(self, function, method):
+		self.RetBackQueue[method]=function
+
+	def RetBack(self, *args):
+		protocol=args[0]
+		method=args[1]
+		kwargs=args[1:]
+		shared.DPrint("Service", 0, "Got a RetBack from method: "+method)
+		if method in self.RetBackQueue:
+			foo=self.RetBackQueue[method]
+			del self.RetBackQueue[method]
+			ret=foo(*kwargs)
+			if ret!=None:
+				return ret
 
 	def ConnectionMade(self, proto):
 		self.connections.append(proto)

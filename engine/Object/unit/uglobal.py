@@ -61,9 +61,10 @@ class GlobalUnit():
 	def _deselected(self):
 		shared.DPrint("Globalunit",5,"Unit deselected: "+str(self.ID))
 		self.entity.text.enable(False)
-		self.entity.node.showBoundingBox(False)
-		self.entity.actNone()
-		self.entity.actDead(True)
+		if debug.AABB:
+			self.entity.node.showBoundingBox(False)
+		#self.entity.actNone()
+		#self.entity.actDead(True)
 		self.entity.rotTurret(60)
 
 	def _setPos(self, x, y, z):

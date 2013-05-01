@@ -12,14 +12,25 @@ class ObjectManager():
 
 	def runMethod(self, prot, obj, method, arg):
 		try:
-			if arg!=None:
-				ret=getattr(self.olist[obj], method)(Protocol=prot, *arg)
-				if ret!=None:
-					prot.sendMethod(0, method, ret)
+			if obj==0:
+				if arg!=None:
+					ret=getattr(self.olist[obj], "RetBack")(prot, method, *arg)
+					if ret!=None:
+						prot.sendMethod(0, method, ret)
+				else:
+					ret=getattr(self.olist[obj], "RetBack")(prot, method)
+					if ret!=None:
+						prot.sendMethod(0, method, ret)
 			else:
-				ret=getattr(self.olist[obj], method)(Protocol=prot)
-				if ret!=None:
-					prot.sendMethod(0, method, ret)
+				if arg!=None:
+					ret=getattr(self.olist[obj], method)(Protocol=prot, *arg)
+					if ret!=None:
+						prot.sendMethod(0, method, ret)
+				else:
+					ret=getattr(self.olist[obj], method)(Protocol=prot)
+					if ret!=None:
+						prot.sendMethod(0, method, ret)
+			#print ret
 
 		except KeyError:
 			try:

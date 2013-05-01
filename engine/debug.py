@@ -42,7 +42,7 @@ def ParseCommand(Txt):
 			shared.unitHandeler.CreateMov(3,1,1,"robot")
 			#Type, Faction, Team, SubType
 		elif CMD=="u_cs":
-			shared.unitHandeler.CreateMov(int(PAR[0]),int(PAR[1]),int(PAR[2]),PAR[3])
+			shared.unitHandeler.Create(int(PAR[0]),PAR[1])
 		elif CMD=="u_cmul":
 			for x in range(0,int(PAR[0])):
 				shared.unitHandeler.CreateMov(3,1,1,"robot")
@@ -170,8 +170,9 @@ def runFile(filesrc):
 	with open(filesrc, "r") as foofile:
 		for command in foofile:
 			command=command.replace("\n", "")
-			shared.DPrint("debug",0,command)
-			shared.DPrint("debug",1,ParseCommand(command))
+			if command[0]!="#" and command[0]!=" " and command[0]!="/":
+				shared.DPrint("debug",0,command)
+				shared.DPrint("debug",1,ParseCommand(command))
 
 #EXTRA COMMANDS
 ACC("man", manCMD, info="Prints the commands manual/infostring\nUsage: ex. man man", args=1)

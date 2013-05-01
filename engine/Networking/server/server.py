@@ -1,0 +1,61 @@
+#TwistedServer v2
+import pickle
+from traceback import print_exc
+from twisted.internet.protocol import Protocol, Factory
+from twisted.internet import reactor, stdio
+from engine import debug, shared
+from engine.Networking import TwCLI, sh_netObject, sh_netMethod
+
+from playermanager import PlayerManager
+from chat import ChatManager
+
+class Service():
+	def __init__(self):
+		#reactor.callLater(5, self.PingAll)
+		self.connections=[]
+
+	def ConnectionMade(self, proto):
+		self.connections.append(proto)
+
+	def ConnectionLost(self, proto, reason):
+		shared.DPrint("Service", 1, "Connection to client lost: "+reason)
+		try:
+			shared.playerManager.DCONN(proto)
+			self.connections.remove(proto)
+		except KeyError:
+			shared.DPrint("Service", 1, "Client not exsisting!")
+		#proto.loseConnection()
+
+	def PingAll(self):
+		for x in self.connections:
+			x.Ping()
+			try:
+				shared.DPrint("Service", 0, x.player.name+": "+str(x.ping))
+			except:
+				shared.DPrint("Service", 0, "UNINITIALIZED"+": "+str(x.ping))
+		reactor.callLater(5, self.PingAll)
+
+	def Broadcast(self, obj, method, args):
+		for x in self.connections:
+			x.sendMethod(obj, method, args)
+
+class Server():
+	def __init__(self):
+		shared.objectManager.addEntry(0,1,self)
+		self.ServerInfo={
+		'name':"YARTS-Server",
+		'desc':"Yet Another RTS Server",
+		'region':'Europe',
+		'country':'Norway'
+		}
+
+	def SI(self, Protocol):
+		return (pickle.dumps(self.ServerInfo))
+
+def Startup():
+	shared.Server=Server()
+
+	ChatManager()
+
+	reactor.listenTCP(1337, sh_netMethod.MethodFactory())
+	reactor.run()

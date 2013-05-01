@@ -1,54 +1,46 @@
-#Director - Net
-#Networked Director
+#Director - Simple
+#This is a simple director that allow you to test out unit animations and movement by using the console
 
 from engine import shared, debug
+from string import split
 
 class Director():
 	def __init__(self):
 		self.Active=False
 
 	def Init(self):
-
-		self.gotoX=None
-		self.gotoY=None
-		self.gotoz=None
+		#debug.ACC("dirgo", self.UnitGo, args=2, info="Tell the units directed by SimpleDir to go towards the coordinates")
+		debug.ACC("dirbuild", self.UnitBuild, args=1, info="Simulate a unit build on the server")
 
 	def Action(self):
 		self.Cast=[]
-		self.UnitAdd("plane")
+		self.CurrentSelection=[]
 		self.Active=True
 
-	def UnitGo(self, x, z):
-		self.gotoX=x
-		self.gotoZ=z
-
-	def UnitAim(self, x, y, z):
-		for actor in self.Cast:
-			actor._look(x, y, z)
-
-	def UnitPri(self):
+	def UnitBuild(self, name):
 		pass
+		#self.Cast.append(shared.unitManager.Create(0, name))
 
-	def UnitSec(self):
-		pass
+	def evt_selected(self, selections):
+		shared.DPrint("SimpleDir", 0, "Selections Updated")
+		self.selections=selections
+		self.CurrentSelection=[]
+		for x in self.selections:
+			unitID=int(split(x.getName(),"_")[1])
+			self.CurrentSelection.append(shared.unitHandeler.Get(unitID))
 
-	def UnitAdd(self, name):
-		self.Cast.append(shared.unitManager.CreateMov(4, 0, 0, "plane"))
+	def evt_moveclick(self, pos):
+		for x in self.CurrentSelection:
+			#x._setwaypoint(pos)
+			shared.DPrint("SimpleDir", 0, "Moving unit: "+str(x))
 
-	def UnitDelAll(self):
-		pass
+	def evt_actionclick(self, data):
+		for x in self.CurrentSelection:
+			pass
+			#x.entity.node.showBoundingBox(True)
+			#shared.reactor.callLater(1, lambda: x.entity.node.showBoundingBox(False))
 
 	def Frame(self):
+		#This will get executed each frame
 		if self.Active:
-			#This will get executed each frame
-			if self.gotoX!=None:
-				x=self.gotoX
-				z=self.gotoZ
-				for actor in self.Cast:
-					print actor
-					print (x, z)
-					print (float(x), float(z))
-					dist=actor._movetowards(float(x), float(z))
-					if dist==0:
-						self.gotoX=None
-					print dist
+			pass

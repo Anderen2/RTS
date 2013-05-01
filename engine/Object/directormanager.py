@@ -45,17 +45,21 @@ class DirectorManager(FrameListener):
 
 	def SelectedEvent(self, sellist):
 		shared.DPrint("dir", 0, "Updating Selections...")
-		self.CurrentDirector.evt_selected(sellist)
+		if self.CurrentDirector!=None:
+			self.CurrentDirector.evt_selected(sellist)
 		if debug.AABB:
 			pass
 
 	def MovementEvent(self, pos):
-		self.CurrentDirector.evt_moveclick(pos)
-		shared.WaypointManager.ShowTime(0, pos, 1)
+		if self.CurrentDirector!=None:
+			self.CurrentDirector.evt_moveclick(pos)
+			shared.WaypointManager.ShowTime(0, pos, 1)
 
 	def ActionEvent(self, data):
-		self.CurrentDirector.evt_actionclick(data)
+		if self.CurrentDirector!=None:
+			self.CurrentDirector.evt_actionclick(data)
 
 	def frameRenderingQueued(self, evt):
-		self.CurrentDirector.Frame()
+		if self.CurrentDirector!=None:
+			self.CurrentDirector.Frame()
 		return True

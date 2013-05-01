@@ -8,8 +8,8 @@ from engine import shared, debug
 
 VERBOSE=True
 PVERBOSE=True
-HUMANOSE=True #Warning, this means that the server will read in Humanose form. It will break everything!
-PHUMANOSE=True #Warning, this means that the server will transmitt in Humanose form. It will break everything!
+HUMANOSE=False #Warning, this means that the server will read in Humanose form. It will break everything!
+PHUMANOSE=False #Warning, this means that the server will transmit in Humanose form. It will break everything!
 
 class MethodProtocol(Protocol):
 	def __init__(self, factory):
@@ -71,6 +71,7 @@ class MethodProtocol(Protocol):
 				
 				obj=Foo[0]
 				method=Bar[0]
+				print("Recived: "+Bar[1].replace(chr(3),"\n___\n"))
 				arg=split(Bar[1], slash)
 				if VERBOSE:
 					print("Object: " + obj + "\nMethod: " + method + "\nArgument: " + str(type(arg)))
@@ -148,14 +149,21 @@ class MethodProtocol(Protocol):
 			rend=""
 
 		try:
+			args=""
 			if arg!=None:
-				args=rslash.join(arg)
+				if type(arg) is list:
+					for x in arg:
+						args=args+x+rslash
+					args=args[:len(args)-1]
+				else:
+					args=arg
 			else:
 				args=""
 
 			method=str(obj)+rdot+str(func)+rdash+args+rend
 			if VERBOSE:
-				print(split(method.replace(chr(1), ".").replace(chr(2), "-").replace(chr(3), "/"), "-")[0])
+				print(split(method.replace(chr(1), ".").replace(chr(2), "-").replace(chr(3), "/"), "-"))
+				print method
 			self.transport.write(method)
 		except:
 			print_exc()

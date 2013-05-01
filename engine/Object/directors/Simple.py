@@ -23,7 +23,7 @@ class Director():
 	def Action(self):
 		self.Cast=[]
 		self.CurrentSelection=[]
-		self.UnitAdd("plane")
+		#self.UnitAdd("plane")
 		self.Active=True
 
 	def UnitGo(self, x, z):
@@ -68,14 +68,3 @@ class Director():
 		#This will get executed each frame
 		if self.Active:
 			pass
-			# if self.gotoX!=None:
-			# 	x=self.gotoX
-			# 	z=self.gotoZ
-			# 	for actor in self.Cast:
-			# 		print actor
-			# 		print (x, z)
-			# 		print (float(x), float(z))
-			# 		dist=actor._movetowards(float(x), float(z))
-			# 		if dist==0:
-			# 			self.gotoX=None
-			# 		print dist

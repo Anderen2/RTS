@@ -8,17 +8,21 @@ shared.DPrint("Main",1,"Initializing Modules...")
 
 from engine.Render import render
 from engine.Object import unitmanager, prop, decorator, zone, directormanager
-from engine.Networking import client
+from engine.Networking.client import client
 
 #Networking
-shared.client=client
+shared.DPrint("Main",1,"Initializing Networking...")
+shared.client=client.Service()
 shared.reactor=client.reactor
-client.Startup()
+#shared.client.Startup()
+shared.client.Connect("localhost", 1337)
 
 #Render
+shared.DPrint("Main",1,"Initializing Render...")
 shared.render=render.RenderApplication()
 
 #Managers
+shared.DPrint("Main",1,"Initializing Managers...")
 shared.unitManager=unitmanager.UnitManager()
 shared.unitHandeler=shared.unitManager
 shared.decHandeler=decorator.DecoratorHandeler()
@@ -26,15 +30,17 @@ shared.propManager=prop.propManager()
 shared.zoneManager=zone.zoneManager()
 
 #CommandParser
+shared.DPrint("Main",1,"Initializing CommandParser...")
 shared.ParseCommand=debug.ParseCommand
 
 #DirectorManager
+shared.DPrint("Main",1,"Initializing DirectorManager...")
 shared.DirectorManager=directormanager.DirectorManager()
 
 #Power it up!
-shared.DPrint("Main",1,"Powerin' up!..")
-shared.DPrint("Main",1,"PWR: UnitHandeler")
-shared.unitHandeler.PowerUp()
+shared.DPrint("Main",1,"Startin' Powerin' up!..")
+shared.DPrint("Main",1,"PWR: UnitManager")
+shared.unitManager.PowerUp()
 shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
 
@@ -47,8 +53,11 @@ except:
 
 #Release tha clutch and start moving forward
 shared.DPrint("Main", 1, "Starting Mainloop..")
-client.Run()
+shared.client.Run()
 
 #We have come to a stop, lets clean up after ourselves
-client.cleanUp()
+shared.DPrint("Main", 1, "Mainloop stopped..")
+shared.client.cleanUp()
+shared.DPrint("Main", 1, "Cleaning up render..")
 shared.render.cleanUp()
+shared.DPrint("Main", 1, "Ha det bra..")

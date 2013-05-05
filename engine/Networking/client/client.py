@@ -7,7 +7,7 @@ from twisted.internet.defer import Deferred
 
 from engine import shared, debug
 from engine.Networking import sh_netObject, sh_netMethod
-from engine.Networking.client import selfplayer, playermanager
+from engine.Networking.client import selfplayer, playermanager, unitmanager
 
 class Service():
 	def __init__(self):
@@ -72,6 +72,7 @@ class Tjener():
 		shared.client.RetMeBack(self.GimmeServerInfo, "SI")
 
 		shared.PlayerManager=playermanager.PlayerManager()
+		shared.netUnitManager=unitmanager.UnitManager()
 
 	def GimmeServerInfo(self, method, serverinfo):
 		self.ServerInfo=pickle.loads(serverinfo)

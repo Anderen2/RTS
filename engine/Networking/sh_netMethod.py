@@ -156,7 +156,7 @@ class MethodProtocol(Protocol):
 			if arg!=None:
 				if type(arg) is list:
 					for x in arg:
-						args=args+x+rslash
+						args=str(args)+str(x)+rslash
 					args=args[:len(args)-1]
 				else:
 					args=arg

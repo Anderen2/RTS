@@ -1,0 +1,16 @@
+NetworkObjects
+
+Common:
+0 = Service / Retback
+
+Server:
+1 = Server
+2 = PlayerManager
+3 = Chat
+4 = UnitManager
+
+Client:
+1 = ??
+2 = PlayerManager
+3 = Chat (NOT IMPLEMENTED)
+4 = UnitManager

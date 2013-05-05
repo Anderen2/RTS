@@ -28,46 +28,46 @@ class UnitManager(FrameListener):
 	def GetParams(self, ent):
 		return self.UnitDict[ent]
 
-	def Create(self, team, name):
+	def Create(self, team, name, pos=None):
 		if name in self.UnitDict:
 			if self.UnitDict[name]["movable"]==0:
-				return self.CreateStuc(self.UnitDict[name]["type"], self.UnitDict[name]["faction"], name, self.UnitDict[name]["ent"])
+				return self.CreateStuc(self.UnitDict[name]["type"], self.UnitDict[name]["faction"], name, self.UnitDict[name]["ent"], pos)
 			elif self.UnitDict[name]["movable"]==1:
-				return self.CreateMov(self.UnitDict[name]["type"], self.UnitDict[name]["faction"], name, self.UnitDict[name]["ent"])
+				return self.CreateMov(self.UnitDict[name]["type"], self.UnitDict[name]["faction"], name, self.UnitDict[name]["ent"], pos)
 		else:
 			shared.DPrint("UnitManager",3,"Tried to create nonexsitant unit: "+str(name))
 			return False
 
-	def CreateStuc(self, Type, Team, SubType, ent):
+	def CreateStuc(self, Type, Team, SubType, ent, pos=None):
 		ID=self.ucount
 		self.ucount+=1
 
 		if Type==1:
-			pointer=stuctype.Buildable(ID, Team, SubType, ent)
+			pointer=stuctype.Buildable(ID, Team, SubType, ent, pos)
 		elif Type==2:
-			pointer=stuctype.Bunker(ID, Team, SubType, ent)
+			pointer=stuctype.Bunker(ID, Team, SubType, ent, pos)
 		elif Type==3:
-			pointer=stuctype.Tech(ID, Team, SubType, ent)
+			pointer=stuctype.Tech(ID, Team, SubType, ent, pos)
 
 		self.units[ID]=pointer
 		return pointer
 
-	def CreateMov(self, Type, Team, SubType, ent):
+	def CreateMov(self, Type, Team, SubType, ent, pos=None):
 		ID=self.ucount
 		self.ucount=self.ucount+1
 
 		if Type==1:
-			pointer=movtype.Worker(ID, Team, SubType, ent)
+			pointer=movtype.Worker(ID, Team, SubType, ent, pos)
 		elif Type==2:
-			pointer=movtype.Vehicle(ID, Team, SubType, ent)
+			pointer=movtype.Vehicle(ID, Team, SubType, ent, pos)
 		elif Type==3:
-			pointer=movtype.Infantry(ID, Team, SubType, ent)
+			pointer=movtype.Infantry(ID, Team, SubType, ent, pos)
 		elif Type==4:
-			pointer=movtype.Aircraft(ID, Team, SubType, ent)
+			pointer=movtype.Aircraft(ID, Team, SubType, ent, pos)
 		elif Type==5:
-			pointer=movtype.Marine(ID, Team, SubType, ent)
+			pointer=movtype.Marine(ID, Team, SubType, ent, pos)
 		else:
-			pointer=movtype.Other(ID, Team, SubType, ent)
+			pointer=movtype.Other(ID, Team, SubType, ent, pos)
 
 		self.units[ID]=pointer
 		return pointer

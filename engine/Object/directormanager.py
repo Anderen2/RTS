@@ -28,6 +28,9 @@ class DirectorManager(FrameListener):
 			self.DirNet.Init()
 		elif director=="Simple":
 			self.Simple.Init()
+		else: 
+			shared.DPrint("dir",1,"Director "+director+" not found")
+			return ("Director "+director+" not found")
 		shared.DPrint("dir",1,"Director "+director+" Initialized")
 
 	def Action(self, director):
@@ -41,6 +44,9 @@ class DirectorManager(FrameListener):
 		elif director=="Simple":
 			self.Simple.Action()
 			self.CurrentDirector=self.Simple
+		else: 
+			shared.DPrint("dir",1,"Director "+director+" not found")
+			return ("Director "+director+" not found")
 		shared.DPrint("dir",1,"Director "+director+" actionized")
 
 	def SelectedEvent(self, sellist):

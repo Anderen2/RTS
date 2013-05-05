@@ -7,6 +7,7 @@ from engine import debug, shared
 from engine.Networking import TwCLI, sh_netObject, sh_netMethod
 
 from playermanager import PlayerManager
+from unitmanager import UnitManager
 from chat import ChatManager
 
 class Service():
@@ -72,6 +73,7 @@ def Startup():
 	shared.Server=Server()
 
 	ChatManager()
+	UnitManager()
 
 	reactor.listenTCP(1337, sh_netMethod.MethodFactory())
 	reactor.run()

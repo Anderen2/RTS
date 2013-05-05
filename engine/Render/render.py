@@ -140,8 +140,9 @@ class RenderApplication(object):
 			shared.renderioInput.inputManager.destroyInputObjectJoyStick(self.joystick)
 		except:
 			pass
-		#shared.renderioInput.InputManager.destroyInputSystem(shared.renderioInput.inputManager)
-		#self.inputManager = None
+		self.root.shutdown()
+		shared.renderioInput.inputManager.destroyInputSystem(shared.renderioInput.inputManager)
+		shared.renderioInput.inputManager = None
 
 class RenderListener(ogre.FrameListener):
 	#This class has functions which is needed/runs each frame

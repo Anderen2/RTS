@@ -9,7 +9,7 @@ class Director():
 		self.Active=False
 
 	def Init(self):
-		#debug.ACC("dirgo", self.UnitGo, args=2, info="Tell the units directed by SimpleDir to go towards the coordinates")
+		#debug.ACC("dirgo", self.UnitGo, args=2, info="Tell the units directed by NetDir to go towards the coordinates")
 		debug.ACC("dirbuild", self.UnitBuild, args=1, info="Simulate a unit build on the server")
 
 	def Action(self):
@@ -18,11 +18,12 @@ class Director():
 		self.Active=True
 
 	def UnitBuild(self, name):
-		pass
+		shared.DPrint(0, "NetDir", "Sending building request..")
+		shared.protocol.sendMethod(4, "req_build", [name])
 		#self.Cast.append(shared.unitManager.Create(0, name))
 
 	def evt_selected(self, selections):
-		shared.DPrint("SimpleDir", 0, "Selections Updated")
+		shared.DPrint("NetDir", 0, "Selections Updated")
 		self.selections=selections
 		self.CurrentSelection=[]
 		for x in self.selections:
@@ -32,7 +33,8 @@ class Director():
 	def evt_moveclick(self, pos):
 		for x in self.CurrentSelection:
 			#x._setwaypoint(pos)
-			shared.DPrint("SimpleDir", 0, "Moving unit: "+str(x))
+			shared.DPrint("NetDir", 0, "Moving unit: "+str(x))
+		shared.SelfPlayer.MoveUnits()
 
 	def evt_actionclick(self, data):
 		for x in self.CurrentSelection:

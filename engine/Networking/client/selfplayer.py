@@ -20,3 +20,5 @@ class SelfPlayer():
 	def recv_HI(self, method, ID):
 		shared.DPrint("SelfPlayer", 0, "Server is joined.")
 		self.ID=ID
+
+		

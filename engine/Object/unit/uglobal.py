@@ -4,7 +4,7 @@ from engine import shared, debug
 from engine.World import pathfinding
 
 class GlobalUnit():
-	def __init__(self, ID, team, name, ent):
+	def __init__(self, ID, team, name, ent, pos=None):
 		#Setup constants
 		self.ID=ID
 		self.name=name
@@ -25,7 +25,10 @@ class GlobalUnit():
 
 		#Do some post-render stuff
 		self.entity.CreateTextOverlay()
-		self.entity.RandomPlacement()
+		if pos==None:
+			self.entity.RandomPlacement()
+		else:
+			self._setPos(pos[0], pos[1], pos[2])
 		self.entity.text.setText(self.name+" "+str(ID))
 
 		#Sound:
@@ -65,10 +68,10 @@ class GlobalUnit():
 			self.entity.node.showBoundingBox(False)
 		#self.entity.actNone()
 		#self.entity.actDead(True)
-		self.entity.rotTurret(60)
+		#self.entity.rotTurret(60)
 
 	def _setPos(self, x, y, z):
-		self.entity.SetPosition(x, y, z)
+		self.entity.SetPosition(float(x), float(y), float(z))
 
 	def _movetowards(self, x, z):
 		self.entity.actNone()

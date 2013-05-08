@@ -12,6 +12,8 @@ class SelfPlayer():
 		self.PickledExtras=""
 		self.ID=None
 
+		self.brandwidthsaver=[]
+
 		#Player join Handshake
 		shared.DPrint("SelfPlayer", 0, "Sending Join Handshake..")
 		shared.protocol.sendMethod(2, "HI", [self.username, self.PickledExtras])
@@ -21,4 +23,9 @@ class SelfPlayer():
 		shared.DPrint("SelfPlayer", 0, "Server is joined.")
 		self.ID=ID
 
-		
+	def MoveUnits(self, selected, pos):
+		if selected!=self.brandwidthsaver:
+			juicypickle=pickle.dumps(selected)
+		else:
+			juicypickle="0"
+		shared.protocol.sendMethod(2, "req_moveunit", [juicypickle, pos[0], pos[1], pos[2]])

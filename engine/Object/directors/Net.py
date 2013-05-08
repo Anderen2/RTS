@@ -31,10 +31,12 @@ class Director():
 			self.CurrentSelection.append(shared.unitHandeler.Get(unitID))
 
 	def evt_moveclick(self, pos):
+		selectedIDS=[]
 		for x in self.CurrentSelection:
-			#x._setwaypoint(pos)
 			shared.DPrint("NetDir", 0, "Moving unit: "+str(x))
-		shared.SelfPlayer.MoveUnits()
+			selectedIDS.append(x.ID)
+			
+		shared.SelfPlayer.MoveUnits(selectedIDS, pos)
 
 	def evt_actionclick(self, data):
 		for x in self.CurrentSelection:

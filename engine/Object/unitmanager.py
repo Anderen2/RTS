@@ -38,6 +38,10 @@ class UnitManager(FrameListener):
 			shared.DPrint("UnitManager",3,"Tried to create nonexsitant unit: "+str(name))
 			return False
 
+	def massMove(self, units, pos):
+		for x in units:
+			self.Get(x)._setwaypoint(pos)
+
 	def CreateStuc(self, Type, Team, SubType, ent, pos=None):
 		ID=self.ucount
 		self.ucount+=1

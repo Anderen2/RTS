@@ -130,6 +130,7 @@ class RenderApplication(object):
 
 		global QUITTIMER
 		if QUITTIMER!=0 or QUITTIMER!=None:
+			reactor.callLater(QUITTIMER, lambda: shared.DPrint("Render", 5, "Game killed due to QUITTIMER!"))
 			reactor.callLater(QUITTIMER, lambda: reactor.stop())
  
 	def cleanUp(self): #This cleanup function needs to be cleaned up! No pun intended

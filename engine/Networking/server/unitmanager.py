@@ -1,4 +1,5 @@
 #Serverside Unitmanager
+import pickle
 from engine import shared, debug
 from random import randrange
 
@@ -9,4 +10,16 @@ class UnitManager():
 
 	def req_build(self, name, Protocol=None):
 		shared.DPrint(0, "netUnitManager", "Building "+str(name))
+
+		## UNIT VALIDATION AND SERVERSIDE CREATION HERE
+
 		shared.PlayerManager.Broadcast(4, "build", [name, randrange(0,100,1), randrange(0,100,1), randrange(0,100,1)])
+
+	def massMove(self, unitlist, pos):
+		amount=len(unitlist)
+		shared.DPrint(0, "netUnitManager", "Massmoving "+str(amount)+ "units to "+str(pos))
+
+		## PATHFINDING SPLITTING AND PATH VALIDATION HERE
+		pickledunits=pickle.dumps(unitlist)
+		x, y, z = pos
+		shared.PlayerManager.Broadcast(4, "massmove", [pickledunits, x, y, z])

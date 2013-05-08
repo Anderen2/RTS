@@ -11,6 +11,8 @@ class PlayerManager():
 		self.PlayerCount=0
 		self.PDict={}
 
+		self.brandwidthsaver=[]
+
 	def HI(self, Username, PickledExtras, Protocol=None):
 		if not self.getFromProto(Protocol):
 			self.PlayerCount+=1
@@ -26,6 +28,15 @@ class PlayerManager():
 			foolist.append({"uid":self.PDict[x].UID, "username":self.PDict[x].username, "info":self.PDict[x].PlayerInfo})
 
 		return pickle.dumps(foolist)
+
+	def req_moveunit(self, selected, x, y, z, Protocol=None):
+		if selected!="0":
+			self.brandwidthsaver=pickle.loads(selected)
+
+		## IF PLAYER OWNS ALL UNITS CHECK HERE! ! !
+		## Tempoary testing workaround (All players could move all units)
+		shared.UnitManager.massMove(self.brandwidthsaver, (x, y, z))
+
 
 	def Broadcast(self, obj, method, args):
 		for x in self.PDict:

@@ -1,4 +1,5 @@
 #Clientside Unitmanager
+import pickle
 from engine import shared, debug
 
 class UnitManager():
@@ -10,3 +11,8 @@ class UnitManager():
 		shared.DPrint(0, "netUnitManager", "Erecting "+str(name)+"at"+str((x,y,z)))
 		pos=(x, y, z)
 		shared.unitManager.Create(0, name, pos)
+
+	def massmove(self, pickledunits, x, y, z, Protocol=None):
+		units=pickle.loads(pickledunits)
+
+		shared.unitManager.massMove(units, (float(x), float(y), float(z)))

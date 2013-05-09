@@ -15,7 +15,7 @@ shared.DPrint("Main",1,"Initializing Networking...")
 shared.client=client.Service()
 shared.reactor=client.reactor
 #shared.client.Startup()
-shared.client.Connect("localhost", 1337)
+shared.client.Connect("192.168.1.104", 1337)
 
 #Render
 shared.DPrint("Main",1,"Initializing Render...")

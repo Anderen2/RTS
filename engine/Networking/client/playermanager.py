@@ -32,7 +32,7 @@ class PlayerManager():
 			shared.DPrint("PlayerManager", 1, "Player "+x["username"]+" ("+str(x["uid"])+")"+" joined the game")
 
 
-	def HI(self, username, ID, pickledextras):
+	def HI(self, username, ID, pickledextras, Protocol=None):
 		self.playerlist.append({"uid":ID, "username":username, "info":pickledextras})
 		self.PDict[ID]=Player(ID, username, pickledextras)
 		shared.DPrint("PlayerManager", 1, "Player "+username+" ("+str(ID)+")"+" joined the game!")

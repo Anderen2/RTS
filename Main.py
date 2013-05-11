@@ -9,13 +9,14 @@ shared.DPrint("Main",1,"Initializing Modules...")
 from engine.Render import render
 from engine.Object import unitmanager, prop, decorator, zone, directormanager
 from engine.Networking.client import client
+from engine.World import maploader
 
 #Networking
 shared.DPrint("Main",1,"Initializing Networking...")
 shared.client=client.Service()
 shared.reactor=client.reactor
 #shared.client.Startup()
-shared.client.Connect("192.168.1.104", 1337)
+shared.client.Connect("localhost", 1337)
 
 #Render
 shared.DPrint("Main",1,"Initializing Render...")
@@ -28,6 +29,10 @@ shared.unitHandeler=shared.unitManager
 shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
 shared.zoneManager=zone.zoneManager()
+
+#MapLoader
+shared.MapLoader=maploader.MapLoader()
+shared.Map=shared.MapLoader.Load("test.map")
 
 #CommandParser
 shared.DPrint("Main",1,"Initializing CommandParser...")
@@ -43,6 +48,8 @@ shared.DPrint("Main",1,"PWR: UnitManager")
 shared.unitManager.PowerUp()
 shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
+shared.DPrint("Main",1,"PWR: MapSetup")
+shared.Map.Setup()
 
 #Autoexec
 shared.DPrint("Main",1,"Executing autoexec")

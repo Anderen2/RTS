@@ -1,7 +1,7 @@
 barrel
 name=Decorational Barrel
 version=1.0
-mesh=barrel.mesh
+mesh=Barrel.mesh
 shadows=False
 meshturret=none
 addmesh=0

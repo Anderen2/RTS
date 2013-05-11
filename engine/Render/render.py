@@ -13,8 +13,15 @@ QUITTIMER=360 #Set this to a time in secounds if you want the game to automaticl
 
 class RenderApplication(object):
 	#This class setups and starts all rendermodules
-	def __init__(self):
+	def __init__(self, bare=False):
 		shared.DPrint("Render",1,"Initializing")
+
+		#Bare defines if this module should setup things or not.
+		#If BARE==True only initialization will be done, and setup will be handeled elsewhere
+		#Mostly only affects renderGUI and renderScene
+		self.BARE=bare
+
+		self.renderqueue=[]
 
 	def PowerUp(self):
 		self.createRoot()
@@ -66,17 +73,20 @@ class RenderApplication(object):
 	def setupScene(self):
 		shared.DPrint("Render",1,"Setting up scene")
 		shared.render3dScene=render3d.Scene()
-		shared.render3dScene.Setup()
+		if not self.BARE:
+			shared.render3dScene.Setup()
 		 
 	def setupInputSystem(self):
 		shared.DPrint("Render",1,"Setting up I/O")
 		shared.renderioInput=renderio.Input()
-		shared.renderioInput.Setup()
+		if not self.BARE:
+			shared.renderioInput.Setup()
  
 	def setupCEGUI(self):
 		shared.DPrint("Render",1,"Setting up GUI")
 		shared.renderguiGUI=rendergui.GUI()
-		shared.renderguiGUI.Setup()
+		if not self.BARE:
+			shared.renderguiGUI.Setup()
 
 	def setupDebuggingTools(self):
 		shared.DPrint("Render",1,"Setting up DBGTools")
@@ -88,10 +98,8 @@ class RenderApplication(object):
 		shared.DPrint("Render",1,"Creating Framelisteners")
 		self.renderlistener = RenderListener()
 		#self.pframeListener.showDebugOverlay(True)
-		self.renderqueue=[]
 
 		self.renderqueue.append(self.renderlistener)
-		self.renderqueue.append(shared.renderioInput)
 		self.renderqueue.append(shared.unitHandeler)
 		self.renderqueue.append(shared.DirectorManager)
 

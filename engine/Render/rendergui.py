@@ -6,25 +6,13 @@ import ogre.gui.CEGUI as CEGUI
 
 class GUI():
 	def __init__(self):
+		shared.DPrint("RenderGUI",1,"Setting up CEGUI")
 		self.root=shared.renderRoot
 		self.scene=shared.render3dScene
 		self.UnitHandeler=shared.unitHandeler
 		UDim=CEGUI.UDim
 
-	def Setup(self):
-		shared.DPrint("RenderGUI",1,"Setting up CEGUI")
-		#Setup varibles
 		self.MoveInterface=None
-		self.hackhz, self.hackvz = shared.render3dCamera.getDimensions()
-		self.globalpha=0.9
-		self.upperalpha=0.5
-
-		#Setup pointers
-		self.windowManager = CEGUI.WindowManager.getSingleton
-		#self.sceneManager = self.scene.sceneManager
-		#self.renderWindow = self.root.getAutoCreatedWindow()
-		#self.ceguiSystem=CEGUI.System.getSingleton()
-		#self.resourceProvider = CEGUI.DefaultResourceProvider()
 
 		# CEGUI setup
 		if CEGUI.Version__.startswith("0.6"):
@@ -32,11 +20,26 @@ class GUI():
 			self.system = CEGUI.System(self.renderer)
 			CEGUI.SchemeManager.getSingleton().loadScheme("TaharezLookSkin.scheme")
 			CEGUI.SchemeManager.getSingleton().loadScheme("VanillaSkin.scheme")
+			CEGUI.SchemeManager.getSingleton().loadScheme("WindowsLook.scheme")
 		else:
 			self.renderer = CEGUI.OgreRenderer.bootstrapSystem()
 			self.system = CEGUI.System.getSingleton()
 			CEGUI.SchemeManager.getSingleton().create("TaharezLookSkin.scheme")
 			CEGUI.SchemeManager.getSingleton().create("VanillaSkin.scheme")
+			CEGUI.SchemeManager.getSingleton().create("WindowsLook.scheme")
+
+		#Setup pointers
+		self.windowManager = CEGUI.WindowManager.getSingleton()
+
+	def SetupBare(self):
+		self.windowManager.createWindow("TaharezLook/Button", "Root")
+
+	def Setup(self):
+		shared.DPrint("RenderGUI",1,"Setting up layout")
+		#Setup varibles
+		self.globalpha=0.9
+		self.upperalpha=0.5
+		self.hackhz, self.hackvz = shared.render3dCamera.getDimensions()
 
 		#Loading Layouts
 		self.sheet = CEGUI.WindowManager.getSingleton().loadWindowLayout("RTS.layout")
@@ -44,8 +47,8 @@ class GUI():
 		self.UnitQueue = CEGUI.WindowManager.getSingleton().loadWindowLayout("UnitQueue.layout")
 
 		self.system.setGUISheet(self.sheet)
-		self.windowManager().getWindow("Root/UnitInfo").addChildWindow(self.UnitQueue)
-		self.windowManager().getWindow("Root/UnitInfo").addChildWindow(self.NoSel)
+		self.windowManager.getWindow("Root/UnitInfo").addChildWindow(self.UnitQueue)
+		self.windowManager.getWindow("Root/UnitInfo").addChildWindow(self.NoSel)
 
 		#Setup Defaults
 		self.system.setDefaultMouseCursor("TaharezLook", "MouseArrow")
@@ -331,6 +334,8 @@ class GUI():
 			self.MoveInterface=None
 
 	def W_Menter(self, evt):
+		self.OldInterface=shared.renderioInput.CurrentMiceInterface
+		shared.renderioInput.CurrentMiceInterface=1
 		self.IgnoreMe=["Root/UnitOpt/BG/Actions","Root/UnitOpt/BG/Upgrades"]
 		self.IgnoreMyParent=["Root/Chat/BG", "Root/Chat", "Root/GameInfo/BG", "Root/GameInfo"]
 		shared.DPrint("RenderGUI",0,"Entered: "+str(evt.window.getName()))
@@ -341,6 +346,11 @@ class GUI():
 		self.ActiveWindow=evt.window
  
  	def W_Mleave(self, evt):
+ 		if shared.renderioInput.CurrentMiceInterface==1:
+ 			if self.OldInterface!=1:
+ 				shared.renderioInput.CurrentMiceInterface=self.OldInterface
+ 			else:
+ 				shared.renderioInput.CurrentMiceInterface=2
  		#if evt.window.getName()!="Root/UnitOpt/BG/Actions" and evt.window.getName()!="Root/UnitOpt/BG/Upgrades" and evt.window.getParent().getName()!="Root/Chat/BG" and evt.window.getParent().getName()!="Root/Chat" and evt.window.getParent().getName()!="Root/GameInfo/BG" and evt.window.getParent().getName()!="Root/GameInfo":
  		if not evt.window.getName() in self.IgnoreMe:
 			if not evt.window.getParent().getName() in self.IgnoreMyParent:

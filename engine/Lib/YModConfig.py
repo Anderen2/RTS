@@ -47,16 +47,16 @@ class Parser():
 				elif line==Lines[len(Lines)-1]:
 					Key, Value = self.ParseLine(line[:len(line)])
 					self.EntDict[Name][Key]=Value
-					shared.DPrint("YModConfigLoader",0,Name+": "+Key+"="+str(Value)+str(type(Value)))
+					#shared.DPrint("YModConfigLoader",0,Name+": "+Key+"="+str(Value)+str(type(Value)))
 				else:
 					Key, Value = self.ParseLine(line[:len(line)-1])
 					self.EntDict[Name][Key]=Value
-					shared.DPrint("YModConfigLoader",0,Name+": "+Key+"="+str(Value)+str(type(Value)))		
+					#shared.DPrint("YModConfigLoader",0,Name+": "+Key+"="+str(Value)+str(type(Value)))		
 
 		return self.EntDict	
 
 	def ParseLine(self,line):
-		DPrint("YModConfigLoader",1,"Parsing Files..")
+		#DPrint("YModConfigLoader",1,"Parsing Line..")
 		ComPar=split(line, "=")
 		Key=ComPar[0]
 		Value=ComPar[1]

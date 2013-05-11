@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="Vanilla/FrameWindow" Name="Properties" >
+        <Property Name="Text" Value="Properties" />
+        <Property Name="TitlebarFont" Value="Commonwealth-10" />
+        <Property Name="TitlebarEnabled" Value="True" />
+        <Property Name="UnifiedAreaRect" Value="{{0.0105469,0},{0.694792,0},{0.155078,0},{0.991666,0}}" />
+        <Window Type="WindowsLook/Button" Name="Properties/Map" >
+            <Property Name="Text" Value="Map" />
+            <Property Name="UnifiedAreaRect" Value="{{0.325676,0},{0.0140343,0},{0.609459,0},{0.158771,0}}" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Properties/Terrain" >
+            <Property Name="Text" Value="Terrain" />
+            <Property Name="UnifiedAreaRect" Value="{{0.222973,0},{0.171052,0},{0.722973,0},{0.328947,0}}" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Properties/Water" >
+            <Property Name="Text" Value="Water" />
+            <Property Name="UnifiedAreaRect" Value="{{0.274324,0},{0.344737,0},{0.686487,0},{0.507018,0}}" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Properties/Players" >
+            <Property Name="Text" Value="Players" />
+            <Property Name="UnifiedAreaRect" Value="{{0.245946,0},{0.519299,0},{0.725676,0},{0.677194,0}}" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Properties/Save" >
+            <Property Name="Text" Value="Save" />
+            <Property Name="UnifiedAreaRect" Value="{{0.562162,0},{0.768421,0},{0.967568,0},{0.996491,0}}" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Properties/Load" >
+            <Property Name="Text" Value="Load" />
+            <Property Name="UnifiedAreaRect" Value="{{0.0270272,0},{0.767544,0},{0.425675,0},{0.97807,0}}" />
+        </Window>
+    </Window>
+</GUILayout>

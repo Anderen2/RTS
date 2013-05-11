@@ -73,6 +73,9 @@ class GlobalUnit():
 	def _setPos(self, x, y, z):
 		self.entity.SetPosition(float(x), float(y), float(z))
 
+	def _setRot(self, rotx, roty, rotz):
+		self.entity.Rotate(float(rotx), float(roty), float(rotz))
+
 	def _movetowards(self, x, z):
 		self.entity.actNone()
 		self.entity.actMove(True)

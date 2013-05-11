@@ -26,21 +26,37 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		OIS.MouseListener.__init__(self)
 		OIS.KeyListener.__init__(self)
 
-		#Get the pointers to different required stuff
-		self.root=shared.renderRoot
-		self.scene=shared.render3dScene
-		self.camera=shared.render3dCamera
-		self.selectobj=shared.render3dSelectStuff
+	def SetupBare(self):
+		shared.DPrint("RenderIO",1,"Setting up OIS")
+		renderWindow = shared.renderRoot.getAutoCreatedWindow()
+		windowHandle = renderWindow.getCustomAttributeInt("WINDOW")
+		paramList = [("WINDOW", str(windowHandle))]
+		self.inputManager = OIS.createPythonInputSystem(paramList)
+
+		#Setup renderlistener
+		shared.render.renderqueue.append(shared.renderioInput)
+
+		#These 2 lines say that you want to capture i/o from the keyboard and the mice, the last argument means that you want "ois buffered input" (Google it if you want more info)
+		self.Keyboard = self.inputManager.createInputObjectKeyboard(OIS.OISKeyboard, True)
+		self.Mouse = self.inputManager.createInputObjectMouse(OIS.OISMouse, True)
+		#These 2 lines just specifies which class instance it should call functions from (mouseMoved, mousePressed, keyPressed, etc), in this case, its this class
+		self.Mouse.setEventCallback(self)
+		self.Keyboard.setEventCallback(self)
+
+		self.Settings()
 
 	def Setup(self):
 		"""This function runs at SetupTime, and makes everything ready for Input/Output fun"""
 		#Try to use shared.DPrint as much as possible when debugging stuff. More info about this is in the module Shared
 		shared.DPrint("RenderIO",1,"Setting up OIS")
 		#The 4 lines below tells OIS what window to capture input from
-		renderWindow = self.root.getAutoCreatedWindow()
+		renderWindow = shared.renderRoot.getAutoCreatedWindow()
 		windowHandle = renderWindow.getCustomAttributeInt("WINDOW")
 		paramList = [("WINDOW", str(windowHandle))]
 		self.inputManager = OIS.createPythonInputSystem(paramList)
+
+		#Setup renderlistener
+		shared.render.renderqueue.append(shared.renderioInput)
 
 		#These 2 lines say that you want to capture i/o from the keyboard and the mice, the last argument means that you want "ois buffered input" (Google it if you want more info)
 		self.Keyboard = self.inputManager.createInputObjectKeyboard(OIS.OISKeyboard, True)
@@ -79,14 +95,14 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		#The current active interface for Keyboard (0=Render, 1=Gui, 2=Console)
 		self.CurrentKeyInterface=0
 
-		#The current active interface for mice (0=Render(CamStear), 1=Gui) !!!Replaces the self.CamStear value!!!
-		self.CurrentMiceInterface=1
+		#The current active interface for mice (0=Render(CamStear), 1=Gui, 2=Selections, 3=MapMaker Tools)
+		self.CurrentMiceInterface=2
 
 		##!!HACKISH SOLUTION!!##
 		#Window height and length
 		#Needs to be replaced with a real solution
-		shared.DPrint("renderio", 0, str(self.camera.getDimensions()))
-		self.hackhz, self.hackvz = self.camera.getDimensions()
+		shared.DPrint("renderio", 0, str(shared.render3dCamera.getDimensions()))
+		self.hackhz, self.hackvz = shared.render3dCamera.getDimensions()
 
 	def frameRenderingQueued(self, timesincelastframe):
 		"""This function has to be named this. Everything in this function gets called each frame, which means 60 times a secound, do not pollute it!"""
@@ -123,14 +139,14 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 	def mouseMoved(self, evt):
 		#Allows you to manually control the camera with the mouse if you hold the Alt key down
 		if self.CurrentMiceInterface==0:
-			self.camera.Rotate((evt.get_state().X.rel, evt.get_state().Y.rel))
+			shared.render3dCamera.Rotate((evt.get_state().X.rel, evt.get_state().Y.rel))
 		
-		if self.CurrentMiceInterface==1:
+		if self.CurrentMiceInterface>0:
 			System.getSingleton().injectMouseMove(evt.get_state().X.rel*self.mousespeed, evt.get_state().Y.rel*self.mousespeed) #GUI Events
 
 			#Allows you to select multiple stuff by dragging (Moving mouse while holding LMB)
 			if self.LMBSel==True:
-				self.selectobj.moveSelection(MouseCursor.getSingleton().getPosition())
+				shared.render3dSelectStuff.moveSelection(MouseCursor.getSingleton().getPosition())
 
 		#Scrollwheel zoom
 		shared.render3dCamera.Move((0, evt.get_state().Z.rel/480, 0), 1)
@@ -141,8 +157,10 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 	def mousePressed(self, evt, id):
 		mousePos = MouseCursor.getSingleton().getPosition()
 		if self.CurrentMiceInterface==1:
+			#This toggles automaticly in rendergui when you hover over a gui element
 			System.getSingleton().injectMouseButtonDown(convertButton(id)) #GUI Events
 
+		if self.CurrentMiceInterface==2:
 			#Selectionstuff
 			if id==OIS.MB_Left:
 				if self.dclicktimer>time()-0.2 and self.dclickpos==mousePos.d_x:
@@ -155,27 +173,32 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 					self.dclickpos=mousePos.d_x
 
 					if not self.CtrlHold:
-						self.selectobj.clearSelection() #Removes everything thats currently selected if you use LMB without holding down Ctrl
+						shared.render3dSelectStuff.clearSelection() #Removes everything thats currently selected if you use LMB without holding down Ctrl
 
 					#Starts selection process
 					self.LMBSel=True
-					self.selectobj.startSelection(MouseCursor.getSingleton().getPosition())
+					shared.render3dSelectStuff.startSelection(MouseCursor.getSingleton().getPosition())
 
 			if id==OIS.MB_Right:
 				shared.DPrint("renderio", 0, "Rightmouse")
-				self.selectobj.actionClick(mousePos.d_x / float(self.hackhz), mousePos.d_y / float(self.hackvz))
+				shared.render3dSelectStuff.actionClick(mousePos.d_x / float(self.hackhz), mousePos.d_y / float(self.hackvz))
 
 			if id==OIS.MB_Middle:
 				shared.DPrint("renderio", 0, "Middlemouse")
+
+		if self.CurrentMiceInterface==3:
+			#MapBuilder Tool Hooks
+			pass
 
 	def mouseReleased(self, evt, id):
 		if self.CurrentMiceInterface==1:
 			System.getSingleton().injectMouseButtonUp(convertButton(id)) #GUI Events
 
+		if self.CurrentMiceInterface==2:
 			if id==OIS.MB_Left:
 				MouseCursor.getSingleton().show()
 				if self.LMBSel:
-					self.selectobj.endSelection() #Ends selection process
+					shared.render3dSelectStuff.endSelection() #Ends selection process
 					self.LMBSel=False
 
 	def keyPressed(self, evt):
@@ -211,5 +234,5 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			System.getSingleton().injectKeyUp(evt.key)
 
 		if evt.key==self.keys["camstear"]:
-			self.CurrentMiceInterface=1
+			self.CurrentMiceInterface=2
 			MouseCursor.getSingleton().show() #Show mousecursor

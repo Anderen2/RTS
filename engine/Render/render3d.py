@@ -1,5 +1,6 @@
 #Rendermodule - render3d
 #Classes for rendering 3d enviroment
+#By Anderen2 (Dec. 2012)
 
 import render3dent, render3ddecal, render3dwaypoint, render3dwater, render3dcamera
 from engine import shared, debug
@@ -74,6 +75,8 @@ class SelectStuff():
 		self.root=root
 		self.camera=self.scene.camera
 
+		self.Trigger="unitNode"
+
 		#Plane Selection
 		self.LMBSel=False
 		self.mStart = ogre.Vector2()
@@ -109,10 +112,8 @@ class SelectStuff():
 
 	def clearSelection(self):
 		shared.DPrint("SelectStuff",0,"Cleared all selections")
-		for x in self.CurrentSelection:
-			unitID=int(split(x.getName(),"_")[1])
-			shared.unitHandeler.Get(unitID)._deselected()
 		self.CurrentSelection=[]
+		shared.DirectorManager.SelectedEvent(self.CurrentSelection)
 
 	def endSelection(self):
 		self.performSelection(self.mStart, self.mStop)
@@ -206,31 +207,28 @@ class SelectStuff():
 		result = self.raySceneQuery.execute()
 		if len(result) > 0:
 			for item in result:
-				if item.movable and item.movable.getName()[0:5] != "tile[" and item.movable.getName()!= "Camera" and item.movable.getParentSceneNode().getName()[:8]=="unitNode":
+				if item.movable and item.movable.getName()[0:5] != "tile[" and item.movable.getName()!= "Camera" and item.movable.getParentSceneNode().getName()[:len(self.Trigger)]==self.Trigger:
 					foosel=[]
 					for x in self.CurrentSelection:
 						if x.getName() == item.movable.getParentSceneNode().getName():
 							foosel.append(x)
 							shared.DPrint("SelectStuff",0,"Selected: "+x.getName())
 					if len(foosel)==0:
-						unitID=int(split(item.movable.getParentSceneNode().getName(),"_")[1])
-						shared.unitHandeler.Get(unitID)._selected()
+						#Selected
 						self.CurrentSelection.append(item.movable.getParentSceneNode())
 					for x in foosel:
-						unitID=int(split(item.movable.getParentSceneNode().getName(),"_")[1])
-						shared.unitHandeler.Get(unitID)._deselected()
+						#Deselected
 						del self.CurrentSelection[self.CurrentSelection.index(x)]
 					foosel=[]
-					#print(self.CurrentSelection)
-					#print("_____________________________________")
+
 					shared.DirectorManager.SelectedEvent(self.CurrentSelection)
 
-					break # We found an existing object
+					break #We found what we were looking for, lets set the breaks and stop here
 				elif item.worldFragment:
 					shared.DPrint("SelectStuff",0,"Selection: World Selected")
+
 		if len(self.CurrentSelection):
 			for x in self.CurrentSelection:
-				#x.showBoundingBox(True)
 				print(x.getName())
 
 	def actionClick(self, mX, mY):
@@ -241,42 +239,21 @@ class SelectStuff():
 		result=self.raySceneQuery.execute()
 		if len(result)>0:
 			for item in result:
-				if item.movable and item.movable.getParentSceneNode().getName()[:8]=="unitNode":
-					unitID=int(split(item.movable.getParentSceneNode().getName(),"_")[1])
-					unitRclicked=shared.unitHandeler.Get(unitID)
-					shared.DirectorManager.ActionEvent(unitRclicked)
+				if item.movable and item.movable.getParentSceneNode().getName()[:len(self.Trigger)]==self.Trigger:
+					shared.DirectorManager.ActionEvent(item.movable.getParentSceneNode().getName())
 					break
 
 				elif item.movable and item.movable.getName()[0:5] == "tile[":
-					#item.movable.getParentSceneNode().showBoundingBox(True)
 					res2=mouseRay.intersects(item.movable.getWorldBoundingBox())
 					posRclicked=mouseRay.getPoint(res2.second)
 					ClickPosition=(posRclicked[0],posRclicked[1],posRclicked[2])
-					#Decal=TerrainMDecal() #posRclicked,200, "rnad", True
-					#TerrainMDecal.makeMaterialReceiveDecal(item.movable.getMaterialName())
-					#Ent=shared.EntityHandeler.Create(8000+randrange(1,100), "robot", "No")
-					#Decal.SetPos(0, 0, 10, 9999999)
-					#Ent.SetPosition(posRclicked[0],posRclicked[1],posRclicked[2])
-					# if self.TestStuff:
-					# 	self.Decal.SetPosition(DecalPlace)
-					# else:
-					# 	self.Decal=shared.DecalManager.Create("MCircle", DecalPlace, (270,0,0))
-					# 	self.TestStuff=True
-					# break
-					
-					#shared.WaypointManager.Show(0, DecalPlace)
-					#debug.RCC("dirgo "+str(floor(DecalPlace[0]))+" "+str(floor(DecalPlace[2])))
-
 					shared.DirectorManager.MovementEvent(ClickPosition)
-
 					break
 					
 
 class SelectionRectangle(ogre.ManualObject):
 	# I am the visual reprensation of the selection box
-	##===============================================================================##
-	##   Selection Rectangle Class
-	##===============================================================================##
+	# Selection Rectangle Class
 	def __init__(self,name):
 		## set selection rectangle to render in 2D and it sits on top of all other objects on screen
 		## ( render when Ogre's Overlays render)
@@ -318,41 +295,28 @@ class SelectionRectangle(ogre.ManualObject):
  
 class PlaneQueryListener(ogre.SceneQueryListener):
 	# I get called each time you multiselect stuff, aka. if you drag a box over units 
-	##===============================================================================##
-	##   Subclassed Scene Query Listener
-	##===============================================================================##
-	#""" the listener that gets called for each pair of intersecting objects """   
+	# Subclassed Scene Query Listener
+	# The listener that gets called for each pair of intersecting objects
 	def __init__ (self, SelStf):
-		ogre.SceneQueryListener.__init__ ( self )
+		ogre.SceneQueryListener.__init__( self )
 		self.SelStf=SelStf
  
 	def queryResult (  self, firstMovable):
-		if firstMovable and firstMovable.getName()[0:5] != "tile[" and firstMovable.getName()!= "Camera" and firstMovable.getParentSceneNode().getName()[:8]=="unitNode":
+		Trigger=shared.render3dSelectStuff.Trigger
+		if firstMovable and firstMovable.getName()[0:5] != "tile[" and firstMovable.getName()!= "Camera" and firstMovable.getParentSceneNode().getName()[:len(Trigger)]==Trigger:
 			foosel=[]
 			for x in self.SelStf.CurrentSelection:
 				if x.getName() == firstMovable.getParentSceneNode().getName():
 					foosel.append(x)
-					#print(foosel.gert)
+					
 			if len(foosel)==0:
-				unitID=int(split(firstMovable.getParentSceneNode().getName(),"_")[1])
-				shared.unitHandeler.Get(unitID)._selected()
+				#Selecting new
 				self.SelStf.CurrentSelection.append(firstMovable.getParentSceneNode())
 			for x in foosel:
-				unitID=int(split(firstMovable.getParentSceneNode().getName(),"_")[1])
-				shared.unitHandeler.Get(unitID)._deselected()
+				#Deselecting old 
 				del self.SelStf.CurrentSelection[self.SelStf.CurrentSelection.index(x)]
 			foosel=[]
 
 			shared.DirectorManager.SelectedEvent(self.SelStf.CurrentSelection)
-
-			#print(self.SelStf.CurrentSelection)
-			#print("_____________________________________")
-			#print type(firstMovable)
-			#print firstMovable.name, dir(firstMovable)
-			if len(self.SelStf.CurrentSelection):
-				for x in self.SelStf.CurrentSelection:
-					#x.showBoundingBox(True)
-					#print(x.getName())
-					pass
 		return True
 	

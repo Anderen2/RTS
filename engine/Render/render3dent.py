@@ -307,7 +307,6 @@ class Entity():
 		else:
 			self.actpart[eff].getEmitter(0).setEnabled(False)
 
-
 	def actAnim(self, anim, yn):
 		if yn==True:
 			self.actanim[anim].setEnabled(True)

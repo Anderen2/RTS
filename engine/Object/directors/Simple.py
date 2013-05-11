@@ -49,10 +49,17 @@ class Director():
 	def evt_selected(self, selections):
 		shared.DPrint("SimpleDir", 0, "Selections Updated")
 		self.selections=selections
+		
+		for x in self.CurrentSelection:
+			x._deselected()
+
 		self.CurrentSelection=[]
+
 		for x in self.selections:
 			unitID=int(split(x.getName(),"_")[1])
-			self.CurrentSelection.append(shared.unitHandeler.Get(unitID))
+			unit=shared.unitHandeler.Get(unitID)
+			unit._selected()
+			self.CurrentSelection.append(unit)
 
 	def evt_moveclick(self, pos):
 		for x in self.CurrentSelection:

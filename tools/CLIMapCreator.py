@@ -90,14 +90,14 @@ zone=0
 while not end:
 	foo=raw_input("Zone ("+str(zone)+") name:  ")
 	if foo!="end":
-		bar=raw_input("Zone placement (x,y,z):  ")
+		bar=raw_input("Zone start placement (x,y,z):  ")
 		if bar!="end":
-			foobar=raw_input("Zone rotation (rotx,roty,rotz):  ")
+			foobar=raw_input("Zone end placement (x,y,z):  ")
 			if foobar!="end":
 				zproperties["zone"+str(zone)]={}
 				zproperties["zone"+str(zone)]["name"]=foo
 				zproperties["zone"+str(zone)]["xyz"]=bar
-				zproperties["zone"+str(zone)]["rot"]=foobar
+				zproperties["zone"+str(zone)]["end"]=foobar
 				zone+=1
 			else:
 				end=True

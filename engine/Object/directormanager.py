@@ -9,10 +9,11 @@ class DirectorManager(FrameListener):
 		FrameListener.__init__(self)
 		shared.DPrint("dir",0, "Initializing Directors..")
 		
-		from directors import Net, Simple
+		from directors import Net, Simple, Mapeditor
 		#self.DirDemo=Demo.Director()
 		self.DirNet=Net.Director()
 		self.Simple=Simple.Director()
+		self.Mapeditor=Mapeditor.Director()
 
 		self.CurrentDirector=None
 
@@ -28,6 +29,8 @@ class DirectorManager(FrameListener):
 			self.DirNet.Init()
 		elif director=="Simple":
 			self.Simple.Init()
+		elif director=="Mapeditor":
+			self.Mapeditor.Init()
 		else: 
 			shared.DPrint("dir",1,"Director "+director+" not found")
 			return ("Director "+director+" not found")
@@ -44,6 +47,9 @@ class DirectorManager(FrameListener):
 		elif director=="Simple":
 			self.Simple.Action()
 			self.CurrentDirector=self.Simple
+		elif director=="Mapeditor":
+			self.Mapeditor.Action()
+			self.CurrentDirector=self.Mapeditor
 		else: 
 			shared.DPrint("dir",1,"Director "+director+" not found")
 			return ("Director "+director+" not found")
@@ -53,6 +59,8 @@ class DirectorManager(FrameListener):
 		shared.DPrint("dir", 0, "Updating Selections...")
 		if self.CurrentDirector!=None:
 			self.CurrentDirector.evt_selected(sellist)
+		else:
+			shared.DPrint("dir", 0, "No directors are initialized!")
 		if debug.AABB:
 			pass
 

@@ -14,11 +14,11 @@ class DecoratorHandeler(FrameListener):
 	def PowerUp(self):
 		pass
 
-	def Create(self, SubType):
+	def Create(self, name, pos=None, rot=None):
 		self.dcount=self.dcount+1
 		ID=self.dcount-1
 
-		pointer=Decoration(ID, SubType)
+		pointer=Decoration(ID, name, pos, rot)
 
 		self.decorators[ID]=pointer
 
@@ -33,27 +33,27 @@ class DecoratorHandeler(FrameListener):
 	def Count(self):
 		return len(self.decorators)
 
-	def Amount(self, SubType="", Type=""):
+	def Amount(self, name="", Type=""):
 		#Function to get how many decorators there are with the following attributes, and which decorators it is.
-		tSubTypes={}
+		tnames={}
 		tType={}
 		
 		for ID, x in self.decorators.items():
-			if SubType!="" and SubType==x.subtype:
-				if not x.subtype in tSubTypes:
-					tSubTypes[SubType]={}
-					tSubTypes[SubType]["count"]=1
-					tSubTypes[SubType]["decorators"]=[x]
+			if name!="" and name==x.name:
+				if not x.name in tnames:
+					tnames[name]={}
+					tnames[name]["count"]=1
+					tnames[name]["decorators"]=[x]
 				else:
-					tSubTypes[SubType]["count"]=tSubTypes[SubType]["count"]+1
-					tSubTypes[SubType]["decorators"].append(x)
+					tnames[name]["count"]=tnames[name]["count"]+1
+					tnames[name]["decorators"].append(x)
 
 		#ADD A SELECTIVE VALUE 
-		#(AKA, a common value, "How many robot subtypes does player 1 have on the map;
+		#(AKA, a common value, "How many robot names does player 1 have on the map;
 		# How many USA aircrafts, how many factions are player 2 in control of ++ ")
 
 		Total={}
-		Total["SubTypes"]=tSubTypes
+		Total["names"]=tnames
 
 		return Total
 
@@ -76,19 +76,36 @@ class DecoratorHandeler(FrameListener):
 
 #Decoratorgroup:
 class Decoration():
-	def __init__(self, ID, subtype):
+	def __init__(self, ID, name, pos=None, rot=None):
 		#Setup constants
 		self.ID=ID
-		self.subtype=subtype
+		self.name=name
 		self.entity=None
 		self.node=None
 		self.text=None
 
 		#Start rendering the unit (self, Identifyer, Type, Team, Interactive)
-		self.entity=shared.EntityHandeler.Create(self.ID, self.subtype, "decorator", None)
+		self.entity=shared.EntityHandeler.Create(self.ID, self.name, "deco", None)
+		try:
+			if self.entity.error:
+				shared.DPrint("Decoration",4,"Entity error! Dec creation aborted!")
+				self._del()
+		except:
+			shared.DPrint("Decoration",4,"Entity critical error! Dec creation aborted!")
+			self._del()
 
 		#Do some post-render stuff
-		self.entity.RandomPlacement()
+		if pos==None:
+			self.entity.RandomPlacement()
+		else:
+			print(pos)
+			x, y, z = pos
+			self._setPos(x, y, z)
+
+		if rot!=None:
+			print(rot)
+			x, y, z = rot
+			self._setRot(x, y, z)
 
 		#Notify that we have successfuly created a unit!
 		shared.DPrint("Decoration",5,"Decorator created! ID="+str(self.ID))
@@ -97,21 +114,34 @@ class Decoration():
 		pass
 
 	def _selected(self):
-		#This should never run, as decs cannot be (de)selected
+		#This should never run ingame, as decs cannot be (de)selected. They can however in the mapeditor
 		shared.DPrint("Decoration",5,"Decorator selected: "+str(self.ID))
+		self.entity.node.showBoundingBox(True)
 
 	def _deselected(self):
-		#This should never run, as decs cannot be (de)selected
+		#This should never run ingame, as decs cannot be (de)selected. They can however in the mapeditor
 		shared.DPrint("Decoration",5,"Decorator deselected: "+str(self.ID))
+		self.entity.node.showBoundingBox(False)
 
-	def _setPos(self):
-		pass
+	def _setPos(self, x, y, z):
+		self.entity.SetPosition(float(x), float(y), float(z))
+
+	def _setRot(self, rotx, roty, rotz):
+		self.entity.Rotate(float(rotx), float(roty), float(rotz))
 
 	def _del(self):
-		shared.DPrint("Decoration",5,"Decorator deleted: "+str(self.ID))
+		shared.DPrint("Decoration",5,"Dec deleted: "+str(self.ID))
 
-		self.entity.Delete()
-		shared.unitHandeler.Delete(self.ID)
+		try:
+			xExsist=None
+			for x in shared.render3dSelectStuff.CurrentSelection:
+				if self.entity.node.getName() == x.getName():
+					xExsist=x
+			if xExsist!=None:
+				shared.render3dSelectStuff.CurrentSelection.remove(xExsist)
 
-	def __del__(self):
-		shared.DPrint("Decoration",5,"Decorator gc'd: "+str(self.ID))
+			if not entity.error:
+				self.entity.Delete()
+			shared.decHandeler.Delete(self.ID)
+		except:
+			shared.DPrint("Decoration",5,"Dec Deletion Failed! Dec may still be in memory and/or in game world!")

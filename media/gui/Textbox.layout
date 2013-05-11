@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="Vanilla/FrameWindow" Name="Popup" >
+        <Property Name="Text" Value="Popup" />
+        <Property Name="TitlebarFont" Value="Commonwealth-10" />
+        <Property Name="TitlebarEnabled" Value="True" />
+        <Property Name="UnifiedAreaRect" Value="{{0.360156,0},{0.345833,0},{0.610156,0},{0.517708,0}}" />
+        <Window Type="WindowsLook/Editbox" Name="Popup/Edit" >
+            <Property Name="MaxTextLength" Value="1073741823" />
+            <Property Name="UnifiedAreaRect" Value="{{0.0132813,0},{0.0515146,0},{0.892187,0},{0.301515,0}}" />
+            <Property Name="TextParsingEnabled" Value="False" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Popup/OK" >
+            <Property Name="Text" Value="OK" />
+            <Property Name="UnifiedAreaRect" Value="{{0.0234375,0},{0.704546,0},{0.273438,0},{0.954546,0}}" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Popup/Cancel" >
+            <Property Name="Text" Value="Cancel" />
+            <Property Name="UnifiedAreaRect" Value="{{0.735156,0},{0.707576,0},{0.985156,0},{0.957576,0}}" />
+        </Window>
+    </Window>
+</GUILayout>

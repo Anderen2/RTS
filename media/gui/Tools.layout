@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="Vanilla/FrameWindow" Name="Tools" >
+        <Property Name="Text" Value="Tools" />
+        <Property Name="TitlebarFont" Value="Commonwealth-10" />
+        <Property Name="TitlebarEnabled" Value="True" />
+        <Property Name="UnifiedAreaRect" Value="{{0.813281,0},{0.0177083,0},{0.973437,0},{0.325,0}}" />
+        <Window Type="WindowsLook/Button" Name="Tools/Select" >
+            <Property Name="Text" Value="Select" />
+            <Property Name="UnifiedAreaRect" Value="{{-0.00853636,0},{0.00593189,0},{0.345122,0},{0.141525,0}}" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Tools/Move" >
+            <Property Name="Text" Value="Move" />
+            <Property Name="UnifiedAreaRect" Value="{{0.359756,0},{-0.00423792,0},{0.658537,0},{0.127118,0}}" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Tools/Rotate" >
+            <Property Name="Text" Value="Rotate" />
+            <Property Name="UnifiedAreaRect" Value="{{-0.00121951,0},{0.149152,0},{0.352439,0},{0.284746,0}}" />
+        </Window>
+        <Window Type="WindowsLook/Button" Name="Tools/Duplicate" >
+            <Property Name="Text" Value="Dupl" />
+            <Property Name="UnifiedAreaRect" Value="{{0.367073,0},{0.151695,0},{0.617073,0},{0.291525,0}}" />
+        </Window>
+    </Window>
+</GUILayout>

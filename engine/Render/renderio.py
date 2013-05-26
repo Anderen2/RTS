@@ -188,7 +188,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 
 		if self.CurrentMiceInterface==3:
 			#MapBuilder Tool Hooks
-			pass
+			shared.mapBackend.MousePressed(id)
 
 	def mouseReleased(self, evt, id):
 		if self.CurrentMiceInterface==1:
@@ -203,7 +203,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 
 		if self.CurrentMiceInterface==3:
 			#MapBuilder Tool Hooks
-			pass
+			shared.mapBackend.MouseReleased(id)
 
 	def keyPressed(self, evt):
 		if self.CurrentKeyInterface==1:

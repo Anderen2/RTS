@@ -26,10 +26,12 @@ class MapeditorBackend():
 	
 	#RenderIO Events (When a tool is selected)
 	def MousePressed(self, id):
-		pass
+		if shared.toolManager.CurrentTool!=0:
+			shared.toolManager.CurrentToolClass.MousePressed()
 
 	def MouseReleased(self, id):
-		pass
+		if shared.toolManager.CurrentTool!=0:
+			shared.toolManager.CurrentToolClass.MouseReleased()
 
 	#GUI Events
 	#	Decoratorevents

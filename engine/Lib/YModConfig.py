@@ -64,7 +64,7 @@ class Parser():
 		if Value[0]=="(" and Value[len(Value)-1]==")":
 			Value=split(Value[1:len(Value)-1],",")
 			#print Value
-			Value=(int(Value[0]),int(Value[1]),int(Value[2]))
+			Value=(float(Value[0]),float(Value[1]),float(Value[2]))
 
 		#Parsing Lists:
 		elif Value[0]=="[" and Value[len(Value)-1]=="]":

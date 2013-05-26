@@ -8,7 +8,7 @@ from engine.Render import render
 from engine.Object import unitmanager, prop, decorator, zone, directormanager
 from engine.Networking.client import client
 from engine.World import maploader
-from engine.Tool.Mapeditor import globalgui
+from engine.Tool.Mapeditor import globalgui, toolmanager, backend
 
 #"Networking"
 shared.DPrint("Main",1,"Initializing Networking...")
@@ -26,6 +26,9 @@ shared.unitHandeler=shared.unitManager
 shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
 shared.zoneManager=zone.zoneManager()
+
+shared.toolManager=toolmanager.ToolManager()
+shared.mapBackend=backend.MapeditorBackend()
 
 #MapLoader
 shared.MapLoader=maploader.MapLoader()

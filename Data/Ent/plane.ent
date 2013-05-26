@@ -1,7 +1,8 @@
 plane
 name=razor
-version=1.0
+version=1.1
 mesh=plane.mesh
+meshscale=(1,1,1)
 shadows=True
 meshturret=none
 addmesh=0

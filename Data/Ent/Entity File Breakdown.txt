@@ -1,9 +1,11 @@
 plane				Engine name of the entity (Cannot contain any special characters or spaces)
 name=Ogre Plane: Razor		Human/Editor/Visible name of the entity
 
-version=1.0			Entityfileformat version (Float)
+version=1.1			Entityfileformat version (Float)
 
 mesh=plane.mesh			The mesh used for this entity
+
+meshscale=(1,1,1)		The scale for the entity
 
 shadows=True			Should this entity cast shadows? (Warning, may be expensive for heavy used entitys!)
 

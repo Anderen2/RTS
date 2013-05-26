@@ -33,7 +33,7 @@ class EntityHandeler():
 
 class Entity():
  	def __init__(self, Identifyer, Type, Team, Interactive):
- 		EntImporter=1.0
+ 		EntImporter=1.1
  		self.ID=Identifyer
  		self.Team=Team
  		self.Type=Type
@@ -50,6 +50,7 @@ class Entity():
 			self.mesh.setCastShadows(self.shadows)
 			self.node=shared.render3dScene.sceneManager.getSceneNode("EntNode").createChildSceneNode(Interactive+"Node_"+str(Identifyer))
 			self.node.attachObject(self.mesh)
+			self.node.scale(self.params["meshscale"][0],self.params["meshscale"][1],self.params["meshscale"][2])
 			self.meshturret=None
 			self.nodeturret=None
 			if not self.params["meshturret"]==None:

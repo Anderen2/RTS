@@ -1,7 +1,8 @@
 tank
 name=WW2 LowPoly Tank
-version=1.0
+version=1.1
 mesh=tankbody.mesh
+meshscale=(1,1,1)
 shadows=True
 meshturret=tankturret.mesh
 addmesh=0

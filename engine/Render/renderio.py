@@ -201,6 +201,10 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 					shared.render3dSelectStuff.endSelection() #Ends selection process
 					self.LMBSel=False
 
+		if self.CurrentMiceInterface==3:
+			#MapBuilder Tool Hooks
+			pass
+
 	def keyPressed(self, evt):
 		if self.CurrentKeyInterface==1:
 			#GUI Events
@@ -224,6 +228,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 				self.CurrentKeyInterface=2
 
 		if evt.key==self.keys["camstear"]:
+			self.OldMiceInterface=self.CurrentMiceInterface
 			self.CurrentMiceInterface=0
 			MouseCursor.getSingleton().hide()
 
@@ -234,5 +239,5 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			System.getSingleton().injectKeyUp(evt.key)
 
 		if evt.key==self.keys["camstear"]:
-			self.CurrentMiceInterface=2
+			self.CurrentMiceInterface=self.OldMiceInterface
 			MouseCursor.getSingleton().show() #Show mousecursor

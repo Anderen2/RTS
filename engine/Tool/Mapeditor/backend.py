@@ -24,29 +24,36 @@ class MapeditorBackend():
 	def rightClick_on_Unit(self, data):
 		pass
 	
+	#RenderIO Events (When a tool is selected)
+	def MousePressed(self, id):
+		pass
+
+	def MouseReleased(self, id):
+		pass
+
 	#GUI Events
 	#	Decoratorevents
 	def Add(self, data):
-		pass
+		shared.decHandeler.Create(data)
 
 	def Remove(self, data):
-		pass
+		shared.decHandeler.Delete(int(data))
 
 	def Modify(self, data, properties):
 		pass
 
 	#	Toolsevents
 	def Select(self):
-		pass
+		shared.toolManager.setTool(0)
 
 	def Move(self):
-		pass
+		shared.toolManager.setTool(1)
 
 	def Rotate(self):
-		pass
+		shared.toolManager.setTool(2)
 
 	def Duplicate(self):
-		pass
+		shared.toolManager.setTool(3)
 
 	#	PropertiesEvents
 	def Map(self, data):

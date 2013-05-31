@@ -151,8 +151,9 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		#Scrollwheel zoom
 		shared.render3dCamera.Move((0, evt.get_state().Z.rel/480, 0), 1)
 
-		#shared.DPrint("renderio", 0, evt.get_state().Z.rel)
-
+		if self.CurrentMiceInterface==3:
+			#MapBuilder Tool Hooks
+			shared.mapBackend.MouseMoved(evt.get_state().X, evt.get_state().Y)
 
 	def mousePressed(self, evt, id):
 		mousePos = MouseCursor.getSingleton().getPosition()

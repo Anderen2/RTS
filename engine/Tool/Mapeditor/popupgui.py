@@ -14,15 +14,27 @@ class PopupGUI():
 
 		self.root.addChildWindow(self.layout)
 
-		self.layout.subscribeEvent(self.layout.EventMouseEnters, shared.globalgui, "W_Menter")
-		self.layout.subscribeEvent(self.layout.EventMouseLeaves, shared.globalgui, "W_Mleave")
+		OkBtn=shared.renderguiGUI.windowManager.getWindow("Popup/OK")
+		CancelBtn=shared.renderguiGUI.windowManager.getWindow("Popup/Cancel")
+
+		OkBtn.subscribeEvent(OkBtn.EventMouseButtonDown, self, "b_OK")
+		CancelBtn.subscribeEvent(CancelBtn.EventMouseButtonDown, self, "b_Cancel")
+
+		shared.globalGUI.registerLayout(self.layout)
+		shared.renderioInput.takeKeyFocus("popupgui")
 
 
 	def b_OK(self, evt):
-		self.ret(evt)
+		print("1")
+		data=""
+		shared.renderioInput.looseKeyFocus("popupgui")
+		print("2")
+		#self.ret(evt, data)
 
 	def b_Cancel(self, evt):
-		pass
+		shared.renderioInput.looseKeyFocus("popupgui")
+		self.ret(evt, data)
 
 	def b_Close(self, evt):
-		del self
+		shared.renderioInput.looseKeyFocus("popupgui")
+		self.ret(evt, data)

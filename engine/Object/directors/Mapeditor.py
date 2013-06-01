@@ -30,10 +30,10 @@ class Director():
 			self.CurrentSelection.append(Deco)
 
 	def evt_moveclick(self, pos):
-		pass
+		shared.mapBackend.SelectionRightClick()
 
 	def evt_actionclick(self, data):
-		pass
+		shared.mapBackend.SelectionRightClick()
 
 	def Frame(self):
 		pass

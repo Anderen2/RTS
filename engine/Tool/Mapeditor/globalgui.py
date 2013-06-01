@@ -2,7 +2,7 @@
 
 from string import split
 from engine import shared, debug
-from engine.Tool.Mapeditor import decorationgui, toolsgui, propertiesgui
+from engine.Tool.Mapeditor import decorationgui, toolsgui, propertiesgui, contextmenu, supersearch
 import ogre.gui.CEGUI as CEGUI
 
 class MapeditorGUI():
@@ -23,9 +23,11 @@ class MapeditorGUI():
 		CEGUI.MouseCursor.getSingleton().setImage("TaharezLook", "MouseArrow")
 
 		#Create rest of GUI elements
-		self.DecorationGUI=decorationgui.DecorationGUI()
-		PropertiesGUI=propertiesgui.PropertiesGUI()
-		ToolsGUI=toolsgui.ToolsGUI()
+		#self.DecorationGUI=decorationgui.DecorationGUI()
+		#self.PropertiesGUI=propertiesgui.PropertiesGUI()
+		#self.ToolsGUI=toolsgui.ToolsGUI()
+		self.ContextMenu=contextmenu.Menu()
+		self.SSearch=supersearch.SSearchGUI()
 
 		#Loop through all the GUI elements to add window movement
 		print("!"*20)
@@ -54,6 +56,20 @@ class MapeditorGUI():
 				yield element.getChildAtIdx(x)
 		else:
 			pass
+
+	def registerLayout(self, layout):
+		shared.DPrint("globalgui", 0, "Registering new gui..")
+		layout.subscribeEvent(layout.EventMouseEnters, self, "W_Menter")
+		layout.subscribeEvent(layout.EventMouseLeaves, self, "W_Mleave")
+		layout.subscribeEvent(layout.EventMouseButtonDown, self, "W_Mclick")
+		layout.subscribeEvent(layout.EventMouseButtonUp, self, "W_Mrelease")
+		layout.subscribeEvent(layout.EventMouseMove, self, "MouseMoving")
+		for y in self.iterChilds(layout.getName()):
+			y.subscribeEvent(y.EventMouseEnters, self, "W_Menter")
+			y.subscribeEvent(y.EventMouseLeaves, self, "W_Mleave")
+			for z in self.iterChilds(y.getName()):
+				z.subscribeEvent(z.EventMouseEnters, self, "W_Menter")
+				z.subscribeEvent(z.EventMouseLeaves, self, "W_Mleave")
 
 	def MouseMoving(self, evt):
 		pass

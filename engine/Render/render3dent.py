@@ -346,6 +346,23 @@ class Entity():
 		self.node.rotate((0,0,1),ogre.Degree(z))
 		return self.node.getOrientation()
 
+	def transRotate(self, x, y, z):
+		px=float(self.node.getOrientation().getRoll().valueDegrees())
+		py=float(self.node.getOrientation().getPitch().valueDegrees())
+		pz=float(self.node.getOrientation().getYaw().valueDegrees())
+		print("PrevRot:")
+		print (px, py, pz)
+		#self.node.rotate((1,0,0),ogre.Degree(px))
+		#self.node.rotate((0,1,0),ogre.Degree(float(py+0.00000000001)))
+		#self.node.rotate((0,0,1),ogre.Degree(pz))
+		self.node.roll(ogre.Degree(px+x))
+		self.node.pitch(ogre.Degree(py+y))
+		self.node.yaw(ogre.Degree(pz+z))
+
+		print("TRot:")
+		print(px+x, py+y, pz+z)
+		return self.node.getOrientation()
+
 	def LookAtZ(self, x, y, z):
 		self.node.setFixedYawAxis(True, ogre.Vector3().UNIT_Y)
 		#self.node.setFixedRollAxis(True, ogre.Vector3().UNIT_X)

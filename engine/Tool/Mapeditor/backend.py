@@ -3,6 +3,8 @@
 #Glues the director, the guis and the mapedior(Main Module)
 
 from engine import shared, debug
+import contextmenu
+from ogre.io.OIS import MB_Left, MB_Right, MB_Middle
 
 class MapeditorBackend():
 	def __init__(self):
@@ -13,6 +15,7 @@ class MapeditorBackend():
 		debug.ACC("tool_move", self.Move, info="", args=0)
 		debug.ACC("tool_rot", self.Rotate, info="", args=0)
 		debug.ACC("tool_dupe", self.Duplicate, info="", args=0)
+		self.conmenu=False
 
 	#Directorevents
 	def newSelection(self, selection):
@@ -26,16 +29,43 @@ class MapeditorBackend():
 	
 	#RenderIO Events (When a tool is selected)
 	def MousePressed(self, id):
-		if shared.toolManager.CurrentTool!=0:
-			shared.toolManager.CurrentToolClass.MousePressed(id)
+		if id==MB_Right:
+			pass
+
+		elif id==MB_Left:
+			if shared.toolManager.CurrentTool!=0:
+				shared.toolManager.CurrentToolClass.MousePressed(id)
+
+		elif id==MB_Middle:
+			self.conmenu==True
+			shared.globalGUI.ContextMenu.middleClick()
+
+		else:
+			shared.DPrint("mapbackend", 2, "Unsupported miceevent catched: "+str(id))
 
 	def MouseReleased(self, id):
-		if shared.toolManager.CurrentTool!=0:
-			shared.toolManager.CurrentToolClass.MouseReleased(id)
+		print(id)
+		if id==MB_Right:
+			self.conmenu=True
+			shared.globalGUI.ContextMenu.rightClick()
+
+		elif id==MB_Left:
+			if self.conmenu==True:
+				shared.globalGUI.ContextMenu.hide()
+				self.conmenu=False
+			if shared.toolManager.CurrentTool!=0:
+				shared.toolManager.CurrentToolClass.MouseReleased(id)
+
+		else:
+			shared.DPrint("mapbackend", 2, "Unsupported miceevent catched: "+str(id))
 
 	def MouseMoved(self, X, Y):
 		if shared.toolManager.CurrentTool!=0:
 			shared.toolManager.CurrentToolClass.MouseMoved(X, Y)
+
+	def SelectionRightClick(self):
+		self.conmenu=True
+		shared.globalGUI.ContextMenu.rightClick()
 
 	#GUI Events
 	#	Decoratorevents

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="DragContainer" Name="Search" >
+        <Property Name="DragAlpha" Value="0.5" />
+        <Property Name="StickyMode" Value="False" />
+        <Property Name="DragThreshold" Value="8" />
+        <Property Name="UnifiedAreaRect" Value="{{0.366992,0},{0.429167,0},{0.614062,0},{0.489063,0}}" />
+        <Window Type="Vanilla/Editbox" Name="Search/Text" >
+            <Property Name="MaxTextLength" Value="1073741823" />
+            <Property Name="UnifiedAreaRect" Value="{{0.1,0},{0,0},{0.9,0},{1,0}}" />
+            <Property Name="TextParsingEnabled" Value="False" />
+        </Window>
+        <Window Type="Vanilla/Button" Name="Search/X" >
+            <Property Name="Text" Value="X" />
+            <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{0.1,0},{1,0}}" />
+        </Window>
+        <Window Type="Vanilla/Button" Name="Search/OK" >
+            <Property Name="Text" Value="OK" />
+            <Property Name="UnifiedAreaRect" Value="{{0.9,0},{0,0},{1,0},{1,0}}" />
+        </Window>
+    </Window>
+</GUILayout>

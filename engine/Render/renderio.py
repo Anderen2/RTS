@@ -98,6 +98,9 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		#The current active interface for mice (0=Render(CamStear), 1=Gui, 2=Selections, 3=MapMaker Tools)
 		self.CurrentMiceInterface=2
 
+		#The current window in focus
+		self.CurrentFocus=None
+
 		##!!HACKISH SOLUTION!!##
 		#Window height and length
 		#Needs to be replaced with a real solution
@@ -149,7 +152,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 				shared.render3dSelectStuff.moveSelection(MouseCursor.getSingleton().getPosition())
 
 		#Scrollwheel zoom
-		shared.render3dCamera.Move((0, evt.get_state().Z.rel/480, 0), 1)
+		#shared.render3dCamera.Move((0, evt.get_state().Z.rel/480, 0), 1)
 
 		if self.CurrentMiceInterface==3:
 			#MapBuilder Tool Hooks
@@ -186,6 +189,12 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 
 			if id==OIS.MB_Middle:
 				shared.DPrint("renderio", 0, "Middlemouse")
+
+				#Hackish solution, but working
+				try:
+					shared.mapBackend.MousePressed(id)
+				except:
+					pass
 
 		if self.CurrentMiceInterface==3:
 			#MapBuilder Tool Hooks
@@ -242,3 +251,15 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		if evt.key==self.keys["camstear"]:
 			self.CurrentMiceInterface=self.OldMiceInterface
 			MouseCursor.getSingleton().show() #Show mousecursor
+
+	def takeKeyFocus(self, mod):
+		if self.CurrentKeyInterface!=2:
+			self.CurrentKeyInterface=1
+			self.CurrentFocus=mod
+
+	def looseKeyFocus(self, mod):
+		if self.CurrentFocus==mod:
+			self.CurrentKeyInterface=0
+			self.CurrentFocus=None
+		else:
+			shared.DPrint("renderio", 2, "Module: "+str(mod)+" tried to loose other modules focus")

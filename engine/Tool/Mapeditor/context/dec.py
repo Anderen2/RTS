@@ -1,0 +1,48 @@
+#Decorator Context Options
+
+from engine import debug, shared
+from ogre.gui.CEGUI import MouseCursor
+
+class contextDec():
+	def __init__(self):
+		self.options=["Remove", "Duplicate", "Properties", "Script", "Entity Editor"]
+		self.optfunc=[self.sRemove, self.sDupe, self.sProp, self.sScript, self.sEntEditor]
+
+	def sRemove(self):
+		for x in self.getUnits():
+			x._del()
+
+	def sDupe(self):
+		Units=self.getUnits()
+		Position=Units[len(Units)-1].entity.node.getPosition()
+		PosTup=(Position.x, Position.y, Position.z)
+		shared.decHandeler.Create(Units[len(Units)-1].entity.Type, pos=PosTup)
+
+	def sProp(self):
+		pass
+
+	def sScript(self):
+		pass
+
+	def sEntEditor(self):
+		pass
+
+	def getUnits(self):
+		return shared.DirectorManager.Mapeditor.CurrentSelection
+
+	def getUnitByRay(self):
+		self.dimh, self.dimv = shared.render3dCamera.getDimensions()
+		print("Raybeens")
+		mousePos = MouseCursor.getSingleton().getPosition()
+		mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
+													  mousePos.d_y / float(self.dimv))
+		self.raySceneQuery.setRay(mouseRay)
+		self.raySceneQuery.setSortByDistance(True)
+		result = self.raySceneQuery.execute()
+		if len(result)>0:
+			for item in result:
+				print "____________________________________"
+				print item.movable.getName()
+				print item.movable.getParentSceneNode().getName()
+				Decorator=shared.decHandeler.Get(int(item.movable.getName()[4:]))
+				return Decorator

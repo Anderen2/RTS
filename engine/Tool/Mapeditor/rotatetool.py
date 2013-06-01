@@ -1,12 +1,12 @@
 #New Selection written from scratch
-#Used to move stuff in the map manager
+#Used to rotate stuff in the map manager
 
 import ogre.renderer.OGRE as ogre
 from ogre.gui.CEGUI import MouseCursor
 
 from engine import debug, shared
 
-class MoveTool():
+class RotateTool():
 	def __init__(self):
 		#Raytrace
 		self.raySceneQuery = shared.render3dScene.sceneManager.createRayQuery(ogre.Ray())
@@ -18,6 +18,8 @@ class MoveTool():
 	def MousePressed(self, id):
 		print("Raybeens")
 		mousePos = MouseCursor.getSingleton().getPosition()
+		self.prevx=mousePos.d_x
+		self.prevy=mousePos.d_y
 		mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
 													  mousePos.d_y / float(self.dimv))
 		self.raySceneQuery.setRay(mouseRay)
@@ -41,8 +43,7 @@ class MoveTool():
 					else:
 						self.CurrentHold=shared.decHandeler.Get(int(item.movable.getName()[4:]))
 
-					if self.CurrentHold!=None:
-						self.CurrentHold.entity.node.showBoundingBox(True)
+					self.CurrentHold.entity.node.showBoundingBox(True)
 
 					break
 
@@ -55,6 +56,12 @@ class MoveTool():
 	def MouseMoved(self, X, Y):
 		if self.CurrentHold!=None:
 			mousePos = MouseCursor.getSingleton().getPosition()
+			# relx=(self.prevx-mousePos.d_x)/100
+			# rely=(self.prevy-mousePos.d_y)/100
+			# self.prevx=mousePos.d_x
+			# self.prevy=mousePos.d_y
+			# print(relx, rely)
+			# self.CurrentHold.entity.transRotate(0, relx, rely)
 			mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
 														  mousePos.d_y / float(self.dimv))
 			self.raySceneQuery.setRay(mouseRay)
@@ -64,7 +71,7 @@ class MoveTool():
 					if item.movable and item.movable.getName()[0:5] == "tile[":
 						hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
 						posMoved=mouseRay.getPoint(hitpoint.second)
-						MovePosition=(posMoved[0],posMoved[1],posMoved[2])
-						YOffset=self.CurrentHold.entity.node._getWorldAABB().getHalfSize().y
-						self.CurrentHold.entity.SetPosition(posMoved[0],posMoved[1]+YOffset,posMoved[2])
+						#MovePosition=(posMoved[0],posMoved[1],posMoved[2])
+						#YOffset=self.CurrentHold.entity.node._getWorldAABB().getHalfSize().y
+						self.CurrentHold.entity.LookAtZ(posMoved[0],posMoved[1],posMoved[2])
 						break

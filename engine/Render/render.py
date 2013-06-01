@@ -9,7 +9,8 @@ import ogre.renderer.OGRE as ogre
 
 shared.DPrint(1,1,"Imported..")
 
-QUITTIMER=360 #Set this to a time in secounds if you want the game to automaticly quit. 0 or None disables it.
+global QUITTIMER
+QUITTIMER=None #Set this to a time in secounds if you want the game to automaticly quit. 0 or None disables it.
 
 class RenderApplication(object):
 	#This class setups and starts all rendermodules
@@ -137,7 +138,7 @@ class RenderApplication(object):
 		self.alphatime=time()
 
 		global QUITTIMER
-		if QUITTIMER!=0 or QUITTIMER!=None:
+		if QUITTIMER!=0 and QUITTIMER!=None:
 			reactor.callLater(QUITTIMER, lambda: shared.DPrint("Render", 5, "Game killed due to QUITTIMER!"))
 			reactor.callLater(QUITTIMER, lambda: reactor.stop())
  

@@ -3,6 +3,7 @@
 
 from engine import shared, debug
 from ogre.renderer.OGRE import FrameListener
+import traceback
 
 class DecoratorHandeler(FrameListener):
 	def __init__(self):
@@ -116,12 +117,14 @@ class Decoration():
 	def _selected(self):
 		#This should never run ingame, as decs cannot be (de)selected. They can however in the mapeditor
 		shared.DPrint("Decoration",5,"Decorator selected: "+str(self.ID))
-		self.entity.node.showBoundingBox(True)
+		if self.entity!=None:
+			self.entity.node.showBoundingBox(True)
 
 	def _deselected(self):
 		#This should never run ingame, as decs cannot be (de)selected. They can however in the mapeditor
 		shared.DPrint("Decoration",5,"Decorator deselected: "+str(self.ID))
-		self.entity.node.showBoundingBox(False)
+		if self.entity!=None:
+			self.entity.node.showBoundingBox(False)
 
 	def _setPos(self, x, y, z):
 		self.entity.SetPosition(float(x), float(y), float(z))
@@ -140,8 +143,10 @@ class Decoration():
 			if xExsist!=None:
 				shared.render3dSelectStuff.CurrentSelection.remove(xExsist)
 
-			if not entity.error:
+			if not self.entity.error:
 				self.entity.Delete()
+				self.entity=None
 			shared.decHandeler.Delete(self.ID)
 		except:
 			shared.DPrint("Decoration",5,"Dec Deletion Failed! Dec may still be in memory and/or in game world!")
+			traceback.print_exc()

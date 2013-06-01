@@ -3,13 +3,13 @@
 #TOOLS: 0=Select, 1=Move, 2=Rotate, 3=Duplicate
 
 from engine import shared, debug
-import movetool
+import movetool, rotatetool
 
 class ToolManager():
 	def __init__(self):
 		self.CurrentTool=0
 
-	def setTool(self, TID):
+	def setTool(self, TID, Toolarg=None):
 		shared.DPrint("ToolManager", 0, "Tool Selected: "+str(TID))
 		self.CurrentTool=TID
 
@@ -26,3 +26,6 @@ class ToolManager():
 
 		if TID==1:
 			self.CurrentToolClass=movetool.MoveTool()
+
+		if TID==2:
+			self.CurrentToolClass=rotatetool.RotateTool()

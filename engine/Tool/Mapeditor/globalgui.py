@@ -83,8 +83,12 @@ class MapeditorGUI():
 		else:
 			evt.window.setAlpha(1)
 
-		self.OldInterface=shared.renderioInput.CurrentMiceInterface
+		if shared.renderioInput.CurrentMiceInterface!=1:
+			self.OldInterface=shared.renderioInput.CurrentMiceInterface
+
+		#print("ENTER INTERFACE OLD: "+str(self.OldInterface))
 		shared.renderioInput.CurrentMiceInterface=1
+		#print("ENTER INTERFACE NEW: "+str(shared.renderioInput.CurrentMiceInterface))
 
 	def W_Mleave(self, evt):
 		if "/" in str(evt.window.getName()):
@@ -93,14 +97,24 @@ class MapeditorGUI():
 		else:
 			evt.window.setAlpha(0.5)
 
+		#print("LEAVE INTERFACE OLD: "+str(self.OldInterface))
+
 		if shared.renderioInput.CurrentMiceInterface==1:
  			if self.OldInterface!=1:
  				shared.renderioInput.CurrentMiceInterface=self.OldInterface
  			else:
  				shared.renderioInput.CurrentMiceInterface=2
 
+ 		#print("LEAVE INTERFACE NEW: "+str(shared.renderioInput.CurrentMiceInterface))
+
+	def resetMiceInterface(self):
+		shared.renderioInput.CurrentMiceInterface=self.OldInterface
+
 	def W_Mclick(self, evt):
 		pass
 
 	def W_Mrelease(self, evt):
 		pass
+
+	def CancelCurrent(self):
+		shared.globalGUI.SSearch.hide()

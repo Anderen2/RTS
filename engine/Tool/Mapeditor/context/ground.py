@@ -18,7 +18,7 @@ class contextGround():
 	def sDec(self):
 		print("Pavin' ground")
 		self.Position=self.getClickedPos()
-		shared.globalGUI.SSearch.ask("Entlist", self.rDec)
+		shared.globalGUI.SSearch.ask("decorators", self.rDec)
 
 	def rDec(self, result):
 		shared.decHandeler.Create(result, pos=self.Position)

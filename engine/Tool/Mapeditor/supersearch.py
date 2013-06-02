@@ -1,4 +1,6 @@
 #SuperSearch
+#SSearch is an modular 'almost semantic' searchengine. Just create an sEngine in ./search/
+#Implement it in self.sEngines and sEngName, and use ask(EngName, Callback) when you need to search
 
 from engine import shared, debug
 import ogre.gui.CEGUI as CEGUI
@@ -29,11 +31,13 @@ class SSearchGUI():
 		self.XBtn=shared.renderguiGUI.windowManager.getWindow("Search/X")
 		self.OkBtn.subscribeEvent(self.OkBtn.EventMouseButtonDown, self, "b_OK")
 		self.XBtn.subscribeEvent(self.XBtn.EventMouseButtonDown, self, "b_X")
+		self.Searchbox.subscribeEvent(self.Searchbox.EventTextAccepted, self, "s_Enter")
 
 		self.CurrentEngine=None
+		self.CurrentEngName="None"
 		self.Customer=None
 		self.sEngines=[entlist.SearchEntlist()]
-		self.sEngName=["Entlist"]
+		self.sEngName=["decorators"]
 
 		debug.ACC("sse", self.show, info="Show the SuperSearch", args=0)
 		debug.ACC("sse_hide", self.hide, info="Hide the SuperSearch", args=0)
@@ -45,16 +49,22 @@ class SSearchGUI():
 			self.show()
 
 	def show(self):
+		self.Searchbox.setProperty("Text", "")
+		self.resultGUI.setProperty("Text", "Type and press enter to search! \nCurrent searchengine is: "+self.CurrentEngName)
 		self.layout.show()
 		self.resultGUI.show()
 		shared.console.hide()
 		shared.renderioInput.CurrentKeyInterface=1
 		shared.renderioInput.takeKeyFocus("ssearch")
+		self.Searchbox.activate()
 
 	def hide(self):
 		self.layout.hide()
 		self.resultGUI.hide()
 		shared.renderioInput.looseKeyFocus("ssearch")
+
+	def s_Enter(self, evt):
+		self.b_OK(None)
 
 	def b_OK(self, evt):
 		result = self.performSearch(self.Searchbox.getProperty("Text"))
@@ -71,6 +81,7 @@ class SSearchGUI():
 	def setEngine(self, engine):
 		if engine in self.sEngName:
 			self.CurrentEngine=self.sEngines[self.sEngName.index(engine)]
+			self.CurrentEngName=engine
 			return True
 		else:
 			return False

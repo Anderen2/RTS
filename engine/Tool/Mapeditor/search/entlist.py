@@ -11,11 +11,11 @@ class SearchEntlist():
 		hits=[]
 		names=[]
 		for key, value in index.iteritems():
-			if str(term) in str(key):
+			if str(term).lower() in str(key).lower():
 				hits.append(key)
 				names.append(value["name"])
 
-			elif str(term) in str(value["name"]):
+			elif str(term).lower() in str(value["name"]).lower():
 				hits.append(key)
 				names.append(value["name"])
 

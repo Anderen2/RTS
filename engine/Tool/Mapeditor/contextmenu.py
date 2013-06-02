@@ -1,4 +1,8 @@
-#Mapeditor rightclick menu
+#ContextMenu
+#The contextmenu is an modular and eventdriven menu which appear near the mousecursor.
+#The menu that appear differs with the object clicked or the button used to 'click' it
+#All the menumodules lies in ./context/
+
 import ogre.renderer.OGRE as ogre
 import ogre.gui.CEGUI as CEGUI
 
@@ -59,7 +63,7 @@ class Menu():
 
 		# for x in self.listboxitems:
 		# 	self.listbox.removeItem(x)
-		# 	print("Item removed.")
+		# 	#print("Item removed.")
 		self.createListbox()
 
 		if self.CurrentContext!=None:
@@ -73,18 +77,25 @@ class Menu():
 
 
 	def rightClick(self):
+		#print("!!! - rightClick")
 		if shared.toolManager.CurrentTool!=0:
 			shared.render3dSelectStuff.clearSelection()
 			shared.render3dSelectStuff.startSelection(CEGUI.MouseCursor.getSingleton().getPosition())
 			shared.render3dSelectStuff.endSelection()
+			#print("!!! - Selection")
 
 		self.contextCheck()
+		#print("!!! - ContentCheck")
 		self.updateOptions()
+		#print("!!! - updateOptions")
 		mousePos = CEGUI.MouseCursor.getSingleton().getPosition()
+		self.rightclickpos=mousePos
 		self.listbox.setPosition(CEGUI.UVector2(CEGUI.UDim(0, mousePos.d_x), CEGUI.UDim(0, mousePos.d_y)))
 		self.listbox.show()
+		#print("!!! - show")
 
 	def middleClick(self):
+		self.active=True
 		self.CurrentContext=0
 		self.updateOptions()
 		mousePos = CEGUI.MouseCursor.getSingleton().getPosition()
@@ -92,11 +103,14 @@ class Menu():
 		self.listbox.show()
 
 	def hide(self):
+		self.active=False
+		#print("!!! - HIDE")
 		if shared.toolManager.CurrentTool!=0:
 			shared.render3dSelectStuff.clearSelection()
 		self.listbox.hide()
 
 	def menuClick(self, evt):
+		shared.globalGUI.resetMiceInterface()
 		if self.listbox.getFirstSelectedItem()!=None:
 			selected=self.listbox.getFirstSelectedItem().getText()
 			if selected in self.options:
@@ -104,7 +118,8 @@ class Menu():
 			elif self.CurrentContext!=None:
 				self.contexts[self.CurrentContext].optfunc[self.contexts[self.CurrentContext].options.index(selected)]()
 			else:
-				shared.DPrint("contextmenu", 4, "Item "+str(selected)+" is not in context or default list!")
+				shared.D#print("contextmenu", 4, "Item "+str(selected)+" is not in context or default list!")
+		self.hide() #This has to be here!
 
 	def sHideGui(self):
 		pass
@@ -115,7 +130,7 @@ class Menu():
 	def contextCheck(self):
 		self.dimh, self.dimv = shared.render3dCamera.getDimensions()
 		self.CurrentContext=None
-		print("Raybeens")
+		#print("Raybeens")
 		mousePos = CEGUI.MouseCursor.getSingleton().getPosition()
 		mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
 													  mousePos.d_y / float(self.dimv))
@@ -125,25 +140,15 @@ class Menu():
 		if len(result)>0:
 			for item in result:
 				if item.movable and item.movable.getName()!="Camera" :
-					print "____________________________________"
-					print item.movable.getName()
-					print item.movable.getParentSceneNode().getName()
+					#print "____________________________________"
+					#print item.movable.getName()
+					#print item.movable.getParentSceneNode().getName()
 
-					# if "-" in item.movable.getName():
-					# 	#If there is a dash in the scenenode name, it means that the currently selected entity is a subentity to something else
-					# 	#Ex. the turret on top of the tank
-					# 	print(item.movable.getName())
-					# 	print(item.movable.getParentSceneNode().getName())
-					# 	print(item.movable.getParentSceneNode().getParentSceneNode().getName())
-					# 	shared.DPrint("movetool", 3, "This is not supported!")
-					# 	#self.CurrentHold=shared.decHandeler.Get(int(item.movable.getParentSceneNode().getParentSceneNode().getName()[4:]))
-					# else:
 					if item.movable.getName()[0:5] == "tile[":
 						self.CurrentContext=2
 
 					elif "dec" in item.movable.getName():
 						self.CurrentContext=1
-						#self.CurrentHold=shared.decHandeler.Get(int(item.movable.getName()[4:])
 
 					else:
 						self.CurrentContext=None

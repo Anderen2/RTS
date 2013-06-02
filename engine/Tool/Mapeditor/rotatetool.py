@@ -42,8 +42,9 @@ class RotateTool():
 						#self.CurrentHold=shared.decHandeler.Get(int(item.movable.getParentSceneNode().getParentSceneNode().getName()[4:]))
 					else:
 						self.CurrentHold=shared.decHandeler.Get(int(item.movable.getName()[4:]))
-
-					self.CurrentHold.entity.node.showBoundingBox(True)
+						
+					if self.CurrentHold!=None:
+						self.CurrentHold.entity.node.showBoundingBox(True)
 
 					break
 

@@ -25,6 +25,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		FrameListener.__init__(self)
 		OIS.MouseListener.__init__(self)
 		OIS.KeyListener.__init__(self)
+		self.oldinf=0
 
 	def SetupBare(self):
 		shared.DPrint("RenderIO",1,"Setting up OIS")
@@ -136,10 +137,14 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		#Multiselection
 		self.CtrlHold=self.Keyboard.isKeyDown(self.keys["multisel"])
 
-		#The application will exit if this returns false, therefor ESC closes the game.
-		return not self.Keyboard.isKeyDown(OIS.KC_ESCAPE)
+		#The application will exit if this returns false, therefor Shift-ESC closes the game.
+		return not (self.Keyboard.isKeyDown(OIS.KC_ESCAPE) and self.Keyboard.isKeyDown(OIS.KC_LSHIFT))
 
 	def mouseMoved(self, evt):
+		if self.CurrentMiceInterface!=self.oldinf:
+			#print self.CurrentMiceInterface
+			self.oldinf=self.CurrentMiceInterface
+		
 		#Allows you to manually control the camera with the mouse if you hold the Alt key down
 		if self.CurrentMiceInterface==0:
 			shared.render3dCamera.Rotate((evt.get_state().X.rel, evt.get_state().Y.rel))
@@ -251,6 +256,12 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		if evt.key==self.keys["camstear"]:
 			self.CurrentMiceInterface=self.OldMiceInterface
 			MouseCursor.getSingleton().show() #Show mousecursor
+
+		if evt.key==OIS.KC_ESCAPE:
+			try:
+				shared.globalGUI.CancelCurrent()
+			except:
+				pass
 
 	def takeKeyFocus(self, mod):
 		if self.CurrentKeyInterface!=2:

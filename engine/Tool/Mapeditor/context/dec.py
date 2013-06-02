@@ -28,6 +28,13 @@ class contextDec():
 		pass
 
 	def getUnits(self):
+		if not shared.DirectorManager.Mapeditor.CurrentSelection==None:
+			if not len(shared.DirectorManager.Mapeditor.CurrentSelection)==0:
+				return shared.DirectorManager.Mapeditor.CurrentSelection
+		
+		shared.render3dSelectStuff.clearSelection()
+		shared.render3dSelectStuff.startSelection(shared.globalGUI.ContextMenu.rightclickpos)
+		shared.render3dSelectStuff.endSelection()
 		return shared.DirectorManager.Mapeditor.CurrentSelection
 
 	def getUnitByRay(self):

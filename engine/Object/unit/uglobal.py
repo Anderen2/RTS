@@ -72,6 +72,7 @@ class GlobalUnit():
 
 	def _setPos(self, x, y, z):
 		self.entity.SetPosition(float(x), float(y), float(z))
+		shared.FowManager.nodeUpdate(self.entity.node)
 
 	def _setRot(self, rotx, roty, rotz):
 		self.entity.Rotate(float(rotx), float(roty), float(rotz))

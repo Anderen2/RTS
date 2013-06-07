@@ -14,6 +14,7 @@ class Director():
 		debug.ACC("dirpri", self.UnitPri, args=0, info="Tell the units directed by SimpleDir to do the Primary Action")
 		debug.ACC("dirsec", self.UnitPri, args=0, info="Tell the units directed by SimpleDir to do the Secondary Action")
 		debug.ACC("diradd", self.UnitAdd, args=1, info="Add a unit under SimpleDir")
+		debug.ACC("diradde", self.UnitAddEnemy, args=1, info="Add a unit under SimpleDir")
 		debug.ACC("dircls", self.UnitDelAll, args=0, info="Clear/Delete all units directed by SimpleDir")
 
 		self.gotoX=None
@@ -41,7 +42,20 @@ class Director():
 		pass
 
 	def UnitAdd(self, name):
-		self.Cast.append(shared.unitManager.Create(0, name))
+		unit=shared.unitManager.Create(0, name)
+		self.Cast.append(unit)
+		shared.FowManager.addAlly(unit.entity.node, 500)
+
+		shared.FowManager.nodeUpdate(unit.entity.node)
+		#print(shared.FowManager.getState(unit.entity.node))
+
+	def UnitAddEnemy(self, name):
+		unit=shared.unitManager.Create(0, name)
+		self.Cast.append(unit)
+		shared.FowManager.addEnemy(unit.entity.node)
+
+		shared.FowManager.nodeUpdate(unit.entity.node)
+		#print(shared.FowManager.getState(unit.entity.node))
 
 	def UnitDelAll(self):
 		pass

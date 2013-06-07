@@ -2,13 +2,14 @@
 #Classes for rendering 3d enviroment
 #By Anderen2 (Dec. 2012)
 
-import render3dent, render3ddecal, render3dwaypoint, render3dwater, render3dcamera
+import render3dent, render3ddecal, render3dwaypoint, render3dwater, render3dcamera, render3dfow
 from engine import shared, debug
 import ogre.renderer.OGRE as ogre
 from ogre.gui.CEGUI import MouseCursor
 from random import randrange
 from string import split
 from math import floor
+from twisted.internet import reactor
 
 class Scene():
 	def __init__(self):
@@ -17,6 +18,8 @@ class Scene():
 	def Setup(self):
 		shared.DPrint("Render3d",1,"Setting up terrain..")
 		self.sceneManager = self.root.createSceneManager(ogre.ST_EXTERIOR_CLOSE, "Default sceneManager")
+		shared.DPrint("Render3dScene",1,"Current scenemanager: %s" % str(self.sceneManager.getTypeName()))
+		#print(self.sceneManager.getTerrainMaterial())
 		self.sceneManager.setWorldGeometry ("terrain.cfg")
 		shared.DPrint("Render3d",1,"Skybox..")
 		self.sceneManager.setSkyBox (True, "Examples/SpaceSkyBox")
@@ -54,9 +57,20 @@ class Scene():
 		shared.DPrint("Render3d",1,"WaterManager..")
 		shared.WaterManager=render3dwater.WaterManager()
 
+		shared.DPrint("Render3d",1,"New FOWManager..")
+		#self, terrain, tsizex, tsizey, tsize)
+		shared.FowManager=render3dfow.FogOfWarListener("Template/Terrain", 1500, 1500, 1500)
+		shared.FowManager.Create()
+
+		#reactor.callLater(0,shared.FowManager.update)
+		
+
 		debug.ACC("r_pfenable", self.PostFilterEnable, info="Enable a postfilter", args=1)
 		debug.ACC("r_pfdisable", self.PostFilterDisable, info="Disable a postfilter", args=1)
 		debug.ACC("r_polymode", self.PolygenMode, info="Change the polygenmode. 1 for points, 2 for wireframe, 3 for solid", args=1)
+
+	def FowUpdate(self):
+		pass
 
 	def PostFilterEnable(self,PF):
 		ogre.CompositorManager.getSingleton().addCompositor(shared.render3dCamera.viewPort, PF)
@@ -66,7 +80,13 @@ class Scene():
 		ogre.CompositorManager.getSingleton().setCompositorEnabled(shared.render3dCamera.viewPort, PF, False)
 
 	def PolygenMode(self, PM):
-		shared.render3dCamera.camera.setPolygonMode(shared.render3dCamera.camera, int(PM))
+		PM=int(PM)
+		if PM==1:
+			shared.render3dCamera.camera.setPolygonMode(ogre.PM_POINTS)
+		elif PM==2:
+			shared.render3dCamera.camera.setPolygonMode(ogre.PM_WIREFRAME)
+		else:
+			shared.render3dCamera.camera.setPolygonMode(ogre.PM_SOLID)
 
 class SelectStuff():
 	def __init__(self, root, scene):

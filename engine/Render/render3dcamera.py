@@ -11,7 +11,7 @@ class Camera():
 		self.root=root
 		shared.DPrint("Camera",1,"Camera: Creating camera")
 		self.camera = scene.sceneManager.createCamera("Camera")
-		self.camera.nearClipDistance = 2
+		self.camera.nearClipDistance = 0.5
 
 		self.camNode=scene.sceneManager.getRootSceneNode().createChildSceneNode("CamNode",(0,0,0))
 

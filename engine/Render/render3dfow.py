@@ -1,320 +1,134 @@
-#Render3dExtension - render3dfow
-#Classes for rendering the Field Of War effect
-#Lowlevel module
+#http://www.youtube.com/watch?feature=player_embedded&v=VjGSMUep6_4
 
-from engine import shared, debug
-from engine.shared import DPrint
 import ogre.renderer.OGRE as ogre
+import math
+from engine import shared, debug
 from random import randrange
 
-class FieldOfWar():
-	def __init__(self):
-		DPrint("Render3dFOW",0,"Initializing Field Of War")
+class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
+	def __init__(self, terrain, tsizex, tsizey, tsize):
+		ogre.RenderTargetListener.__init__(self)
+		ogre.Node.Listener.__init__(self)
+		self.terrain = terrain # this is a string corresponding to the name of the terrain material. Ex: "OceanCg"
 
-		worldsize=1500
-		precision=10
-		DPrint("Render3dFOW",0,"World Size: "+str(worldsize))
-		DPrint("Render3dFOW",0,"Precision: "+str(precision))
+		self.tsizex=tsizex #Terrain Size
+		self.tsizey=tsizey
+		self.tsize=tsize
 
-		DPrint("Render3dFOW",0,"Calculating Vertices")
-		self.XGrid=[]
-		for x in range(0,(worldsize+precision)/precision):
-			self.XGrid.append(x*precision)
+		debug.ACC("turn", self.ChangeShit, info="Enable a nein", args=3)
 
-		self.YGrid=[]
-		for y in range(0,(worldsize+precision)/precision):
-			self.YGrid.append(y*precision)
+		self.AllyNodes={}
+		self.EnemyNodes=[]
 
-		Vertcount=len(self.XGrid)*len(self.YGrid)
-		DPrint("Render3dFOW",0,"Vertice Count: "+str(Vertcount))
-		Tricount=Vertcount*2
-		DPrint("Render3dFOW",0,"Approx. Triangle Count: "+str(Tricount))
+		self.CircleEnts=[]
+		self.CircleNodes=[]
 
-		DPrint("Render3dFOW",0,"Creating Plane...")
-		self.plane=ogre.ManualObject("Quad")
-		self.plane.begin("transparency", ogre.RenderOperation.OT_TRIANGLE_LIST)
-		self.plane.setDynamic(True)
-		width = worldsize
-		height = worldsize
-
-
-		#May be slow to update with highpres fowplanes! 
-		#Todo: Sectionize based on presision
-		DPrint("Render3dFOW",0,"Creating Vertices")
-		I=0
-		self.VertColour=[]
-		for x in self.XGrid:
-			for y in self.YGrid:
-				self.plane.position(x, 0, y)
-				#self.plane.colour(randrange(0,10,1)/float(10),randrange(0,10,1)/float(10),randrange(0,10,1)/float(10),0.5) #Uncomment this for pretty colours! <3 <3 :D
-				#self.plane.index(I)
-				self.plane.colour(0,0,0,0.8)
-				self.VertColour.append((0,0,0,0.8))
-				I=I+1
 		
-		What=(worldsize/precision)+1
-		self.OppVal=What
-		#Create a list of all vertices
-		self.VertList=[]
-		for x in self.XGrid:
-			for y in self.YGrid:
-				self.VertList.append((x,y))
+	def Create(self):
+		self.fogManager = ogre.Root.getSingleton().createSceneManager(ogre.ST_EXTERIOR_CLOSE)
+		self.fogManager.setAmbientLight(ogre.ColourValue(0.1,0.1,0.1))
 
-		DPrint("Render3dFOW",0,"Calculating triangles")
-		#Create a list of all triangles (1)
-		self.TriList1=[]
-		for x in self.VertList:
-			self.TriList1.append((self.VertList.index(x), self.VertList.index(x)+1, self.VertList.index(x)+What))
+		self.camera = self.fogManager.createCamera("fogCam")
+		self.camera.setAspectRatio(1)
+		self.camera.setPosition(self.tsizex, self.tsize, self.tsizey) 
+		self.camera.lookAt(self.tsizex/2, 0, (self.tsizey/2)+1)
 
-		#Remove bad triangles (1)
-		for x in range(1, What+1):
-			self.TriList1.pop((What-1)*x)
+		#"FOG" (Black plane)
+		#__________________________________________________________________________________________________________________________________________________________
 
-		#Remove offchart triangles (1)
-		for x in range(1,What):
-			self.TriList1.pop(len(self.TriList1)-1)
+		#create the plane
+		self.plane = ogre.MovablePlane("ReflectPlane")
+		self.plane.d = 0
+		self.plane.normal = ogre.Vector3().UNIT_Y
 
-		#Create a list of all triangles (2)
-		self.TriList2=[]
-		for x in self.VertList:
-			self.TriList2.append((self.VertList.index(x)+What, self.VertList.index(x)+What+1, self.VertList.index(x)+1))
+		#ogre.MeshManager.getSingleton().createPlane(name,              group,                                                plane, width, height, xseg, yseg, Normals, texcoodsets, utile, vtile, upvector)
+		ogre.MeshManager.getSingleton().createPlane("ReflectionPlane", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME,self.plane, self.tsizex, self.tsizey, 1, 1, True, 1, 1, 1, ogre.Vector3().UNIT_Z)
+		self.planeEnt = self.fogManager.createEntity( "Plane", "ReflectionPlane" ) 
+		self.planeNode = self.fogManager.getRootSceneNode().createChildSceneNode() 
+		self.planeNode.attachObject(self.planeEnt) 
+		self.planeNode.setPosition(self.tsizex/2,0,self.tsizey/2) #Set plane directly over the terrain
 
-		#Remove bad triangles (2)
-		for x in range(1, What+1):
-			self.TriList2.pop((What-1)*x)
+		#__________________________________________________________________________________________________________________________________________________________
 
-		#Remove offchart triangles (2)
-		for x in range(1,What):
-			self.TriList2.pop(len(self.TriList2)-1)
+		#establish the entity that will act as each ally's visible sight range
+		circle = ogre.MovablePlane("circleMovablePlane") 
+		circle.normal = ogre.Vector3().UNIT_Y 
+		circle.d = 0 
 
-		DPrint("Render3dFOW",0,"Total Triangle count: "+str(len(self.TriList1)+len(self.TriList2)))
+		# construct a white circle material that can be blended on the Overlay plane to create the sight radius light area
+		circleMat = ogre.MaterialManager.getSingleton().create("FOW_circleMat",ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME) 
+		circleMat.getTechnique(0).getPass(0).createTextureUnitState("FOWbeta4.png")
+		circleMat.setSelfIllumination(1,1,1) #make sure the image is always perfectly lit
+		circleMat.setSceneBlending(ogre.SBT_TRANSPARENT_ALPHA)
 
-		DPrint("Render3dFOW",0,"Creating triangles..")
-		for x in self.TriList1:
-			self.plane.triangle(x[2],x[1],x[0])
+		# attach the material to a mesh that we can attach to ally nodes
+		mesh = ogre.MeshManager.getSingleton().createPlane("FOW_Circle", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME, circle, 500, 500, 1, 1, True, 1, 1, 1, ogre.Vector3().UNIT_Z)
+		mesh.getSubMesh(0).setMaterialName("FOW_circleMat")
 
-		for x in self.TriList2:
-			self.plane.triangle(x[0],x[1],x[2])
+		#__________________________________________________________________________________________________________________________________________________________
 
-		# for I in range(0,worldsize/precision):
-		# 	self.plane.index(I,I+1)
+		self.texture = ogre.TextureManager.getSingleton().createManual( "RttTex", "General", ogre.TextureType.TEX_TYPE_2D, 512, 512, 1, ogre.PixelFormat.PF_R8G8B8, ogre.TU_RENDERTARGET )
+		#self.texture = ogre.TextureManager.getSingleton().createManual( "terrainTex", "General", ogre.TEX_TYPE_2D, 512, 512, 0, ogre.PF_R8G8B8, ogre.TU_RENDERTARGET) 
+		self.RT = self.texture.getBuffer().getRenderTarget()
 
-		# self.plane.position(0, 0, 0)
-		# self.plane.colour(0,0,0,0.5)
-		# self.plane.position(width, 0, 0)
-		# self.plane.colour(0,0,0,0.5)
-		# self.plane.position(0, 0, height)
-		# self.plane.colour(0,0,0,0.5)
-		# self.plane.position(width, 0, height)
-		# self.plane.colour(0,0,0,0.5)
-		# self.plane.triangle(3,2,1)
-		# self.plane.triangle(0,1,2)
-		self.plane.end()
+		terrainMat = ogre.MaterialManager.getSingleton().getByName(self.terrain)
+		self.terrainPass = terrainMat.getTechnique(0).createPass()
+		self.terrainPass.setSceneBlending(ogre.SBT_MODULATE) # mutliply the color value contents of the scene with the values in this texture pass
+	
+		# modify the properties of this texture and make it a state within the pass created earlier
+		tex = self.terrainPass.createTextureUnitState("RttTex") 
+		tex.setProjectiveTexturing(True,self.camera) # allow the texture to be updated via projections from self.camera
+		tex.setTextureAddressingMode(ogre.TextureUnitState.TAM_CLAMP) # when color values go above 1.0, they are set to 1.0 
 
-		DPrint("Render3dFOW",0,"Plane created successfully")
+		#associate render target with the texture that was just made
+		self.terrainTarget = self.texture.getBuffer().getRenderTarget() 
+		self.terrainTarget.addViewport(self.camera) 
+		self.terrainTarget.getViewport(0).setOverlaysEnabled(False)
+		self.terrainTarget.getViewport(0).setClearEveryFrame(True)
+		self.terrainTarget.setAutoUpdated(False)
+		self.terrainTarget.update()  
+		self.terrainTarget.getViewport(0).setBackgroundColour(ogre.ColourValue().Black)
+		self.terrainTarget.setPriority(1) # as we want the plane to be rendered first, set this target's rendering priority to 1 (0 is first)
 
-		self.plane.setVisible(True)
-		self.FOWn=shared.render3dScene.sceneManager.getRootSceneNode().createChildSceneNode("FieldOfWar")
-		self.FOWn.attachObject(self.plane)
-		self.FOWn.rotate((1,0,0),ogre.Degree(180))
-		self.FOWn.rotate((0,1,0),ogre.Degree(90))
-		self.FOWn.setPosition(0,100,0)
+	def update(self):
+		self.terrainTarget.update()
 
-	def Update(self):
-		#Updates the fogplane
-		self.plane.beginUpdate(0)
-		for XY in self.VertList:
-			self.plane.position(XY[0], 0, XY[1])
-			Index=self.VertList.index(XY)
-			if self.VertColour[Index][3]==0:
-				print(Index)
-			self.plane.colour(self.VertColour[Index][0],self.VertColour[Index][1],self.VertColour[Index][2],self.VertColour[Index][3])
+	def addView(self, size):
+		circleEnt = self.fogManager.createEntity( "Circle"+str(randrange(0, 1000, 1)), "FOW_Circle" ) 
+		circleNode = self.fogManager.getRootSceneNode().createChildSceneNode() 
+		circleNode.attachObject(circleEnt) 
+		#circleNode.setPosition(pos[0], pos[1])
 
-		for x in self.TriList1:
-			self.plane.triangle(x[2],x[1],x[0])
+		self.CircleEnts.append(circleEnt)
+		self.CircleNodes.append(circleNode)
 
-		for x in self.TriList2:
-			self.plane.triangle(x[0],x[1],x[2])
-		self.plane.end()
-		#self.FOWn.attachObject(self.plane)
+		return (circleEnt, circleNode)
 
-	def GetVerts(self):
-		return self.VertColour
+	def nodeUpdate(self, node):
+		if node in self.EnemyNodes:
+			pass
+		else:
+			print(node.getName())
+			View=self.AllyNodes[node.getName()]
+			print(View)
+			pos=node.getPosition()
+			View[1].setPosition(pos.x, 0, pos.z)
+			self.update()
+			print("Uptidate")
+			print(pos.x, pos.z)
 
-	def GetVert(self, index):
-		return self.VertColour[index]
+	def addAlly(self, allynode, viewsize):
+		View = self.addView(viewsize)
 
-	#May be slow with big vertlists! Maybe premake a dict where you can lookup the positions for the vertices?
-	#Round X,Z to the nearest presisionlevel, and check the dict by using pos as key
-	def ConvXZtoVertex(self, pos):
-		#Converts a worldcoord into a vertexindex on the fogplane and returns it
-		RealPos=(pos[1],pos[0]) #invert the positions
-		Prev=100
-		PVert=None
-		for x in self.VertList:
-			foo=abs(x[0]-RealPos[0])+abs(x[1]-RealPos[1])
-			if foo<Prev:
-				Prev=foo
-				PVert=x
-		return self.VertList.index(PVert)
+		self.AllyNodes[allynode.getName()]=View
+		self.nodeUpdate(allynode)
 
-	def VisionIdx(self, index):
-		#Lights the vertex on the fogplane
-		self.VertColour[index]=(0,0,0,0)
+		return View[1]
 
-	def VisionIdxList(self, ilist):
-		for x in ilist:
-			self.VertColour[x]=(0,0,0,0)
+	def addEnemy(self, enemynode):
+		pass
 
-	def VisionPos(self, pos):
-		#Converts a worldcoord into a vertexindex on the fogplane and lights it
-		RealPos=(pos[1],pos[0]) #invert the positions
-		Prev=100
-		PVert=None
-		for x in self.VertList:
-			foo=abs(x[0]-RealPos[0])+abs(x[1]-RealPos[1])
-			if foo<Prev:
-				Prev=foo
-				print Prev
-				PVert=x
-		self.VisionIdx(self.VertList.index(PVert))
-		return PVert
-
-	def VisionCircle(self, pos, radius):
-		#Converts a circle with a radius worldcoords/vertexindexes and lights them
-		Outline=[]
-		CurrVert=self.ConvXZtoVertex(pos)
-		Outline.append(CurrVert)
-		for x in range(0,radius):
-			CurrVert=CurrVert+1
-			Outline.append(CurrVert)
-			#print(CurrVert)
-			CurrVert=CurrVert+self.OppVal
-			Outline.append(CurrVert)
-			#print(CurrVert)
-		CurrVert=CurrVert+1
-		Outline.append(CurrVert)
-		#print(CurrVert)
-		for x in range(0,radius):
-			CurrVert=CurrVert-self.OppVal
-			Outline.append(CurrVert)
-			#print(CurrVert)
-			CurrVert=CurrVert+1
-			Outline.append(CurrVert)
-			#print(CurrVert)
-		CurrVert=CurrVert-self.OppVal
-		Outline.append(CurrVert)
-		#print(CurrVert)
-		for x in range(0, radius):
-			CurrVert=CurrVert-1
-			Outline.append(CurrVert)
-			#print(CurrVert)
-			CurrVert=CurrVert-self.OppVal
-			Outline.append(CurrVert)
-			#print(CurrVert)
-		CurrVert=CurrVert-1
-		Outline.append(CurrVert)
-		#print(CurrVert)
-		for x in range(0, radius):
-			CurrVert=CurrVert+self.OppVal
-			Outline.append(CurrVert)
-			#print(CurrVert)
-			CurrVert=CurrVert-1
-			Outline.append(CurrVert)
-			#print(CurrVert)
-		CurrVert=CurrVert-self.OppVal
-		Outline.append(CurrVert)
-		print("______________________________")
-		print(Outline)
-
-		self.VisionIdxList(Outline)
-
-	def VisionSquare(self, p0, p2):
-		#Converts a square with the specified boundaries into wcords/Vidx and lights it
-		distx=abs(p0[0]-p2[0])
-		disty=abs(p0[1]-p2[1])
-		print (distx, disty)
-
-		p1=(p0[0]+distx, p0[1])
-		p3=(p2[0]-distx, p2[1])
-
-		pv0=self.ConvXZtoVertex(p0)
-		pv1=self.ConvXZtoVertex(p1)
-		pv2=self.ConvXZtoVertex(p2)
-		pv3=self.ConvXZtoVertex(p3)
-
-		print(p0, p1, p2, p3)
-		print(pv0, pv1, pv2, pv3)
-
-		vdistx=pv1-pv0
-		vdisty=pv2-pv3
-
-		print(vdistx, vdisty)
-
-		CurrVert=pv0
-		for x in range(0, vdistx):
-			for y in range(0, vdisty):
-				self.VisionIdx(CurrVert)
-				print CurrVert
-				CurrVert+=1
-			CurrVert=CurrVert+self.OppVal-vdisty
-
-
-	def VisionBox(self, p0, p1, p2, p3):
-		#Converts a box with the specified boundaries worldcoords/vertexindexes and lights them
-		pv0=self.ConvXZtoVertex(p0)
-		pv1=self.ConvXZtoVertex(p1)
-		pv2=self.ConvXZtoVertex(p2)
-		pv3=self.ConvXZtoVertex(p3)
-
-		vdistx=abs(pv1-pv0)
-		vdisty=abs(pv2-pv3)
-
-		print(vdistx, vdisty)
-
-		CurrVert=pv0
-		for x in range(0, vdistx):
-			for y in range(0, vdisty):
-				self.VisionIdx(CurrVert)
-				print CurrVert
-				CurrVert+=1
-			CurrVert=CurrVert+self.OppVal-vdisty
-
-	def VisionList(self, wlist):
-		#Converts a list of worldcoords into indexes and lights them
-		for x in wlist:
-			self.VisionIdx(self.ConvXZtoVertex(x))
-
-
-# class FieldOfWar():
-# 	def __init__(self):
-# 		plane=ogre.Plane((0,1,0),0)
-# 		MeshManager=ogre.MeshManager.getSingleton()
-# 		MeshManager.createPlane("FOW", "General", plane, 10000, 10000, 100, 100, True, 1, 100, 100, (0,0,1))
-# 		self.Entity=shared.render3dScene.sceneManager.createEntity("FOW","FOW")
-# 		self.Entity.setMaterialName("FOWDarken")
-# 		self.Entity.setCastShadows(False)
-# 		#self.Entity.setRenderQueueGroup(ogre.RENDER_QUEUE_SKIES_LATE)
-# 		self.node=shared.render3dScene.sceneManager.getRootSceneNode().createChildSceneNode()
-# 		self.node.attachObject(self.Entity)
-# 		self.node.setPosition((0,200,0))
-
-# 	def Create(self, pos):
-# 		return Vision(pos)
-
-# class Vision():
-# 	def __init__(self, pos):
-# 		plane=ogre.Plane((0,1,0),0)
-# 		MeshManager=ogre.MeshManager.getSingleton()
-# 		MeshManager.createPlane("FOWVision", "General", plane, 100, 100, 1, 1, True, 1, 1, 1, (0,0,1))
-# 		self.Entity=shared.render3dScene.sceneManager.createEntity("FOW"+str(randrange(0,9999,1)),"FOWVision")
-# 		self.Entity.setMaterialName("FOWCircle")
-# 		self.Entity.setCastShadows(False)
-# 		#self.Entity.setRenderQueueGroup(ogre.RENDER_QUEUE_SKIES_LATE)
-# 		self.node=shared.render3dScene.sceneManager.getRootSceneNode().createChildSceneNode()
-# 		self.node.attachObject(self.Entity)
-# 		self.node.setPosition(pos)
-
-
-# 	def setPosition(self, pos):
-# 		self.node.setPosition(pos)
+	def ChangeShit(self, x, y, z):
+		#self.circleNode.setPosition(float(x),float(y),float(z))
+		self.addView(200)[1].setPosition(float(x), 0, float(z))
+		self.update()

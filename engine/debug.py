@@ -171,8 +171,15 @@ def runFile(filesrc):
 		for command in foofile:
 			command=command.replace("\n", "")
 			if command[0]!="#" and command[0]!=" " and command[0]!="/":
-				shared.DPrint("debug",0,command)
+				shared.DPrint("debug",0,"EXE: "+command)
 				shared.DPrint("debug",1,ParseCommand(command))
+
+def runCLI(args):
+	foo=" ".join(args)
+	for x in split(foo, "--"):
+		if x!="" and x!=" ":
+			shared.DPrint("debug",0,"CLI: "+x)
+			shared.DPrint("debug",1,ParseCommand(x))
 
 #EXTRA COMMANDS
 ACC("man", manCMD, info="Prints the commands manual/infostring\nUsage: ex. man man", args=1)

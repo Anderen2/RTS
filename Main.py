@@ -1,6 +1,8 @@
 #Main
 #Submodules: Render, Networking, Gameplay, Other
 
+from sys import argv
+
 #Initialize stuff
 from engine import shared, debug
 shared.logInit("engine")
@@ -50,6 +52,14 @@ shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
 shared.DPrint("Main",1,"PWR: MapSetup")
 shared.Map.Setup()
+
+#CLI Parameters
+shared.DPrint("Main",1,"Executing CLI Parameters")
+if len(argv) > 1:
+	try:
+		debug.runCLI(argv[1:])
+	except:
+		pass
 
 #Autoexec
 shared.DPrint("Main",1,"Executing autoexec")

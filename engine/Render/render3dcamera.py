@@ -11,8 +11,13 @@ class Camera():
 		self.root=root
 		shared.DPrint("Camera",1,"Camera: Creating camera")
 		self.camera = scene.sceneManager.createCamera("Camera")
-		self.camera.nearClipDistance = 0.5
+		self.camera.nearClipDistance = 10
+		self.camera.setFarClipDistance(10000)
 
+		print("LOD: !!!!!!!")
+		print(self.camera.getLodBias())
+
+		self.camera.setLodBias(100)
 		self.camNode=scene.sceneManager.getRootSceneNode().createChildSceneNode("CamNode",(0,0,0))
 
 		self.pitchnode=self.camNode.createChildSceneNode('PitchNode1')

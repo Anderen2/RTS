@@ -26,12 +26,15 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		
 	def Create(self):
 		self.fogManager = ogre.Root.getSingleton().createSceneManager(ogre.ST_EXTERIOR_CLOSE)
-		self.fogManager.setAmbientLight(ogre.ColourValue(0.1,0.1,0.1))
+		self.fogManager.setAmbientLight(ogre.ColourValue(0.2,0.2,0.2))
 
 		self.camera = self.fogManager.createCamera("fogCam")
 		self.camera.setAspectRatio(1)
+		#self.camera.setProjectionType(ogre.PT_ORTHOGRAPHIC)
 		self.camera.setPosition(self.tsizex, self.tsize, self.tsizey) 
 		self.camera.lookAt(self.tsizex/2, 0, (self.tsizey/2)+1)
+		self.camera.nearClipDistance = 10
+		self.camera.setFarClipDistance(10000)
 
 		#"FOG" (Black plane)
 		#__________________________________________________________________________________________________________________________________________________________
@@ -60,6 +63,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		circleMat.getTechnique(0).getPass(0).createTextureUnitState("FOWbeta4.png")
 		circleMat.setSelfIllumination(1,1,1) #make sure the image is always perfectly lit
 		circleMat.setSceneBlending(ogre.SBT_TRANSPARENT_ALPHA)
+		circleMat.setDepthWriteEnabled(False)
 
 		# attach the material to a mesh that we can attach to ally nodes
 		mesh = ogre.MeshManager.getSingleton().createPlane("FOW_Circle", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME, circle, 500, 500, 1, 1, True, 1, 1, 1, ogre.Vector3().UNIT_Z)
@@ -84,8 +88,9 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.terrainTarget = self.texture.getBuffer().getRenderTarget() 
 		self.terrainTarget.addViewport(self.camera) 
 		self.terrainTarget.getViewport(0).setOverlaysEnabled(False)
-		self.terrainTarget.getViewport(0).setClearEveryFrame(True)
+		self.terrainTarget.getViewport(0).setClearEveryFrame(False)
 		self.terrainTarget.setAutoUpdated(False)
+		self.terrainTarget.getViewport(0).clear()
 		self.terrainTarget.update()  
 		self.terrainTarget.getViewport(0).setBackgroundColour(ogre.ColourValue().Black)
 		self.terrainTarget.setPriority(1) # as we want the plane to be rendered first, set this target's rendering priority to 1 (0 is first)
@@ -94,10 +99,12 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.terrainTarget.update()
 
 	def addView(self, size):
-		circleEnt = self.fogManager.createEntity( "Circle"+str(randrange(0, 1000, 1)), "FOW_Circle" ) 
+		circleEnt = self.fogManager.createEntity( "Circle"+str(len(self.CircleEnts)), "FOW_Circle" ) 
 		circleNode = self.fogManager.getRootSceneNode().createChildSceneNode() 
 		circleNode.attachObject(circleEnt) 
-		#circleNode.setPosition(pos[0], pos[1])
+		circleNode.setPosition(0, 1+(len(self.CircleEnts)), 0)
+		print("!!!")
+		print(1+(len(self.CircleEnts)))
 
 		self.CircleEnts.append(circleEnt)
 		self.CircleNodes.append(circleNode)
@@ -108,14 +115,16 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		if node in self.EnemyNodes:
 			pass
 		else:
-			print(node.getName())
+			#print(node.getName())
 			View=self.AllyNodes[node.getName()]
-			print(View)
+			#print(View)
 			pos=node.getPosition()
-			View[1].setPosition(pos.x, 0, pos.z)
+			y = View[1].getPosition().y
+			#print(View[1].getPosition())
+			View[1].setPosition(pos.x, y, pos.z)
 			self.update()
-			print("Uptidate")
-			print(pos.x, pos.z)
+			#print("Uptidate")
+			#print(pos.x, y, pos.z)
 
 	def addAlly(self, allynode, viewsize):
 		View = self.addView(viewsize)

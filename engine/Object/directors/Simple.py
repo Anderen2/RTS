@@ -44,18 +44,18 @@ class Director():
 	def UnitAdd(self, name):
 		unit=shared.unitManager.Create(0, name)
 		self.Cast.append(unit)
-		shared.FowManager.addAlly(unit.entity.node, 500)
 
-		shared.FowManager.nodeUpdate(unit.entity.node)
-		#print(shared.FowManager.getState(unit.entity.node))
+		if not shared.FowManager==None:
+			shared.FowManager.addAlly(unit.entity.node, 500)
+			shared.FowManager.nodeUpdate(unit.entity.node)
 
 	def UnitAddEnemy(self, name):
 		unit=shared.unitManager.Create(0, name)
 		self.Cast.append(unit)
-		shared.FowManager.addEnemy(unit.entity.node)
 
-		shared.FowManager.nodeUpdate(unit.entity.node)
-		#print(shared.FowManager.getState(unit.entity.node))
+		if not shared.FowManager==None:
+			shared.FowManager.addEnemy(unit.entity.node)
+			shared.FowManager.nodeUpdate(unit.entity.node)
 
 	def UnitDelAll(self):
 		pass

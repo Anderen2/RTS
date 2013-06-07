@@ -57,20 +57,15 @@ class Scene():
 		shared.DPrint("Render3d",1,"WaterManager..")
 		shared.WaterManager=render3dwater.WaterManager()
 
-		shared.DPrint("Render3d",1,"New FOWManager..")
-		#self, terrain, tsizex, tsizey, tsize)
-		shared.FowManager=render3dfow.FogOfWarListener("Template/Terrain", 1500, 1500, 1500)
-		shared.FowManager.Create()
-
-		#reactor.callLater(0,shared.FowManager.update)
-		
-
 		debug.ACC("r_pfenable", self.PostFilterEnable, info="Enable a postfilter", args=1)
 		debug.ACC("r_pfdisable", self.PostFilterDisable, info="Disable a postfilter", args=1)
 		debug.ACC("r_polymode", self.PolygenMode, info="Change the polygenmode. 1 for points, 2 for wireframe, 3 for solid", args=1)
 
-	def FowUpdate(self):
-		pass
+	def FowSetup(self):
+		shared.DPrint("Render3d",1,"New FOWManager..")
+		#self, terrain, tsizex, tsizey, tsize)
+		shared.FowManager=render3dfow.FogOfWarListener("Template/Terrain", 1500, 1500, 1500)
+		shared.FowManager.Create()
 
 	def PostFilterEnable(self,PF):
 		ogre.CompositorManager.getSingleton().addCompositor(shared.render3dCamera.viewPort, PF)

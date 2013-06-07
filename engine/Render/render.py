@@ -74,8 +74,10 @@ class RenderApplication(object):
 	def setupScene(self):
 		shared.DPrint("Render",1,"Setting up scene")
 		shared.render3dScene=render3d.Scene()
+		shared.FowManager=None
 		if not self.BARE:
 			shared.render3dScene.Setup()
+			shared.render3dScene.FowSetup()
 		 
 	def setupInputSystem(self):
 		shared.DPrint("Render",1,"Setting up I/O")

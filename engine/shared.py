@@ -11,7 +11,7 @@ render3dScene=None
 render3dCamera=None
 render3dSelectStuff=None
 
-renderguiGUI=None
+renderGUI=None
 
 renderioInput=None
 

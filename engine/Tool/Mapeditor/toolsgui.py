@@ -4,8 +4,8 @@ from engine import shared, debug
 
 class ToolsGUI():
 	def __init__(self):
-		self.root = shared.renderguiGUI.windowManager.getWindow("Root")
-		self.layout = shared.renderguiGUI.windowManager.loadWindowLayout("Tools.layout")
+		self.root = shared.renderGUI.windowManager.getWindow("Root")
+		self.layout = shared.renderGUI.windowManager.loadWindowLayout("Tools.layout")
 
 		self.root.addChildWindow(self.layout)
 

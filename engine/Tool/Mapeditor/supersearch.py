@@ -9,8 +9,8 @@ from engine.Tool.Mapeditor.search import entlist
 
 class SSearchGUI():
 	def __init__(self):
-		self.root = shared.renderguiGUI.windowManager.getWindow("Root")
-		self.layout = shared.renderguiGUI.windowManager.loadWindowLayout("SSearch.layout")
+		self.root = shared.renderGUI.windowManager.getWindow("Root")
+		self.layout = shared.renderGUI.windowManager.loadWindowLayout("SSearch.layout")
 
 		self.layout.setProperty("Text", "Search..")
 		self.root.addChildWindow(self.layout)
@@ -18,7 +18,7 @@ class SSearchGUI():
 		shared.globalGUI.registerLayout(self.layout)
 		self.layout.hide()
 
-		self.resultGUI=shared.renderguiGUI.windowManager.createWindow("Vanilla/MultiLineEditbox", "SSResults")
+		self.resultGUI=shared.renderGUI.windowManager.createWindow("Vanilla/MultiLineEditbox", "SSResults")
 		self.resultGUI.setSize(CEGUI.UVector2(CEGUI.UDim(0.25, 0), CEGUI.UDim(0.2, 0)))
 		self.resultGUI.setPosition(CEGUI.UVector2(CEGUI.UDim(0.35, 0), CEGUI.UDim(0.16, 0)))
 		self.resultGUI.setReadOnly(True)
@@ -26,9 +26,9 @@ class SSearchGUI():
 		shared.globalGUI.registerLayout(self.resultGUI)
 		self.resultGUI.hide()
 
-		self.Searchbox=shared.renderguiGUI.windowManager.getWindow("Search/Text")
-		self.OkBtn=shared.renderguiGUI.windowManager.getWindow("Search/OK")
-		self.XBtn=shared.renderguiGUI.windowManager.getWindow("Search/X")
+		self.Searchbox=shared.renderGUI.windowManager.getWindow("Search/Text")
+		self.OkBtn=shared.renderGUI.windowManager.getWindow("Search/OK")
+		self.XBtn=shared.renderGUI.windowManager.getWindow("Search/X")
 		self.OkBtn.subscribeEvent(self.OkBtn.EventMouseButtonDown, self, "b_OK")
 		self.XBtn.subscribeEvent(self.XBtn.EventMouseButtonDown, self, "b_X")
 		self.Searchbox.subscribeEvent(self.Searchbox.EventTextAccepted, self, "s_Enter")

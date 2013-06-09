@@ -34,7 +34,7 @@ def ParseCommand(Txt):
 			return str(AABB)
 		elif CMD=="dbg_guistats":
 			GUISTATS = not GUISTATS
-			shared.renderguiGUI.GuiStats(GUISTATS)
+			shared.renderGUI.GuiStats(GUISTATS)
 			return str(GUISTATS)
 
 		#UNIT HANDLER COMMANDS

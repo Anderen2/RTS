@@ -10,8 +10,8 @@ from engine.Networking.client import client
 from engine.World import maploader
 from engine.Tool.Mapeditor import globalgui, toolmanager, backend
 
-#"Networking"
-shared.DPrint("Main",1,"Initializing Networking...")
+#Mainloop
+shared.DPrint("Main",1,"Initializing Mainloop...")
 shared.client=client.Service()
 shared.reactor=client.reactor
 
@@ -52,12 +52,12 @@ shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
 
 shared.render3dScene.Setup()
-#shared.renderguiGUI.SetupBare()
+#shared.renderGUI.SetupBare()
 
 shared.globalGUI=globalgui.MapeditorGUI()
 shared.globalGUI.Setup()
 
-shared.renderguiGUI.SetupDebugStuff()
+shared.renderGUI.createDebugOnly()
 
 shared.renderioInput.SetupBare()
 

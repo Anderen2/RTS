@@ -2,7 +2,7 @@
 #Submodules: render3d, rendergui, renderio, renderphys
 import render3d, rendergui, renderio, renderphys, renderconsole
 from twisted.internet import reactor
-from engine import shared
+from engine import shared, debug
 from time import gmtime, sleep, time
 from traceback import print_exc
 import ogre.renderer.OGRE as ogre
@@ -87,9 +87,9 @@ class RenderApplication(object):
  
 	def setupCEGUI(self):
 		shared.DPrint("Render",1,"Setting up GUI")
-		shared.renderguiGUI=rendergui.GUI()
+		shared.renderGUI=rendergui.GUI()
 		if not self.BARE:
-			shared.renderguiGUI.Setup()
+			shared.renderGUI.Setup()
 
 	def setupDebuggingTools(self):
 		shared.DPrint("Render",1,"Setting up DBGTools")
@@ -162,7 +162,7 @@ class RenderListener(ogre.FrameListener):
 		ogre.FrameListener.__init__(self)
 		self.scene=shared.render3dScene
 		self.input=shared.renderioInput
-		self.gui=shared.renderguiGUI
+		self.gui=shared.renderGUI
 		self.RT=shared.renderRoot.getAutoCreatedWindow()
 		self.FPS=0
 		# self.FPSc=0
@@ -182,8 +182,9 @@ class RenderListener(ogre.FrameListener):
 		# 	self.FPSc=self.FPSc+1
 		# self.FPS=sum(self.FPStable)/self.FPSsample
 		# #print(self.FPStable)
-		self.gui.FPScounter.setText(str(int(self.RT.getLastFPS()))+"|"+str(int(self.RT.getWorstFPS())))
-		self.gui.DIVcounter.setText(str(int(self.RT.getTriangleCount()))+"|"+str(int(self.RT.getBatchCount())))
+		if debug.GUISTATS:
+			shared.gui['debug'].FPScounter.setText(str(int(self.RT.getLastFPS()))+"|"+str(int(self.RT.getWorstFPS())))
+			shared.gui['debug'].DIVcounter.setText(str(int(self.RT.getTriangleCount()))+"|"+str(int(self.RT.getBatchCount())))
 		# self.FPS=self.FPS+1
 		# if self.FPS>60:
 		# 	tt=gmtime()[5]+1

@@ -8,10 +8,10 @@ class DecorationGUI():
 	def __init__(self):
 
 		#Bad habbit, but fuckit
-		WM = shared.renderguiGUI.windowManager
+		WM = shared.renderGUI.windowManager
 
-		self.root = shared.renderguiGUI.windowManager.getWindow("Root")
-		self.layout = shared.renderguiGUI.windowManager.loadWindowLayout("Decoration.layout")
+		self.root = shared.renderGUI.windowManager.getWindow("Root")
+		self.layout = shared.renderGUI.windowManager.loadWindowLayout("Decoration.layout")
 
 		self.root.addChildWindow(self.layout)
 

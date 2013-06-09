@@ -15,11 +15,11 @@ class MapeditorGUI():
 		self.hackhz, self.hackvz = shared.render3dCamera.getDimensions()
 
 		self.sheet = CEGUI.WindowManager.getSingleton().loadWindowLayout("empty.layout")
-		shared.renderguiGUI.system.setGUISheet(self.sheet)
+		shared.renderGUI.system.setGUISheet(self.sheet)
 
 		#Defaults
-		shared.renderguiGUI.system.setDefaultMouseCursor("TaharezLook", "MouseArrow")
-		shared.renderguiGUI.system.setDefaultFont("BlueHighway-12")
+		shared.renderGUI.system.setDefaultMouseCursor("TaharezLook", "MouseArrow")
+		shared.renderGUI.system.setDefaultFont("BlueHighway-12")
 		CEGUI.MouseCursor.getSingleton().setImage("TaharezLook", "MouseArrow")
 
 		#Create rest of GUI elements
@@ -31,7 +31,7 @@ class MapeditorGUI():
 
 		#Loop through all the GUI elements to add window movement
 		print("!"*20)
-		print(shared.renderguiGUI.windowManager.getWindow("Root").getChildCount())
+		print(shared.renderGUI.windowManager.getWindow("Root").getChildCount())
 
 		for x in self.iterChilds("Root"):
 			x.setAlpha(0.5)
@@ -49,7 +49,7 @@ class MapeditorGUI():
 			print(x)
 
 	def iterChilds(self, window):
-		element=shared.renderguiGUI.windowManager.getWindow(window)
+		element=shared.renderGUI.windowManager.getWindow(window)
 		childcount=element.getChildCount()
 		if childcount!=0:
 			for x in xrange(0, childcount):
@@ -79,7 +79,7 @@ class MapeditorGUI():
 		print split("name", "a")
 		if "/" in str(evt.window.getName()):
 			parentwindow=split(str(evt.window.getName()),"/")[0]
-			shared.renderguiGUI.windowManager.getWindow(parentwindow).setAlpha(1)
+			shared.renderGUI.windowManager.getWindow(parentwindow).setAlpha(1)
 		else:
 			evt.window.setAlpha(1)
 
@@ -93,7 +93,7 @@ class MapeditorGUI():
 	def W_Mleave(self, evt):
 		if "/" in str(evt.window.getName()):
 			parentwindow=split(str(evt.window.getName()),"/")[0]
-			shared.renderguiGUI.windowManager.getWindow(parentwindow).setAlpha(0.5)
+			shared.renderGUI.windowManager.getWindow(parentwindow).setAlpha(0.5)
 		else:
 			evt.window.setAlpha(0.5)
 

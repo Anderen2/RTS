@@ -4,8 +4,8 @@ from engine import shared, debug
 
 class PopupGUI():
 	def __init__(self, poptype, ret, info="Popup"):
-		self.root = shared.renderguiGUI.windowManager.getWindow("Root")
-		self.layout = shared.renderguiGUI.windowManager.loadWindowLayout(poptype+".layout")
+		self.root = shared.renderGUI.windowManager.getWindow("Root")
+		self.layout = shared.renderGUI.windowManager.loadWindowLayout(poptype+".layout")
 
 		self.poptype=poptype
 		self.ret=ret
@@ -14,8 +14,8 @@ class PopupGUI():
 
 		self.root.addChildWindow(self.layout)
 
-		OkBtn=shared.renderguiGUI.windowManager.getWindow("Popup/OK")
-		CancelBtn=shared.renderguiGUI.windowManager.getWindow("Popup/Cancel")
+		OkBtn=shared.renderGUI.windowManager.getWindow("Popup/OK")
+		CancelBtn=shared.renderGUI.windowManager.getWindow("Popup/Cancel")
 
 		OkBtn.subscribeEvent(OkBtn.EventMouseButtonDown, self, "b_OK")
 		CancelBtn.subscribeEvent(CancelBtn.EventMouseButtonDown, self, "b_Cancel")

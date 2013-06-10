@@ -4,8 +4,8 @@ from engine import debug, shared
 
 class contextTools():
 	def __init__(self):
-		self.options=["Select", "Move (Ground)", "Move (Y-Axis)", "Move (Free)", "Rotate (Z)", "Rotate (Y)", "Rotate (X)"]
-		self.optfunc=[self.sSelect, self.sMoveGnd, self.sMoveY, self.sMoveFree, self.sRotateZ, self.sRotateY, self.sRotateX]
+		self.options=["Select", "Move (Ground)", "Move (Y-Axis)", "Move (Free)", "Rotate (Z)", "Rotate (Y)", "Rotate (X)", "Save", "Load"]
+		self.optfunc=[self.sSelect, self.sMoveGnd, self.sMoveY, self.sMoveFree, self.sRotateZ, self.sRotateY, self.sRotateX, self.sSave, self.sLoad]
 
 	def sSelect(self):
 		shared.toolManager.setTool(0)
@@ -27,3 +27,9 @@ class contextTools():
 
 	def sRotateX(self):
 		shared.toolManager.setTool(2,2)
+
+	def sSave(self):
+		shared.Mapfile.Save("nice.map")
+
+	def sLoad(self):
+		pass

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="Vanilla/FrameWindow" Name="Options" >
+        <Property Name="Font" Value="Commonwealth-10" />
+        <Property Name="Text" Value="Options" />
+        <Property Name="TitlebarFont" Value="Commonwealth-10" />
+        <Property Name="TitlebarEnabled" Value="True" />
+        <Property Name="UnifiedAreaRect" Value="{{0.269336,0},{0.266406,0},{0.707812,0},{0.671355,0}}" />
+        <Window Type="DefaultWindow" Name="Options/Sidebar" >
+            <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{0.25,0},{1,0}}" />
+            <Window Type="WindowsLook/Button" Name="Options/Sidebar/1" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" Value="Heightmap" />
+                <Property Name="Alpha" Value="0.9" />
+                <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{0.15,0}}" />
+                <Property Name="WantsMultiClickEvents" Value="False" />
+            </Window>
+        </Window>
+        <Window Type="DefaultWindow" Name="Options/Desc" >
+            <Property Name="UnifiedAreaRect" Value="{{0.25,0},{0,0},{0.6,0},{1,0}}" />
+            <Window Type="Vanilla/StaticText" Name="Options/Desc/1" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" Value="File" />
+                <Property Name="HorzExtent" Value="28" />
+                <Property Name="VertExtent" Value="23.1724" />
+                <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{0.15,0}}" />
+            </Window>
+        </Window>
+        <Window Type="DefaultWindow" Name="Options/Opt" >
+            <Property Name="UnifiedAreaRect" Value="{{0.6,0},{0,0},{1,0},{1,0}}" />
+            <Window Type="Vanilla/Button" Name="Options/Opt/1" >
+                <Property Name="Font" Value="Commonwealth-10" />
+                <Property Name="Text" Value="./Heigh.png" />
+                <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{0.15,0}}" />
+            </Window>
+        </Window>
+    </Window>
+</GUILayout>

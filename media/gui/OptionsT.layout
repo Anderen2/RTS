@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="Vanilla/FrameWindow" Name="Options" >
+        <Property Name="Font" Value="Commonwealth-10" />
+        <Property Name="Text" Value="Options" />
+        <Property Name="TitlebarFont" Value="Commonwealth-10" />
+        <Property Name="TitlebarEnabled" Value="True" />
+        <Property Name="UnifiedAreaRect" Value="{{0.269336,0},{0.266406,0},{0.707812,0},{0.671355,0}}" />
+        <Window Type="DefaultWindow" Name="Options/Sidebar" >
+            <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{0.25,0},{1,0}}" />
+            <Window Type="Vanilla/Button" Name="Options/Sidebar/Apply" >
+                <Property Name="Text" Value="Apply" />
+                <Property Name="UnifiedAreaRect" Value="{{0,0},{0.9,0},{0.5,0},{1,0}}" />
+            </Window>
+            <Window Type="Vanilla/Button" Name="Options/Sidebar/Cancel" >
+                <Property Name="Text" Value="Cancel" />
+                <Property Name="UnifiedAreaRect" Value="{{0.5,0},{0.9,0},{1,0},{1,0}}" />
+            </Window>
+        </Window>
+        <Window Type="DefaultWindow" Name="Options/Desc" >
+            <Property Name="UnifiedAreaRect" Value="{{0.25,0},{0,0},{0.6,0},{1,0}}" />
+        </Window>
+        <Window Type="DefaultWindow" Name="Options/Opt" >
+            <Property Name="UnifiedAreaRect" Value="{{0.6,0},{0,0},{1,0},{1,0}}" />
+        </Window>
+    </Window>
+</GUILayout>

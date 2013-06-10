@@ -144,7 +144,7 @@ class Menu():
 					#print item.movable.getName()
 					#print item.movable.getParentSceneNode().getName()
 
-					if item.movable.getName()[0:5] == "tile[":
+					if item.movable.getName()[0:5] == "tile[" or item.movable.getName()[0:5] == "Water":
 						self.CurrentContext=2
 
 					elif "dec" in item.movable.getName():

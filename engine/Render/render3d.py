@@ -9,6 +9,7 @@ from ogre.gui.CEGUI import MouseCursor
 from random import randrange
 from string import split
 from math import floor
+from traceback import print_exc
 from twisted.internet import reactor
 
 class Scene():
@@ -62,6 +63,13 @@ class Scene():
 		debug.ACC("r_pfenable", self.PostFilterEnable, info="Enable a postfilter", args=1)
 		debug.ACC("r_pfdisable", self.PostFilterDisable, info="Disable a postfilter", args=1)
 		debug.ACC("r_pm", self.PolygenMode, info="Change the polygenmode. 1 for points, 2 for wireframe, 3 for solid", args=1)
+		debug.ACC("r_reloadterrain", self.RldTerrain, info="Reload the terrain", args=0)
+
+	def RldTerrain(self):
+		try:
+			self.sceneManager.setWorldGeometry("terrain2.cfg")
+		except:
+			print_exc()
 
 	def FowSetup(self):
 		shared.DPrint("Render3d",1,"New FOWManager..")

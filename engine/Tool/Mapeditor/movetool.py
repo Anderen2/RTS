@@ -25,7 +25,7 @@ class MoveTool():
 		result = self.raySceneQuery.execute()
 		if len(result)>0:
 			for item in result:
-				if item.movable and item.movable.getName()!="Camera" and item.movable.getName()[0:5] != "tile[":
+				if item.movable and item.movable.getName()!="Camera" and item.movable.getName()[0:5] != "tile[" and item.movable.getName()[0:5] != "Water":
 					print "____________________________________"
 					print item.movable.getName()
 					print item.movable.getParentSceneNode().getName()

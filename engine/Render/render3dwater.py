@@ -9,10 +9,23 @@ import ogre.renderer.OGRE as ogre
 class WaterManager():
 	def __init__(self):
 		self.wcount=0
+		self.waters=[]
 
 	def Create(self, Pos, Height, Width):
 		self.wcount=self.wcount+1
-		return Water(self.wcount,Pos, Height, Width)
+		water=Water(self.wcount, Pos, Height, Width)
+		self.waters.append(water)
+		return water
+
+	def CreateUno(self, Altitude):
+		self.wcount=self.wcount+1
+
+		# terrainLength=
+		# terrainHeight=
+
+		water=Water(self.wcount, Pos, Height, Width)
+		self.waters.append(water)
+		return water
 
 def ConsoleFriendly(X, Y, Z, L, H):
 	shared.WaterManager.Create((float(X),float(Y),float(Z)),float(L),float(H))
@@ -31,6 +44,11 @@ class Water():
 		self.node=shared.render3dScene.sceneManager.getRootSceneNode().createChildSceneNode()
 		self.node.attachObject(self.Entity)
 		self.node.setPosition(Pos)
+
+	def destroy(self):
+		self.node.detachObject(self.Entity)
+		shared.render3dScene.sceneManager.destroyEntity(self.Entity.getName())
+		shared.render3dScene.sceneManager.destroySceneNode(self.node.getName())
 
 	def __del__(self):
 		pass

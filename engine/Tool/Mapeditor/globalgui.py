@@ -2,7 +2,7 @@
 
 from string import split
 from engine import shared, debug
-from engine.Tool.Mapeditor import decorationgui, toolsgui, propertiesgui, contextmenu, supersearch
+from engine.Tool.Mapeditor import optionsgui, contextmenu, supersearch
 import ogre.gui.CEGUI as CEGUI
 
 class MapeditorGUI():
@@ -26,6 +26,7 @@ class MapeditorGUI():
 		#self.DecorationGUI=decorationgui.DecorationGUI()
 		#self.PropertiesGUI=propertiesgui.PropertiesGUI()
 		#self.ToolsGUI=toolsgui.ToolsGUI()
+		self.OptionsGUI = optionsgui.GUI()
 		self.ContextMenu=contextmenu.Menu()
 		self.SSearch=supersearch.SSearchGUI()
 

@@ -2,6 +2,7 @@
 #This module is shared between all modules, and contains pointers to nessesary classes
 from time import localtime
 
+wd="./" #Workingdirectory
 #Its not nessesary to declare all these as none before declaring them to what they are. But it gives a quick overview over what the names are
 render=None
 

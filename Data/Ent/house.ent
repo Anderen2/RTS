@@ -2,7 +2,7 @@ house
 name=TudorHouse
 version=1.1
 mesh=tudorhouse.mesh
-meshscale=(0.35,0.35,0.35)
+meshscale=(0.2,0.15,0.2)
 shadows=True
 meshturret=none
 addmesh=0

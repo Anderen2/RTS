@@ -8,7 +8,7 @@ from engine.Render import render
 from engine.Object import unitmanager, prop, decorator, zone, directormanager
 from engine.Networking.client import client
 from engine.World import maploader
-from engine.Tool.Mapeditor import globalgui, toolmanager, backend
+from engine.Tool.Mapeditor import globalgui, toolmanager, backend, mapfile
 
 #Mainloop
 shared.DPrint("Main",1,"Initializing Mainloop...")
@@ -33,6 +33,9 @@ shared.mapBackend=backend.MapeditorBackend()
 #MapLoader
 shared.MapLoader=maploader.MapLoader()
 shared.Map=shared.MapLoader.Load("test.map")
+
+#MapSaver
+shared.Mapfile=mapfile.Mapfile()
 
 #CommandParser
 shared.DPrint("Main",1,"Initializing CommandParser...")

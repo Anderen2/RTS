@@ -16,29 +16,34 @@ class MapLoader():
 		if float(mapconfig["Map"]["General"]["Version"])<MAPLOADERVERSION:
 			shared.DPrint("Maploader", 2, "Map is an older version than the importer, errors may occur!")
 
-		return Map(mapconfig)
+		self.Map=Map(mapconfig)
+		return self.Map
 
 	def terrainLoad(self, terraincfg):
 		self.createTerrainCFG(terraincfg)
 		shared.render3dScene.RldTerrain()
 
 		if terraincfg["Water"]["Type"]!="None":
-			terrainX=float(terraincfg["Heightmap"]["Scale"][0])
-			terrainY=float(terraincfg["Heightmap"]["Scale"][1])
+			terrainX=int(terraincfg["Heightmap"]["Scale"][0])
+			terrainY=int(terraincfg["Heightmap"]["Scale"][1])
 			if len(shared.WaterManager.waters)==0:
-				shared.WaterManager.Create((terrainX/2, float(terraincfg["Water"]["Altitude"]), terrainY/2), terrainX, terrainY)
+				shared.WaterManager.Create((terrainX/2, int(terraincfg["Water"]["Altitude"]), terrainY/2), terrainX, terrainY)
 			else:
-				shared.WaterManager.waters[0].node.setPosition((terrainX/2, float(terraincfg["Water"]["Altitude"]), terrainY/2))
+				if (shared.WaterManager.waters[0].node.getPosition().x)/2==terrainX/2:
+					shared.WaterManager.waters[0].node.setPosition((terrainX/2, int(terraincfg["Water"]["Altitude"]), terrainY/2))
+				else:
+					shared.WaterManager.Remove(0)
+					shared.WaterManager.Create((terrainX/2, int(terraincfg["Water"]["Altitude"]), terrainY/2), terrainX, terrainY)
 		else:
-			if len(shared.WaterManager.waters)==0:
-				shared.WaterManager.waters[0].destroy()
+			if len(shared.WaterManager.waters)!=0:
+				shared.WaterManager.Remove(0)
 
 	def createTerrainCFG(self, terraincfg):
 		Comment="# Automaticly generated from current map. Do NOT mod this file manually, your changes will only be overwritten!"
 		PageSource="Heightmap"
 		HeightmapImage=terraincfg["Heightmap"]["Heightmap File"]
 		PageSize=str(terraincfg["Heightmap"]["PageSize"])
-		TileSize="129"
+		TileSize=str(terraincfg["Heightmap"]["TileSize"])
 		MaxPixelError="30000"
 		PageWorldX=str(terraincfg["Heightmap"]["Scale"][0])
 		PageWorldZ=str(terraincfg["Heightmap"]["Scale"][1])
@@ -67,23 +72,6 @@ class Map():
 	def Setup(self):
 		shared.DPrint("Map", 0, "Starting to setup scene according to mapfile")
 
-		## TERRAIN TO render3d
-		## Player/Camera TO Playermanager
-		## Decorations to DecorationManager
-		## Units to UnitManager
-		## Zones to ZoneManager
-
-		# #Decoratorplacer
-		# for x in self.properties["decos"]:
-		# 	name=self.properties["decos"][x]["name"]
-
-		# 	pos=self.properties["decos"][x]["xyz"]
-		# 	posl=pos.split(",")
-		# 	rot=self.properties["decos"][x]["rot"]
-		# 	rotl=rot.split(",")
-		# 	shared.DPrint("Map", 0, "Placing decorator: "+name+" ("+x+")"+" @ "+pos)
-		# 	shared.decHandeler.Create(name, posl, rotl)
-
 		#Setup Terrain (Heightmap, Water and Textures)
 		shared.MapLoader.terrainLoad(self.config["Terrain"])
 
@@ -94,4 +82,4 @@ class Map():
 			rot=self.config["Decorator"][ID]["rot"]
 
 			shared.DPrint("Map", 0, "Placing decorator: "+name+" ("+str(ID)+")"+" @ "+str(pos))
-			shared.decHandeler.Create(name, pos, rot)
+			shared.decHandeler.Create(name, pos).entity.setOrientation(rot[0], rot[1], rot[2], rot[3])

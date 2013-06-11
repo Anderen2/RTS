@@ -10,6 +10,8 @@ from engine.Networking.client import client
 from engine.World import maploader
 from engine.Tool.Mapeditor import globalgui, toolmanager, backend, mapfile
 
+shared.wd="./Data/Map/"
+
 #Mainloop
 shared.DPrint("Main",1,"Initializing Mainloop...")
 shared.client=client.Service()
@@ -32,7 +34,7 @@ shared.mapBackend=backend.MapeditorBackend()
 
 #MapLoader
 shared.MapLoader=maploader.MapLoader()
-shared.Map=shared.MapLoader.Load("test.map")
+shared.Map=shared.MapLoader.Load("nice.map")
 
 #MapSaver
 shared.Mapfile=mapfile.Mapfile()

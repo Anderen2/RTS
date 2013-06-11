@@ -29,7 +29,25 @@ class contextTools():
 		shared.toolManager.setTool(2,2)
 
 	def sSave(self):
-		shared.Mapfile.Save("nice.map")
+		layout={"Save": {"Filename":"str", "Working Directory":"str", "None":"str"}}
+		config={"Save": {"Filename":"nice.map", "Working Directory":shared.wd, "None":"none"}}
+		shared.globalGUI.OptionsGUI.ask("Save Map", self.callbackSave, layout, config)
 
 	def sLoad(self):
-		pass
+		layout={"Load": {"Filename":"str", "Working Directory":"str", "None":"str"}}
+		config={"Load": {"Filename":"nice.map", "Working Directory":shared.wd, "None":"none"}}
+		shared.globalGUI.OptionsGUI.ask("Load Map", self.callbackLoad, layout, config)
+
+	def callbackSave(self,config):
+		filename=config["Save"]["Filename"]
+		workingdir=config["Save"]["Working Directory"]
+		shared.Mapfile.Save(workingdir+filename)
+
+	def callbackLoad(self, config):
+		filename=config["Load"]["Filename"]
+		workingdir=config["Load"]["Working Directory"]
+		shared.wd=workingdir
+
+		shared.decHandeler._del() #Clear all decorations from the map
+		shared.MapLoader.Load(filename).Setup() #Setup new map
+		shared.Mapfile.Load() #Setup mapconfig for new map 

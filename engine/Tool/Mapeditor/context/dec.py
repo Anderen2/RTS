@@ -10,7 +10,7 @@ class contextDec():
 
 	def sRemove(self):
 		for x in self.getUnits():
-			x._del()
+			shared.decHandeler.Remove(x.ID)
 
 	def sDupe(self):
 		Units=self.getUnits()

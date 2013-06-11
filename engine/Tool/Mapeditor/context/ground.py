@@ -31,15 +31,16 @@ class contextGround():
 		pass
 
 	def sTerrain(self):
-		layout={"Heightmap":{"Heightmap File":"file","Scale":"vector2","Height":"float", "PageSize":"float"}, "Texture":{"Base Texture":"file", "Alpha Splatmaps":"filelist", "Alpha SplatTextures": "filelist"}, "Water":{"Type":["Ocean", "None"], "Altitude":"float"}, "Lightning":{"Position of sun":"vector3", "Ambient":"color"}}
-		config={"Heightmap":{"Heightmap File":"high.png", "Scale":"1,1", "Height":"10", "PageSize":"1025"}, "Texture":{"Base Texture": "2048.png", "Alpha Splatmaps": "alphamap.png;alphamap2.png", "Alpha SplatTextures": "terr_rock-dirt.jpg;grass_1024.jpg"}, "Water":{"Type":"Ocean", "Altitude":"10.0"}, "Lightning":{"Position of sun":"0,0,0", "Ambient":"64,64,0"}}
+		layout={"Heightmap":{"Heightmap File":"file","Scale":"vector2","Height":"float", "TileSize":"int", "PageSize":"int"}, "Texture":{"Base Texture":"file", "Alpha Splatmaps":"filelist", "Alpha SplatTextures": "filelist"}, "Water":{"Type":["Ocean", "None"], "Altitude":"float"}, "Lightning":{"Position of sun":"vector3", "Ambient":"color"}}
+		
+		config=shared.Mapfile.TerrainConfig
 
 		shared.globalGUI.OptionsGUI.ask("Terrain Settings", self.callbackTerrain, layout, config)
 
 	def sMap(self):
 		layout={"General": {"Name":"str", "Version":"float", "Description":"str"}, "Players":{"Count": "int"}}
-		config={"General": {"Name":"Test", "Version":"0.1", "Description":"The first map!"}, "Players":{"Count": "4"}}
 
+		config=shared.Mapfile.MapConfig
 		shared.globalGUI.OptionsGUI.ask("Map Settings", self.callbackMap, layout, config)
 
 	def getClickedPos(self):
@@ -58,13 +59,14 @@ class contextGround():
 					break
 
 	def callbackTerrain(self, config):
+		shared.Mapfile.TerrainConfig=textvalidator.convertConfig(config)
+
 		for section, keys in config.iteritems():
 			print("["+section+"]")
 
 			for key, value in keys.iteritems():
-				print(key+"="+value)
+				print(key+"="+str(value))
 
-		shared.Mapfile.TerrainConfig=config
 		shared.MapLoader.terrainLoad(textvalidator.convertConfig(config))
 
 	def callbackMap(self, config):
@@ -72,6 +74,6 @@ class contextGround():
 			print("["+section+"]")
 
 			for key, value in keys.iteritems():
-				print(key+"="+value)
+				print(key+"="+str(value))
 
-		shared.Mapfile.MapConfig=config
+		shared.Mapfile.MapConfig=textvalidator.convertConfig(config)

@@ -340,11 +340,19 @@ class Entity():
 		self.node.translate(x, y, z)
 		return self.node.getPosition()
 
+	def setOrientation(self, w, x, y, z):
+		self.node.setOrientation(float(w), float(x), float(y), float(z))
+
 	def Rotate(self, x, y, z):
 		self.node.rotate((1,0,0),ogre.Degree(x))
 		self.node.rotate((0,1,0),ogre.Degree(y))
 		self.node.rotate((0,0,1),ogre.Degree(z))
 		return self.node.getOrientation()
+
+	def RPYRotate(self, roll, pitch, yaw):
+		self.node.roll(ogre.Degree(float(roll)))
+		self.node.pitch(ogre.Degree(float(pitch)))
+		self.node.yaw(ogre.Degree(float(yaw)))
 
 	def transRotate(self, x, y, z):
 		px=float(self.node.getOrientation().getRoll().valueDegrees())

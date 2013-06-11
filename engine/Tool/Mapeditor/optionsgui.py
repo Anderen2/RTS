@@ -82,20 +82,20 @@ class GUI():
 
 		for Cname, option in self.CurrentContent.iteritems():
 			print(Cname)
-			text=shared.renderGUI.windowManager.createWindow("Vanilla/StaticText", "Options/Desc/"+Cname)
+			text=shared.renderGUI.windowManager.createWindow("Vanilla/StaticText", "Options/Desc/"+str(Cname))
 			text.setSize(CEGUI.UVector2(CEGUI.UDim(1, 0), CEGUI.UDim(0.10, 0)))
 			text.setPosition(CEGUI.UVector2(CEGUI.UDim(0, 0), CEGUI.UDim(len(self.DescItems)*0.10, 0)))
-			text.setText(Cname)
+			text.setText(str(Cname))
 			text.show()
 
 			self.Desc.addChildWindow(text)
 			shared.globalGUI.registerLayout(text)
 			self.DescItems.append(text)
 
-			choice=shared.renderGUI.windowManager.createWindow("Vanilla/Editbox", "Options/Opt/"+Cname)
+			choice=shared.renderGUI.windowManager.createWindow("Vanilla/Editbox", "Options/Opt/"+str(Cname))
 			choice.setSize(CEGUI.UVector2(CEGUI.UDim(1, 0), CEGUI.UDim(0.10, 0)))
 			choice.setPosition(CEGUI.UVector2(CEGUI.UDim(0, 0), CEGUI.UDim(len(self.OptItems)*0.10, 0)))
-			choice.setText(self.CurrentConfig[self.CurrentSection][Cname])
+			choice.setText(str(self.CurrentConfig[self.CurrentSection][Cname]))
 
 			choice.subscribeEvent(choice.EventTextAccepted, self, "validateField")
 			choice.subscribeEvent(choice.EventDeactivated, self, "validateField")

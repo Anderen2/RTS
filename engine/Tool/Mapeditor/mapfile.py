@@ -1,6 +1,7 @@
 #Mapfile Creator
 
 from engine import shared, debug
+from twisted.internet import reactor
 import pickle
 
 class Mapfile():
@@ -10,10 +11,15 @@ class Mapfile():
 		self.TerrainConfig={}
 		self.DecoratorConfig={}
 
+		self.Load()
+
 	def Generate(self):
+		self.DecoratorConfig={}
 		for ID, Deco in shared.decHandeler.decorators.iteritems():
+			print (ID, Deco)
 			pos=Deco.entity.node.getPosition()
-			rot=(float(Deco.entity.node.getOrientation().getRoll().valueDegrees()), float(Deco.entity.node.getOrientation().getPitch().valueDegrees()), float(Deco.entity.node.getOrientation().getYaw().valueDegrees()))
+			print(pos)
+			rot=(float(Deco.entity.node.getOrientation().w), float(Deco.entity.node.getOrientation().x), float(Deco.entity.node.getOrientation().y), float(Deco.entity.node.getOrientation().z))
 
 			self.DecoratorConfig[ID]={}
 			self.DecoratorConfig[ID]["pos"]=(pos.x, pos.y, pos.z)
@@ -26,3 +32,16 @@ class Mapfile():
 		self.Generate()
 		File=open(filename,"w")
 		pickle.dump(self.Map, File)
+
+	def Load(self):
+		self.Map=shared.MapLoader.Map.config
+		self.MapConfig=self.Map["Map"]
+		self.TerrainConfig=self.Map["Terrain"]
+		self.DecoratorConfig=self.Map["Decorator"]
+
+	# def checkYourPrivileges(self):
+	# 	if len(self.TerrainConfig)>1:
+	# 		print(self.TerrainConfig["Heightmap"]["Scale"]+"test")
+	# 	else:
+	# 		print("Shit is cahs!")
+	# 	#reactor.callLater(1, self.checkYourPrivileges)

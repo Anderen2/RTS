@@ -63,7 +63,14 @@ class Scene():
 		debug.ACC("r_pfenable", self.PostFilterEnable, info="Enable a postfilter", args=1)
 		debug.ACC("r_pfdisable", self.PostFilterDisable, info="Disable a postfilter", args=1)
 		debug.ACC("r_pm", self.PolygenMode, info="Change the polygenmode. 1 for points, 2 for wireframe, 3 for solid", args=1)
+		debug.ACC("r_aabb", self.cAABB, info="View all bounding boxes, 1/0", args=1)
 		debug.ACC("r_reloadterrain", self.RldTerrain, info="Reload the terrain", args=0)
+
+	def cAABB(self, onoff):
+		if onoff==str(1):
+			self.sceneManager.showBoundingBoxes(True)
+		else:
+			self.sceneManager.showBoundingBoxes(False)
 
 	def RldTerrain(self):
 		try:

@@ -25,11 +25,17 @@ class DecoratorHandeler(FrameListener):
 
 		return pointer
 
+	def Remove(self, ID):
+		if ID in self.decorators:
+			self.Destroy(ID)
+			self.Delete(ID)
+
 	def Destroy(self, ID):
 		self.decorators[ID]._del()
 
 	def Delete(self, ID):
 		del self.decorators[ID]
+		#self.dcount-=1
 
 	def Count(self):
 		return len(self.decorators)
@@ -68,7 +74,7 @@ class DecoratorHandeler(FrameListener):
 		return True
 
 	def _del(self):
-		for ID, unit in self.decorators.items():
+		for ID, unit in self.decorators.iteritems():
 			unit._del()
 		self.decorators={}
 
@@ -146,7 +152,7 @@ class Decoration():
 			if not self.entity.error:
 				self.entity.Delete()
 				self.entity=None
-			shared.decHandeler.Delete(self.ID)
+			#shared.decHandeler.Delete(self.ID)
 		except:
 			shared.DPrint("Decoration",5,"Dec Deletion Failed! Dec may still be in memory and/or in game world!")
 			traceback.print_exc()

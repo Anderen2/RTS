@@ -27,6 +27,10 @@ class WaterManager():
 		self.waters.append(water)
 		return water
 
+	def Remove(self, ID):
+		self.waters[ID].destroy()
+		del self.waters[ID]
+
 def ConsoleFriendly(X, Y, Z, L, H):
 	shared.WaterManager.Create((float(X),float(Y),float(Z)),float(L),float(H))
 
@@ -36,8 +40,8 @@ class Water():
 	def __init__(self, ID, Pos, Length, Width):
 		plane=ogre.Plane((0,1,0),0)
 		MeshManager=ogre.MeshManager.getSingleton()
-		MeshManager.createPlane("Water", "General", plane, Width, Length, 100, 100, True, 1, 100, 100, (0,0,1))
-		self.Entity=shared.render3dScene.sceneManager.createEntity("Water"+str(ID),"Water")
+		MeshManager.createPlane("Water"+str(ID), "General", plane, Width, Length, 100, 100, True, 1, 100, 100, (0,0,1))
+		self.Entity=shared.render3dScene.sceneManager.createEntity("Water"+str(ID),"Water"+str(ID))
 		self.Entity.setMaterialName("OceanHLSL_GLSL")
 		self.Entity.setCastShadows(False)
 		#self.Entity.setRenderQueueGroup(ogre.RENDER_QUEUE_SKIES_LATE)

@@ -4,8 +4,8 @@ from engine import debug, shared
 
 class contextTools():
 	def __init__(self):
-		self.options=["Select", "Move (Ground)", "Move (Y-Axis)", "Move (Free)", "Rotate (Z)", "Rotate (Y)", "Rotate (X)", "Save", "Load"]
-		self.optfunc=[self.sSelect, self.sMoveGnd, self.sMoveY, self.sMoveFree, self.sRotateZ, self.sRotateY, self.sRotateX, self.sSave, self.sLoad]
+		self.options=["Select", "Move (Ground)", "Move (Y-Axis)", "Move (Gnd, Y-Lock)","Move (X/Z-Axis)", "Rotate (Z)", "Rotate (Y)", "Rotate (X)", "Save", "Load"]
+		self.optfunc=[self.sSelect, self.sMoveGnd, self.sMoveY, self.sMoveGndYLock, self.sMoveXZ, self.sRotateZ, self.sRotateY, self.sRotateX, self.sSave, self.sLoad]
 
 	def sSelect(self):
 		shared.toolManager.setTool(0)
@@ -16,8 +16,11 @@ class contextTools():
 	def sMoveY(self):
 		shared.toolManager.setTool(1,1)
 
-	def sMoveFree(self):
+	def sMoveGndYLock(self):
 		shared.toolManager.setTool(1,2)
+
+	def sMoveXZ(self):
+		shared.toolManager.setTool(1,3)
 
 	def sRotateZ(self):
 		shared.toolManager.setTool(2)

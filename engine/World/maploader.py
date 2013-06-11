@@ -21,6 +21,17 @@ class MapLoader():
 
 	def terrainLoad(self, terraincfg):
 		self.createTerrainCFG(terraincfg)
+
+		#Create a dictionary with textures and alphamaps
+		splattingDict = {}
+
+		i=0
+		for x in terraincfg["Texture"]["Alpha Splatmaps"]:
+			Fun = x.replace("[", "").replace("]", "").replace(" ", "")
+			splattingDict[terraincfg["Texture"]["Alpha SplatTextures"][i].replace("[", "").replace("]", "").replace(" ", "")]=Fun
+			i+=1
+
+		shared.render3dScene.createTerrainMaterial(terraincfg["Texture"]["Base Texture"], splattingDict)
 		shared.render3dScene.RldTerrain()
 
 		if terraincfg["Water"]["Type"]!="None":

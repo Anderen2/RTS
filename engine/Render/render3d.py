@@ -15,14 +15,18 @@ from twisted.internet import reactor
 class Scene():
 	def __init__(self):
 		self.root=shared.renderRoot
+		self.TerrainMaterial=None
 
 	def Setup(self):
 		shared.DPrint("Render3d",1,"Scenemanager..")
 		self.sceneManager = self.root.createSceneManager(ogre.ST_EXTERIOR_CLOSE, "Default sceneManager")
 		shared.DPrint("Render3dScene",1,"Current scenemanager: %s" % str(self.sceneManager.getTypeName()))
-		#print(self.sceneManager.getTerrainMaterial())
 
 		shared.DPrint("Render3d",1,"Terrain..")
+		
+		if self.TerrainMaterial==None:
+			self.createTerrainMaterial("2048.png", {"terr_rock-dirt.jpg":"alphamap.png", "grass_1024.jpg":"alphamap2.png"})
+
 		self.sceneManager.setWorldGeometry ("terrain.cfg")
 
 		shared.DPrint("Render3d",1,"Skybox..")
@@ -83,6 +87,42 @@ class Scene():
 		#self, terrain, tsizex, tsizey, tsize)
 		shared.FowManager=render3dfow.FogOfWarListener("Template/Terrain", 1500, 1500, 1500)
 		shared.FowManager.Create()
+
+	def createTerrainMaterial(self, base, splatting):
+		if self.TerrainMaterial!=None:
+			self.TerrainMaterial.removeAllTechniques()
+			Technique=self.TerrainMaterial.createTechnique()
+			basePass=Technique.createPass()
+		else:
+			self.TerrainMaterial = ogre.MaterialManager.getSingleton().create("Template/Terrain",ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME) 
+
+		Technique=self.TerrainMaterial.getTechnique(0)
+		basePass=Technique.getPass(0)
+		baseTexture = basePass.createTextureUnitState()
+		baseTexture.setTextureName(base)
+		baseTexture.setTextureScale(1, 1)
+
+		for texture, alphamap in splatting.iteritems():
+			splattingPass = Technique.createPass()
+			splattingPass.setLightingEnabled(False)
+			splattingPass.setSceneBlending(ogre.SBT_TRANSPARENT_ALPHA)
+			splattingPass.setDepthFunction(ogre.CMPF_EQUAL)
+
+			alphamapTexture = splattingPass.createTextureUnitState()
+			alphamapTexture.setTextureName(alphamap)
+			alphamapTexture.setAlphaOperation(ogre.LBX_SOURCE1, ogre.LBS_TEXTURE, ogre.LBS_TEXTURE)
+			alphamapTexture.setColourOperationEx(ogre.LBX_SOURCE2, ogre.LBS_TEXTURE, ogre.LBS_TEXTURE)
+
+			detailTexture = splattingPass.createTextureUnitState()
+			detailTexture.setTextureName(texture)
+			detailTexture.setTextureScale(0.07, 0.07)
+			detailTexture.setColourOperationEx(ogre.LBX_BLEND_DIFFUSE_ALPHA, ogre.LBS_TEXTURE, ogre.LBS_CURRENT)
+
+		# lightingPass = Technique.createPass()
+		# lightingPass.setAmbient(1,1,1)
+		# lightingPass.setDiffuse(1,1,1,0)
+		# lightingPass.setDepthFunction(ogre.CMPF_EQUAL)
+		# lightingPass.setSceneBlending(ogre.SBF_ZERO, ogre.SBF_ONE_MINUS_SOURCE_COLOUR )
 
 	def PostFilterEnable(self,PF):
 		ogre.CompositorManager.getSingleton().addCompositor(shared.render3dCamera.viewPort, PF)

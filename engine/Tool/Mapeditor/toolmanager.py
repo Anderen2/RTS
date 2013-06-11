@@ -25,7 +25,7 @@ class ToolManager():
 			self.CurrentToolClass=None
 
 		if TID==1:
-			self.CurrentToolClass=movetool.MoveTool()
+			self.CurrentToolClass=movetool.MoveTool(Toolarg)
 
 		if TID==2:
 			self.CurrentToolClass=rotatetool.RotateTool()

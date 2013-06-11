@@ -7,13 +7,18 @@ from ogre.gui.CEGUI import MouseCursor
 from engine import debug, shared
 
 class MoveTool():
-	def __init__(self):
+	def __init__(self, Type):
 		#Raytrace
 		self.raySceneQuery = shared.render3dScene.sceneManager.createRayQuery(ogre.Ray())
 
 		self.dimh, self.dimv = shared.render3dCamera.getDimensions()
 
 		self.CurrentHold=None
+
+		self.CurrentType=Type
+
+		self.oldYPos = 0
+		self.oldXPos = 0
 
 	def MousePressed(self, id):
 		print("Raybeens")
@@ -53,18 +58,49 @@ class MoveTool():
 		self.CurrentHold=None
 
 	def MouseMoved(self, X, Y):
-		if self.CurrentHold!=None:
+		if self.CurrentType==None:
+			if self.CurrentHold!=None:
+				mousePos = MouseCursor.getSingleton().getPosition()
+				mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
+															  mousePos.d_y / float(self.dimv))
+				self.raySceneQuery.setRay(mouseRay)
+				result = self.raySceneQuery.execute()
+				if len(result)>0:
+					for item in result:
+						if item.movable and item.movable.getName()[0:5] == "tile[":
+							hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
+							posMoved=mouseRay.getPoint(hitpoint.second)
+							MovePosition=(posMoved[0],posMoved[1],posMoved[2])
+							YOffset=self.CurrentHold.entity.node._getWorldAABB().getHalfSize().y
+							self.CurrentHold.entity.SetPosition(posMoved[0],posMoved[1]+YOffset,posMoved[2])
+							break
+
+		elif self.CurrentType==1:
 			mousePos = MouseCursor.getSingleton().getPosition()
-			mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
-														  mousePos.d_y / float(self.dimv))
-			self.raySceneQuery.setRay(mouseRay)
-			result = self.raySceneQuery.execute()
-			if len(result)>0:
-				for item in result:
-					if item.movable and item.movable.getName()[0:5] == "tile[":
-						hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
-						posMoved=mouseRay.getPoint(hitpoint.second)
-						MovePosition=(posMoved[0],posMoved[1],posMoved[2])
-						YOffset=self.CurrentHold.entity.node._getWorldAABB().getHalfSize().y
-						self.CurrentHold.entity.SetPosition(posMoved[0],posMoved[1]+YOffset,posMoved[2])
-						break
+			if self.CurrentHold!=None:
+				self.CurrentHold.entity.Translate(0, self.oldYPos-mousePos.d_y, 0)
+			self.oldYPos = mousePos.d_y
+
+		elif self.CurrentType==2:
+			if self.CurrentHold!=None:
+				mousePos = MouseCursor.getSingleton().getPosition()
+				mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
+															  mousePos.d_y / float(self.dimv))
+				self.raySceneQuery.setRay(mouseRay)
+				result = self.raySceneQuery.execute()
+				if len(result)>0:
+					for item in result:
+						if item.movable and item.movable.getName()[0:5] == "tile[":
+							hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
+							posMoved=mouseRay.getPoint(hitpoint.second)
+							MovePosition=(posMoved[0],posMoved[1],posMoved[2])
+							YLock=self.CurrentHold.entity.node.getPosition().y
+							self.CurrentHold.entity.SetPosition(posMoved[0],YLock,posMoved[2])
+							break
+
+		elif self.CurrentType==3:
+			mousePos = MouseCursor.getSingleton().getPosition()
+			if self.CurrentHold!=None:
+				self.CurrentHold.entity.Translate(self.oldXPos-mousePos.d_x, 0, self.oldYPos-mousePos.d_y)
+			self.oldXPos = mousePos.d_x
+			self.oldYPos = mousePos.d_y

@@ -34,7 +34,7 @@ shared.zoneManager=zone.zoneManager()
 
 #MapLoader
 shared.MapLoader=maploader.MapLoader()
-shared.Map=shared.MapLoader.Load("nice.map")
+shared.Map=shared.MapLoader.Load("best.map")
 
 #CommandParser
 shared.DPrint("Main",1,"Initializing CommandParser...")

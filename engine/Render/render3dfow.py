@@ -6,14 +6,12 @@ from engine import shared, debug
 from random import randrange
 
 class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
-	def __init__(self, terrain, tsizex, tsizey, tsize):
+	def __init__(self, terrain):
 		ogre.RenderTargetListener.__init__(self)
 		ogre.Node.Listener.__init__(self)
 		self.terrain = terrain # this is a string corresponding to the name of the terrain material. Ex: "OceanCg"
 
-		self.tsizex=tsizex #Terrain Size
-		self.tsizey=tsizey
-		self.tsize=tsize
+		self.created=False
 
 		debug.ACC("turn", self.ChangeShit, info="Enable a nein", args=3)
 
@@ -24,7 +22,15 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.CircleNodes=[]
 
 		
-	def Create(self):
+	def Create(self, tsizex, tsizey):
+		shared.DPrint("FOWManager", 1, "Creating Fog Of War")
+
+		self.created=True
+
+		self.tsizex=tsizex #Terrain Size
+		self.tsizey=tsizey
+		self.tsize=(tsizex+tsizey)/2
+
 		self.fogManager = ogre.Root.getSingleton().createSceneManager(ogre.ST_EXTERIOR_CLOSE)
 		self.fogManager.setAmbientLight(ogre.ColourValue(0.2,0.2,0.2))
 

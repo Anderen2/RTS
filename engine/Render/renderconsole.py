@@ -216,6 +216,7 @@ class Console(ogre.FrameListener):
  
 	def write(self, text):
 		if text!="" and text!=None:
+			text=str(text)
 			for line in text.split("\n"):
 				while len(line) > 0:
 					self.outputHistory += [line[:Console.CONSOLE_LINE_LENGTH]]

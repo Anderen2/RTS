@@ -76,6 +76,7 @@ class RenderApplication(object):
 		shared.render3dScene=render3d.Scene()
 		shared.FowManager=None
 		if not self.BARE:
+			shared.FowManager=True
 			shared.render3dScene.Setup()
 			shared.render3dScene.FowSetup()
 		 

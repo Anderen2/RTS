@@ -7,6 +7,7 @@ class MapLoader():
 		global MAPLOADERVERSION
 		MAPLOADERVERSION=1.0
 		shared.DPrint("Maploader", 0, "Initializing..")
+		debug.ACC("map", self.Load, info="Load a map\nUsage: map mapfile. ex. map nice.map")
 
 	def Load(self, mapname):
 		global MAPLOADERVERSION
@@ -48,6 +49,10 @@ class MapLoader():
 		else:
 			if len(shared.WaterManager.waters)!=0:
 				shared.WaterManager.Remove(0)
+
+		if shared.FowManager!=None:
+			if shared.FowManager.created==False:
+				shared.FowManager.Create(int(terraincfg["Heightmap"]["Scale"][0]), int(terraincfg["Heightmap"]["Scale"][1]))
 
 	def createTerrainCFG(self, terraincfg):
 		Comment="# Automaticly generated from current map. Do NOT mod this file manually, your changes will only be overwritten!"

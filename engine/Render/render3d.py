@@ -85,8 +85,8 @@ class Scene():
 	def FowSetup(self):
 		shared.DPrint("Render3d",1,"New FOWManager..")
 		#self, terrain, tsizex, tsizey, tsize)
-		shared.FowManager=render3dfow.FogOfWarListener("Template/Terrain", 1500, 1500, 1500)
-		shared.FowManager.Create()
+		shared.FowManager=render3dfow.FogOfWarListener("Template/Terrain")
+		#shared.FowManager.Create()
 
 	def createTerrainMaterial(self, base, splatting):
 		if self.TerrainMaterial!=None:
@@ -120,7 +120,7 @@ class Scene():
 
 		# lightingPass = Technique.createPass()
 		# lightingPass.setAmbient(1,1,1)
-		# lightingPass.setDiffuse(1,1,1,0)
+		# lightingPass.setDiffuse(1,1,1,1)
 		# lightingPass.setDepthFunction(ogre.CMPF_EQUAL)
 		# lightingPass.setSceneBlending(ogre.SBF_ZERO, ogre.SBF_ONE_MINUS_SOURCE_COLOUR )
 

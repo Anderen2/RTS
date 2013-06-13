@@ -1,5 +1,6 @@
 #Unitmanagermodule - Globalunit
 #This is the class which all units derive from and bases itself on
+from traceback import print_exc
 from engine import shared, debug
 from engine.World import pathfinding
 
@@ -15,6 +16,7 @@ class GlobalUnit():
 
 		#Start rendering the unit (self, Identifyer, Type, Team, Interactive)
 		self.entity=shared.EntityHandeler.Create(self.ID, self.ent, "unit", self.team)
+		print("Entity")
 		try:
 			if self.entity.error:
 				shared.DPrint("Globalunit",4,"Entity error! Unit creation aborted!")
@@ -23,13 +25,19 @@ class GlobalUnit():
 			shared.DPrint("Globalunit",4,"Entity critical error! Unit creation aborted!")
 			self._del()
 
+		print("Errorcheck")
+
 		#Do some post-render stuff
 		self.entity.CreateTextOverlay()
 		if pos==None:
-			self.entity.RandomPlacement()
+			pass
+			#self.entity.RandomPlacement()
 		else:
-			self._setPos(pos[0], pos[1], pos[2])
+			pass
+			#self._setPos(pos[0], pos[1], pos[2])
 		self.entity.text.setText(self.name+" "+str(ID))
+
+		print("Text")
 
 		#Sound:
 		#self.snd=shared.SoundEntMgr.Create
@@ -42,6 +50,7 @@ class GlobalUnit():
 
 		#Start unit-dependant shit:
 		self.init()
+		print("Init")
 
 		#Notify that we have successfuly created a unit!
 		shared.DPrint("Globalunit",5,"Unit created! ID="+str(self.ID))
@@ -72,7 +81,8 @@ class GlobalUnit():
 
 	def _setPos(self, x, y, z):
 		self.entity.SetPosition(float(x), float(y), float(z))
-		shared.FowManager.nodeUpdate(self.entity.node)
+		if shared.FowManager!=None and shared.FowManager!=True:
+			shared.FowManager.nodeUpdate(self.entity.node)
 
 	def _setRot(self, rotx, roty, rotz):
 		self.entity.Rotate(float(rotx), float(roty), float(rotz))
@@ -134,3 +144,4 @@ class GlobalUnit():
 
 	def __del__(self):
 		shared.DPrint("Globalunit",5,"Unit gc'd: "+str(self.ID))
+		#print_exc()

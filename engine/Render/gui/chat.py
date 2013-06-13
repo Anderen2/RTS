@@ -32,6 +32,9 @@ class Chat():
 
 		shared.renderGUI.registerLayout(self.Window)
 
+	def setChatLog(self, log):
+		self.Log.setText(log)
+
 	def Chat_TitleClick(self, evt):
 		if evt.button==CEGUI.LeftButton:
 			evt.window.setText("Chat: Team")

@@ -13,6 +13,7 @@ class UnitManager(FrameListener):
 		FrameListener.__init__(self)
 		shared.DPrint("UnitManager",1,"Initializing..")
 		self.units={}
+		self.u2=[]
 		self.ucount=0
 
 	def PowerUp(self):
@@ -74,6 +75,8 @@ class UnitManager(FrameListener):
 			pointer=movtype.Other(ID, Team, SubType, ent, pos)
 
 		self.units[ID]=pointer
+		print(self.units[ID])
+		self.u2.append(pointer)
 		return pointer
 
 	def Delete(self, ID):

@@ -7,7 +7,7 @@ from twisted.internet.defer import Deferred
 
 from engine import shared, debug
 from engine.Networking import sh_netObject, sh_netMethod
-from engine.Networking.client import selfplayer, playermanager, unitmanager
+from engine.Networking.client import playermanager, unitmanager, chat
 
 class Service():
 	def __init__(self):
@@ -66,13 +66,13 @@ class Tjener():
 		shared.DPrint("Tjener", 0, "Pulling Serverinfo")
 
 		debug.ACC("net_serverinfo", self.PrintNice, info="Prints serverinfo", args=0)
-		debug.ACC("net_say", self.ChatSay, info="Say something in chat\nUsage: net_say channel message", args=2)
 
 		protocol.sendMethod(1, "SI", [])
 		shared.client.RetMeBack(self.GimmeServerInfo, "SI")
 
 		shared.PlayerManager=playermanager.PlayerManager()
 		shared.netUnitManager=unitmanager.UnitManager()
+		shared.ChatManager=chat.ChatManager()
 
 	def GimmeServerInfo(self, method, serverinfo):
 		self.ServerInfo=pickle.loads(serverinfo)
@@ -81,5 +81,5 @@ class Tjener():
 	def PrintNice(self):
 		return ("""\nConnected to server: %s \n%s\nServer Location: %s / %s \nPlayers Connected: %d""" % (self.ServerInfo["name"], self.ServerInfo["desc"], self.ServerInfo["region"], self.ServerInfo["country"], self.playercount))
 
-	def ChatSay(self, channel, mesg):
-		shared.protocol.sendMethod(3, "SA", [channel, mesg])
+	
+	

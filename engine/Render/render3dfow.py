@@ -121,16 +121,19 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		if node in self.EnemyNodes:
 			pass
 		else:
-			#print(node.getName())
-			View=self.AllyNodes[node.getName()]
-			#print(View)
-			pos=node.getPosition()
-			y = View[1].getPosition().y
-			#print(View[1].getPosition())
-			View[1].setPosition(pos.x, y, pos.z)
-			self.update()
-			#print("Uptidate")
-			#print(pos.x, y, pos.z)
+			try:
+				#print(node.getName())
+				View=self.AllyNodes[node.getName()]
+				#print(View)
+				pos=node.getPosition()
+				y = View[1].getPosition().y
+				#print(View[1].getPosition())
+				View[1].setPosition(pos.x, y, pos.z)
+				self.update()
+				#print("Uptidate")
+				#print(pos.x, y, pos.z)
+			except:
+				shared.DPrint("FOWManager", 3, "Non-registered unit tried to update View!")
 
 	def addAlly(self, allynode, viewsize):
 		View = self.addView(viewsize)
@@ -141,7 +144,8 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		return View[1]
 
 	def addEnemy(self, enemynode):
-		pass
+		self.EnemyNodes.append(enemynode)
+		self.nodeUpdate(enemynode)
 
 	def ChangeShit(self, x, y, z):
 		#self.circleNode.setPosition(float(x),float(y),float(z))

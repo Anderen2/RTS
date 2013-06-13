@@ -22,10 +22,17 @@ class PlayerManager():
 
 		#Initialize the clientside versions of the players in the game
 		self.PDict={}
+
+	def getFromUID(self, uid):
+		try:
+			return self.PDict[int(uid)]
+		except:
+			return False
 		
 	def recv_playerlist(self, method, playerlist):
 		shared.DPrint("PlayerManager", 0, "Got Playerlist")
 		self.playerlist=pickle.loads(playerlist)
+		shared.DPrint("PlayerManager", 0, "Current players: "+str(len(self.playerlist)))
 
 		for x in self.playerlist:
 			self.PDict[x["uid"]]=Player(x["uid"], x["username"], x["info"])

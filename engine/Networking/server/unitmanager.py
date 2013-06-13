@@ -13,7 +13,10 @@ class UnitManager():
 
 		## UNIT VALIDATION AND SERVERSIDE CREATION HERE
 
-		shared.PlayerManager.Broadcast(4, "build", [name, randrange(0,100,1), randrange(0,100,1), randrange(0,100,1)])
+		team = shared.PlayerManager.getFromProto(Protocol).team
+		userid = shared.PlayerManager.getFromProto(Protocol).UID
+
+		shared.PlayerManager.Broadcast(4, "build", [name, randrange(0,100,1), randrange(100,300,1), randrange(0,100,1), userid, team])
 
 	def massMove(self, unitlist, pos):
 		amount=len(unitlist)

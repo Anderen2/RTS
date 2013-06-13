@@ -1,6 +1,7 @@
 #Serverside Playermanager
 import pickle
 
+from twisted.internet import reactor
 from engine import debug, shared
 from player import Player
 
@@ -18,6 +19,7 @@ class PlayerManager():
 			self.PlayerCount+=1
 			self.Broadcast(2, "HI", [Username, str(self.PlayerCount), PickledExtras])
 			self.PDict[self.PlayerCount]=Player(self.PlayerCount, Username, Protocol, PickledExtras)
+			reactor.callLater(1, self.PDict[self.PlayerCount].Setup)
 			return [str(self.PlayerCount)]
 		else:
 			Protocol.sendMethod(3, "SA", ["-1", "0", "You are already in the game."])

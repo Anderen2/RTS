@@ -28,6 +28,7 @@ class Scene():
 			self.createTerrainMaterial("2048.png", {"terr_rock-dirt.jpg":"alphamap.png", "grass_1024.jpg":"alphamap2.png"})
 
 		self.sceneManager.setWorldGeometry ("terrain.cfg")
+		#print(self.sceneManager.getHeightAt(10,10))
 
 		shared.DPrint("Render3d",1,"Skybox..")
 		self.sceneManager.setSkyBox (True, "Examples/SpaceSkyBox")

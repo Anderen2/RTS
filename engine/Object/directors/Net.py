@@ -47,8 +47,8 @@ class Director():
 	def evt_actionclick(self, data):
 		for x in self.CurrentSelection:
 			pass
-			unitID=int(split(item.movable.getParentSceneNode().getName(),"_")[1])
-			unitRclicked=shared.unitHandeler.Get(unitID)
+			#unitID=int(split(item.movable.getParentSceneNode().getName(),"_")[1])
+			#unitRclicked=shared.unitHandeler.Get(unitID)
 			#x.entity.node.showBoundingBox(True)
 			#shared.reactor.callLater(1, lambda: x.entity.node.showBoundingBox(False))
 

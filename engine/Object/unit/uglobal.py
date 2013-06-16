@@ -2,7 +2,6 @@
 #This is the class which all units derive from and bases itself on
 from traceback import print_exc
 from engine import shared, debug
-from engine.World import pathfinding
 
 class GlobalUnit():
 	def __init__(self, ID, team, name, ent, pos=None):
@@ -16,7 +15,6 @@ class GlobalUnit():
 
 		#Start rendering the unit (self, Identifyer, Type, Team, Interactive)
 		self.entity=shared.EntityHandeler.Create(self.ID, self.ent, "unit", self.team)
-		print("Entity")
 		try:
 			if self.entity.error:
 				shared.DPrint("Globalunit",4,"Entity error! Unit creation aborted!")
@@ -25,19 +23,14 @@ class GlobalUnit():
 			shared.DPrint("Globalunit",4,"Entity critical error! Unit creation aborted!")
 			self._del()
 
-		print("Errorcheck")
 
 		#Do some post-render stuff
 		self.entity.CreateTextOverlay()
-		if pos==None:
-			pass
-			#self.entity.RandomPlacement()
-		else:
-			pass
-			#self._setPos(pos[0], pos[1], pos[2])
 		self.entity.text.setText(self.name+" "+str(ID))
-
-		print("Text")
+		if pos==None:
+			self.entity.RandomPlacement()
+		else:
+			self._setPos(pos[0], pos[1], pos[2])
 
 		#Sound:
 		#self.snd=shared.SoundEntMgr.Create
@@ -50,7 +43,6 @@ class GlobalUnit():
 
 		#Start unit-dependant shit:
 		self.init()
-		print("Init")
 
 		#Notify that we have successfuly created a unit!
 		shared.DPrint("Globalunit",5,"Unit created! ID="+str(self.ID))
@@ -59,8 +51,9 @@ class GlobalUnit():
 		self.entity.text.update()
 		self.entity.Think()
 		if self.nextwaypoint!=None:
-			if self._movetowards(self.nextwaypoint[0], self.nextwaypoint[2])<1:
+			if self._movetowards(self.nextwaypoint[0], self.nextwaypoint[2])<2:
 				self.nextwaypoint=None
+				self.entity.actNone()
 		
 
 	def _selected(self):
@@ -88,18 +81,17 @@ class GlobalUnit():
 		self.entity.Rotate(float(rotx), float(roty), float(rotz))
 
 	def _movetowards(self, x, z):
-		self.entity.actNone()
-		self.entity.actMove(True)
 		src=self.entity.node.getPosition()
 		src2d=(src[0], src[2]) #2D Coordinates (X, Z) or Longitude and Latitude (Not Altitude!)
-		xzd=pathfinding.GetNextCoord(src2d, (x,z)) #Returns next Xcoord, Zcoord and a measure of how much distance which is left (x, z, dist)
-		if xzd[0]>src[0]-1 or xzd[1]>src[2]-1 or xzd[0]<src[0]+1 or xzd[1]<src[2]+1:
-			self._look(xzd[0], src[1], xzd[1])
+		xzd=shared.Pathfinder.ABPath.GetNextCoord(src2d, (x,z)) #Returns next Xcoord, Zcoord and a measure of how much distance which is left (x, z, dist)
+		#if xzd[0]>src[0]-1 or xzd[1]>src[2]-1 or xzd[0]<src[0]+1 or xzd[1]<src[2]+1:
+		self._look(self.nextwaypoint[0], src[1], self.nextwaypoint[2])
 		self._setPos(xzd[0], src[1], xzd[1])
 		return xzd[2]
 
 	def _setwaypoint(self, pos):
 		self.nextwaypoint=pos
+		self.entity.actMove(True)
 
 	def _move(self):
 		pass

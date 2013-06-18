@@ -22,7 +22,7 @@ class Director():
 		shared.protocol.sendMethod(4, "req_build", [name])
 		#self.Cast.append(shared.unitManager.Create(0, name))
 
-	def evt_selected(self, selections):
+	def evt_selected(self, selections, actionQueueing):
 		shared.DPrint("NetDir", 0, "Selections Updated")
 		self.selections=selections
 		for x in self.CurrentSelection:
@@ -36,7 +36,7 @@ class Director():
 			unit._selected()
 			self.CurrentSelection.append(unit)
 
-	def evt_moveclick(self, pos):
+	def evt_moveclick(self, pos, actionQueueing):
 		selectedIDS=[]
 		for x in self.CurrentSelection:
 			shared.DPrint("NetDir", 0, "Moving unit: "+str(x))
@@ -44,7 +44,7 @@ class Director():
 			
 		shared.SelfPlayer.MoveUnits(selectedIDS, pos)
 
-	def evt_actionclick(self, data):
+	def evt_actionclick(self, data, actionQueueing):
 		for x in self.CurrentSelection:
 			pass
 			#unitID=int(split(item.movable.getParentSceneNode().getName(),"_")[1])

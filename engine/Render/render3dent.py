@@ -24,7 +24,7 @@ class EntityHandeler():
 		return self.EntDict[ent]
 
 	def Create(self, Identifyer, Type, Interactive, Team=None):
-		shared.DPrint("Render3dEnt",0,"Creating Entity: "+Type+" : "+str(Interactive))
+		shared.DPrint("Render3dEnt",0,"Creating Entity: "+str(Interactive)+":"+Type+" ["+str(Identifyer)+"]")
 		ent=Entity(Identifyer, Type, Team, Interactive)
 		return ent
 
@@ -76,7 +76,8 @@ class Entity():
 			self.movepartnode=[]
 	 		if not self.params["moveeff"]==None:
 	 			DPrint("Entity",0,"	MoveEffect")
-	 			movepart=shared.render3dScene.sceneManager.createParticleSystem("moveeff0-"+str(self.ID),self.params["moveeff"])
+	 			movepart=shared.render3dScene.sceneManager.createParticleSystem("moveeff0-"+str(self.ID)+"-"+str(randrange(0,100,1)),self.params["moveeff"])
+	 			print("!!!!!!!!!!!!!!!!!!!!   " +"moveeff0-"+str(self.ID))
 				movepartnode=self.node.createChildSceneNode()
 				movepart.getEmitter(0).setTimeToLive(self.params["moveefftime"])
 				movepart.getEmitter(0).setEnabled(False)
@@ -89,8 +90,10 @@ class Entity():
 				self.movepartnode.append(movepartnode)
 				for x in range(0,self.params["addmoveeff"]):
 					y=x+1
+					print(y)
 					DPrint("Entity",0,"	AddMoveEffect: "+str(y))
-					movepart=shared.render3dScene.sceneManager.createParticleSystem("moveeff"+str(y)+"-"+str(self.ID),self.params["moveeff"+str(y)])
+					movepart=shared.render3dScene.sceneManager.createParticleSystem("amoveeff"+str(y)+"-"+str(self.ID)+"-"+str(randrange(0,100,1)),self.params["moveeff"+str(y)])
+					print("!!!!!!!!!!!!!!!!!!!!   " +"amoveeff"+str(y)+"-"+str(self.ID))
 					movepartnode=self.node.createChildSceneNode()
 					movepart.getEmitter(0).setTimeToLive(self.params["moveefftime"+str(y)])
 					movepart.getEmitter(0).setEnabled(False)
@@ -106,7 +109,7 @@ class Entity():
 			self.dieeffnode=None
 			if not self.params["dieeff"]==None:
 				DPrint("Entity",0,"	DieEffect")
-				dieeff=shared.render3dScene.sceneManager.createParticleSystem("dieeff0-"+str(self.ID),self.params["dieeff"])
+				dieeff=shared.render3dScene.sceneManager.createParticleSystem("dieeff0-"+str(self.ID)+"-"+str(randrange(0,100,1)),self.params["dieeff"])
 				dieeffnode=self.node.createChildSceneNode()
 				dieeff.getEmitter(0).setTimeToLive(self.params["dieefftime"])
 				dieeff.getEmitter(0).setEnabled(False)
@@ -124,7 +127,7 @@ class Entity():
 				for x in range(0, self.params["acteff"]):
 					y=x+1
 					DPrint("Entity",0,"	ActEffect: "+str(y))
-					actpart=shared.render3dScene.sceneManager.createParticleSystem("acteff"+str(y)+"-"+str(self.ID),self.params["acteff"+str(y)])
+					actpart=shared.render3dScene.sceneManager.createParticleSystem("acteff"+str(y)+"-"+str(self.ID)+"-"+str(randrange(0,100,1)),self.params["acteff"+str(y)])
 					actpartnode=self.node.createChildSceneNode()
 					actpart.getEmitter(0).setTimeToLive(self.params["actefftime"+str(y)])
 					actpart.getEmitter(0).setEnabled(False)
@@ -142,7 +145,7 @@ class Entity():
 				for x in range(0, self.params["light"]):
 					y=x+1
 					DPrint("Entity",0,"	Light: "+str(y))
-					light=shared.render3dScene.sceneManager.createLight("light"+str(y)+"-"+str(self.ID))
+					light=shared.render3dScene.sceneManager.createLight("light"+str(y)+"-"+str(self.ID)+"-"+str(randrange(0,100,1)))
 					light.type = ogre.Light.LT_POINT
 					light.diffuseColour = (.5, .5, .0)
 					light.spectacularColour=(.75,.75,.75)

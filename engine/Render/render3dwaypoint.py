@@ -10,6 +10,7 @@ from ogre.renderer.OGRE import Degree, RENDER_QUEUE_SKIES_LATE, RENDER_QUEUE_BAC
 class WaypointManager():
 	def __init__(self):
 		self.params={}
+		self.queuelist=[]
 
 	def Load(self):
 		#Moving Waypoint

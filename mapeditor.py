@@ -11,6 +11,7 @@ from engine.World import maploader
 from engine.Tool.Mapeditor import globalgui, toolmanager, backend, mapfile
 
 shared.wd="./Data/Map/"
+shared.side = "Tool"
 
 #Mainloop
 shared.DPrint("Main",1,"Initializing Mainloop...")

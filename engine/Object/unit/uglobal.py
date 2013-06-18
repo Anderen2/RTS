@@ -10,8 +10,8 @@ class GlobalUnit():
 		self.name=name
 		self.team=team
 		self.ent=ent
-		self.entity=None
 		self.hname=shared.unitManager.GetParam(self.name, "name")
+		self.group=None
 
 		#Start rendering the unit (self, Identifyer, Type, Team, Interactive)
 		self.entity=shared.EntityHandeler.Create(self.ID, self.ent, "unit", self.team)

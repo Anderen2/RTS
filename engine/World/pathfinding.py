@@ -29,8 +29,8 @@ class AB():
 			xStep = 1
 			yStep = 1
 
-		print(xStep)
-		print(yStep)
+		#print(xStep)
+		#print(yStep)
 
 		if dst[0]<src[0]:
 			x=float(src[0])-xStep

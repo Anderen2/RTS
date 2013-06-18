@@ -45,6 +45,7 @@ class UnitManager(FrameListener):
 
 	def CreateStuc(self, Type, Team, SubType, ent, pos=None):
 		ID=self.ucount
+		shared.DPrint("UnitManager", 0, "Creating Structure: "+str(Type)+" "+str(SubType)+" ["+str(ID)+"]")
 		self.ucount+=1
 
 		if Type==1:
@@ -59,6 +60,7 @@ class UnitManager(FrameListener):
 
 	def CreateMov(self, Type, Team, SubType, ent, pos=None):
 		ID=self.ucount
+		shared.DPrint("UnitManager", 0,"Creating Movable: "+str(Type)+" "+str(SubType)+" ["+str(ID)+"]")
 		self.ucount=self.ucount+1
 
 		if Type==1:

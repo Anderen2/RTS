@@ -3,6 +3,9 @@ from engine import shared, debug
 from engine.Networking import sh_netObject, TwCLI
 from engine.Networking.server import server
 
+shared.wd = "./"
+shared.side = "Server"
+
 shared.logInit("server")
 shared.DPrint("Main",1,"Initializing Modules...")
 

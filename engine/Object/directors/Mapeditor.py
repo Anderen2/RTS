@@ -15,7 +15,7 @@ class Director():
 		self.Cast=[]
 		self.CurrentSelection=[]
 
-	def evt_selected(self, selections):
+	def evt_selected(self, selections, shiftkeydown):
 		shared.DPrint(0, "MapDir", "Selections Updated")
 		self.selections=selections
 		for x in self.CurrentSelection:
@@ -29,10 +29,10 @@ class Director():
 			Deco._selected()
 			self.CurrentSelection.append(Deco)
 
-	def evt_moveclick(self, pos):
+	def evt_moveclick(self, pos, shiftkeydown):
 		shared.mapBackend.SelectionRightClick()
 
-	def evt_actionclick(self, data):
+	def evt_actionclick(self, data, shiftkeydown):
 		shared.mapBackend.SelectionRightClick()
 
 	def Frame(self):

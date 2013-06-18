@@ -81,7 +81,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		shared.DPrint("RenderIO",1,"Defining Settings")
 		self.camkeys={"forward":OIS.KC_W, "backward":OIS.KC_S, "left":OIS.KC_A, "right":OIS.KC_D, "up":OIS.KC_Q, "down":OIS.KC_E}
 		self.keys=self.camkeys
-		self.keys.update({"camstear":OIS.KC_LMENU, "multisel":OIS.KC_LCONTROL, "console":OIS.KC_F12})
+		self.keys.update({"camstear":OIS.KC_LMENU, "multisel":OIS.KC_LSHIFT, "queueaction":OIS.KC_LCONTROL, "console":OIS.KC_F12})
 		self.rotate = 0.13
 
 		self.mousespeed = 1
@@ -90,7 +90,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		self.dclicktimer=0
 		self.dclickpos=0
 
-		self.CtrlHold=False #Multiselection
+		self.MultiSelection=False #Multiselection
 		self.LMBSel=False
 
 		#The current active interface for Keyboard (0=Render, 1=Gui, 2=Console)
@@ -135,7 +135,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 						shared.render3dCamera.Move((0,-1,0), self.Delta)
 
 		#Multiselection
-		self.CtrlHold=self.Keyboard.isKeyDown(self.keys["multisel"])
+		self.MultiSelection=self.Keyboard.isKeyDown(self.keys["multisel"])
 
 		#The application will exit if this returns false, therefor Shift-ESC closes the game.
 		return not (self.Keyboard.isKeyDown(OIS.KC_ESCAPE) and self.Keyboard.isKeyDown(OIS.KC_LSHIFT))
@@ -170,6 +170,12 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			System.getSingleton().injectMouseButtonDown(convertButton(id)) #GUI Events
 
 		if self.CurrentMiceInterface==2:
+			#Grouprelated
+			if self.Keyboard.isKeyDown(self.keys["queueaction"]):
+				shared.DirectorManager.actionQueueing=True
+			else:
+				shared.DirectorManager.actionQueueing=False
+
 			#Selectionstuff
 			if id==OIS.MB_Left:
 				if self.dclicktimer>time()-0.2 and self.dclickpos==mousePos.d_x:
@@ -181,7 +187,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 					self.dclicktimer=time()
 					self.dclickpos=mousePos.d_x
 
-					if not self.CtrlHold:
+					if not self.MultiSelection:
 						shared.render3dSelectStuff.clearSelection() #Removes everything thats currently selected if you use LMB without holding down Ctrl
 
 					#Starts selection process

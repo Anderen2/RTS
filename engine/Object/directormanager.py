@@ -16,6 +16,7 @@ class DirectorManager(FrameListener):
 		self.Mapeditor=Mapeditor.Director()
 
 		self.CurrentDirector=None
+		self.actionQueueing=False
 
 		debug.ACC("dirinit", self.Init, args=1, info="Initialize an director")
 		debug.ACC("diraction", self.Action, args=1, info="Start directing with an director")
@@ -58,7 +59,7 @@ class DirectorManager(FrameListener):
 	def SelectedEvent(self, sellist):
 		shared.DPrint("dir", 0, "Updating Selections...")
 		if self.CurrentDirector!=None:
-			self.CurrentDirector.evt_selected(sellist)
+			self.CurrentDirector.evt_selected(sellist, self.actionQueueing)
 		else:
 			shared.DPrint("dir", 0, "No directors are initialized!")
 		if debug.AABB:
@@ -66,12 +67,12 @@ class DirectorManager(FrameListener):
 
 	def MovementEvent(self, pos):
 		if self.CurrentDirector!=None:
-			self.CurrentDirector.evt_moveclick(pos)
+			self.CurrentDirector.evt_moveclick(pos, self.actionQueueing)
 			shared.WaypointManager.ShowTime(0, pos, 1)
 
 	def ActionEvent(self, data):
 		if self.CurrentDirector!=None:
-			self.CurrentDirector.evt_actionclick(data)
+			self.CurrentDirector.evt_actionclick(data, self.actionQueueing)
 
 	def frameRenderingQueued(self, evt):
 		if self.CurrentDirector!=None:

@@ -9,15 +9,17 @@ shared.logInit("engine")
 shared.DPrint("Main",1,"Initializing Modules...")
 
 from engine.Render import render
-from engine.Object import unitmanager, prop, decorator, zone, directormanager
+from engine.Object import unitmanager, prop, decorator, zone, directormanager, unitgroup
 from engine.Networking.client import client
 from engine.World import maploader, pathfinding
 
-#Networking
+shared.wd="./"
+shared.side = "Client"
+
+#Networking and Mainloop
 shared.DPrint("Main",1,"Initializing Networking...")
 shared.client=client.Service()
 shared.reactor=client.reactor
-#shared.client.Startup()
 shared.client.Connect("localhost", 1337)
 
 #Render
@@ -28,6 +30,7 @@ shared.render=render.RenderApplication()
 shared.DPrint("Main",1,"Initializing Managers...")
 shared.unitManager=unitmanager.UnitManager()
 shared.unitHandeler=shared.unitManager
+shared.unitGroup=unitgroup.GroupManager()
 shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
 shared.zoneManager=zone.zoneManager()
@@ -36,10 +39,10 @@ shared.zoneManager=zone.zoneManager()
 shared.MapLoader=maploader.MapLoader()
 shared.Map=shared.MapLoader.Load("best.map")
 
-#Pathfinder
+#Pathfinding
 shared.Pathfinder = pathfinding
 
-#CommandParser
+#Command Parser
 shared.DPrint("Main",1,"Initializing CommandParser...")
 shared.ParseCommand=debug.ParseCommand
 
@@ -56,6 +59,13 @@ shared.render.PowerUp()
 shared.DPrint("Main",1,"PWR: MapSetup")
 shared.Map.Setup()
 
+#Autoexec
+shared.DPrint("Main",1,"Executing autoexec")
+try:
+	debug.runFile("./autoexec")
+except:
+	shared.DPrint("Main",2,"No autoexec file exsists!")
+
 #CLI Parameters
 shared.DPrint("Main",1,"Executing CLI Parameters")
 if len(argv) > 1:
@@ -63,13 +73,6 @@ if len(argv) > 1:
 		debug.runCLI(argv[1:])
 	except:
 		pass
-
-#Autoexec
-shared.DPrint("Main",1,"Executing autoexec")
-try:
-	debug.runFile("./autoexec")
-except:
-	shared.DPrint("Main",2,"No autoexec file exsists!")
 
 #Release tha clutch and start moving forward
 shared.DPrint("Main", 1, "Starting Mainloop..")

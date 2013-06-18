@@ -1,6 +1,6 @@
 echo This is a test! :D
-#dirinit Simple
-#diraction Simple
-dirinit Net
-diraction Net
+dirinit Simple
+diraction Simple
+#dirinit Net
+#diraction Net
 #u_cs 3 1 1 robot

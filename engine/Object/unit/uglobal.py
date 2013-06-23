@@ -84,7 +84,7 @@ class GlobalUnit():
 		src=self.entity.node.getPosition()
 		src2d=(src[0], src[2]) #2D Coordinates (X, Z) or Longitude and Latitude (Not Altitude!)
 		xzd=shared.Pathfinder.ABPath.GetNextCoord(src2d, (x,z)) #Returns next Xcoord, Zcoord and a measure of how much distance which is left (x, z, dist)
-		#if xzd[0]>src[0]-1 or xzd[1]>src[2]-1 or xzd[0]<src[0]+1 or xzd[1]<src[2]+1:
+
 		self._look(self.nextwaypoint[0], src[1], self.nextwaypoint[2])
 		self._setPos(xzd[0], src[1], xzd[1])
 		return xzd[2]

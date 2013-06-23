@@ -76,8 +76,7 @@ class Entity():
 			self.movepartnode=[]
 	 		if not self.params["moveeff"]==None:
 	 			DPrint("Entity",0,"	MoveEffect")
-	 			movepart=shared.render3dScene.sceneManager.createParticleSystem("moveeff0-"+str(self.ID)+"-"+str(randrange(0,100,1)),self.params["moveeff"])
-	 			print("!!!!!!!!!!!!!!!!!!!!   " +"moveeff0-"+str(self.ID))
+	 			movepart=shared.render3dScene.sceneManager.createParticleSystem("moveeff0-"+str(self.ID)+"-"+str(Interactive),self.params["moveeff"])
 				movepartnode=self.node.createChildSceneNode()
 				movepart.getEmitter(0).setTimeToLive(self.params["moveefftime"])
 				movepart.getEmitter(0).setEnabled(False)
@@ -92,8 +91,7 @@ class Entity():
 					y=x+1
 					print(y)
 					DPrint("Entity",0,"	AddMoveEffect: "+str(y))
-					movepart=shared.render3dScene.sceneManager.createParticleSystem("amoveeff"+str(y)+"-"+str(self.ID)+"-"+str(randrange(0,100,1)),self.params["moveeff"+str(y)])
-					print("!!!!!!!!!!!!!!!!!!!!   " +"amoveeff"+str(y)+"-"+str(self.ID))
+					movepart=shared.render3dScene.sceneManager.createParticleSystem("moveeff"+str(y)+"-"+str(self.ID)+"-"+str(Interactive),self.params["moveeff"+str(y)])
 					movepartnode=self.node.createChildSceneNode()
 					movepart.getEmitter(0).setTimeToLive(self.params["moveefftime"+str(y)])
 					movepart.getEmitter(0).setEnabled(False)

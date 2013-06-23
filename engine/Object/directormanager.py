@@ -62,6 +62,7 @@ class DirectorManager(FrameListener):
 			self.CurrentDirector.evt_selected(sellist, self.actionQueueing)
 		else:
 			shared.DPrint("dir", 0, "No directors are initialized!")
+
 		if debug.AABB:
 			pass
 

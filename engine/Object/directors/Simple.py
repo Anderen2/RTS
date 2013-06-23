@@ -111,6 +111,11 @@ class Director():
 				elif self.CurrentSelection[0].group.members[:] == self.CurrentSelection[:]:
 					self.CurrentSelectedGroup=self.CurrentSelection[0].group
 
+		if self.CurrentSelectedGroup!=None:
+			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
+		else:
+			shared.gui['unitinfo'].noSelection()
+
 		self.OldSelection=[]
 		self.OldSelectedGroup=None
 
@@ -123,6 +128,11 @@ class Director():
 			self.CurrentSelectedGroup=group
 			for unit in self.CurrentSelection:
 				unit.group = group
+
+		if self.CurrentSelectedGroup!=None:
+			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
+		else:
+			shared.gui['unitinfo'].noSelection()
 
 		evt = {"3dMouse":pos}
 		self.CurrentSelectedGroup.addAction(move.ActMove(self.CurrentSelectedGroup, evt))

@@ -45,6 +45,8 @@ class UnitGroup():
 		if self.actionQueue[0]==action:
 			self.beginNextAction()
 
+		self.updateVisuals()
+
 	def removeAction(self, action):
 		if self.actionQueue[0] == action:
 			self.actionQueue[0].abort()
@@ -53,6 +55,8 @@ class UnitGroup():
 		else:
 			self.actionQueue.remove(action)
 
+		self.updateVisuals()
+
 	def removeActionID(self, actionid):
 		if actionid == 0:
 			self.actionQueue[0].abort()
@@ -60,10 +64,13 @@ class UnitGroup():
 			self.beginNextAction()
 		else:
 			self.actionQueue.pop(actionid)
+
+		self.updateVisuals()
 		
 	def actionFinished(self):
 		self.actionQueue.pop(0)
 		self.beginNextAction()
+		self.updateVisuals()
 
 	def beginNextAction(self):
 		if len(self.actionQueue)!=0:
@@ -78,3 +85,7 @@ class UnitGroup():
 				self.delUnit(unit)
 
 		reactor.callLater(0.5, self.actionUpdate)
+
+	def updateVisuals(self):
+		shared.gui['unitinfo'].updateQueue()
+		#Update waypoints here

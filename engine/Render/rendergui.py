@@ -1,5 +1,6 @@
 import ogre.gui.CEGUI as CEGUI
 from string import split
+from traceback import print_exc
 
 from engine import shared, debug
 from engine.Render.gui import chat, debugGUI, gameinfo, minimap, moneybar, options, powerbar, tactical, unitinfo, unitopt
@@ -90,11 +91,11 @@ class GUI():
 		layout.subscribeEvent(layout.EventMouseButtonDown, self, "W_Mclick")
 		layout.subscribeEvent(layout.EventMouseButtonUp, self, "W_Mrelease")
 		layout.subscribeEvent(layout.EventMouseMove, self, "MouseMoving")
-		try:
-			foobar=self.windowManager.getWindow(layout.getName()+"/BG")
-			foobar.setProperty("Image","set:guibgset image:guibgs")
-		except:
-			print(layout.getName()+" has no background!")
+		# try:
+		# 	foobar=self.windowManager.getWindow(layout.getName()+"/BG")
+		# 	foobar.setProperty("Image","set:guibgset image:guibgs")
+		# except:
+		# 	print(layout.getName()+" has no background!")
 
 		for y in self.iterChilds(layout.getName()):
 			y.subscribeEvent(y.EventMouseEnters, self, "W_Menter")
@@ -173,8 +174,9 @@ class GUI():
  			else:
  				shared.renderioInput.CurrentMiceInterface=2
  		if not evt.window.getName() in self.IgnoreMe:
-			if not evt.window.getParent().getName() in self.IgnoreMyParent:
- 				evt.window.setAlpha(1)
+ 			if evt.window.getParent()!=None:
+				if not evt.window.getParent().getName() in self.IgnoreMyParent:
+	 				evt.window.setAlpha(1)
  		self.ActiveWindow=None
 
  	def HideAll(self):

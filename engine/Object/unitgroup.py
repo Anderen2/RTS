@@ -93,12 +93,10 @@ class UnitGroup():
 
 	def deselected(self):
 		self.currentlyselected=False
-		self.updateVisuals()
+		shared.WaypointManager.update(None)
 
 	def updateVisuals(self):
 		if self.currentlyselected:
 			shared.gui['unitinfo'].updateQueue()
 			#Update waypoints here
 			shared.WaypointManager.update(self)
-		else:
-			shared.WaypointManager.update(None)

@@ -65,6 +65,9 @@ class Director():
 		for unit in self.CurrentSelection:
 			unit._deselected()
 
+		if self.CurrentSelectedGroup!=None:
+			self.CurrentSelectedGroup.deselected()
+
 	def selectAll(self):
 		for unit in self.CurrentSelection:
 			unit._selected()
@@ -113,6 +116,7 @@ class Director():
 
 		if self.CurrentSelectedGroup!=None:
 			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
+			self.CurrentSelectedGroup.selected()
 		else:
 			shared.gui['unitinfo'].noSelection()
 
@@ -131,6 +135,7 @@ class Director():
 
 		if self.CurrentSelectedGroup!=None:
 			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
+			self.CurrentSelectedGroup.selected()
 		else:
 			shared.gui['unitinfo'].noSelection()
 

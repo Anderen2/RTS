@@ -81,11 +81,11 @@ class A2Decal():
 	def __del__(self):
 		try:
 			shared.DPrint("Render3dDecal",0,"Decal "+str(self.ID)+" gc'd")
+			self.node.detachObject(self.ent)
+			shared.render3dScene.sceneManager.destroyEntity(self.ent)
+			shared.render3dScene.sceneManager.destroySceneNode(self.node)
 		except:
 			print("Decal "+str(self.ID)+" gc'd")
-		#shared.render3dScene.sceneManager.destroyEntity(self.ent)
-		#shared.render3dScene.sceneManager.destroySceneNode(self.node)
-
 #__________________________________________________________________________________________________________________________________________________________________________
 #Nonworking Decals Ahoy:
 

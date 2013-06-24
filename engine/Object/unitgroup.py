@@ -23,6 +23,7 @@ class UnitGroup():
 
 		self.persistent=persistent
 		self.actionQueue=[]
+		self.currentlyselected = False
 
 	def addUnit(self, unit):
 		if len(self.members)!=0:
@@ -86,6 +87,18 @@ class UnitGroup():
 
 		reactor.callLater(0.5, self.actionUpdate)
 
+	def selected(self):
+		self.currentlyselected=True
+		self.updateVisuals()
+
+	def deselected(self):
+		self.currentlyselected=False
+		self.updateVisuals()
+
 	def updateVisuals(self):
-		shared.gui['unitinfo'].updateQueue()
-		#Update waypoints here
+		if self.currentlyselected:
+			shared.gui['unitinfo'].updateQueue()
+			#Update waypoints here
+			shared.WaypointManager.update(self)
+		else:
+			shared.WaypointManager.update(None)

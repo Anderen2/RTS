@@ -5,6 +5,7 @@ from engine import shared, debug
 class ActMove():
 	def __init__(self, group, evt):
 		self.waypointPos = evt["3dMouse"]
+		self.waypointType = "Move"
 		self.queueImage = "move"
 		self.abortable = True
 		self.aborted=False

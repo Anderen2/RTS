@@ -69,7 +69,7 @@ class DirectorManager(FrameListener):
 	def MovementEvent(self, pos):
 		if self.CurrentDirector!=None:
 			self.CurrentDirector.evt_moveclick(pos, self.actionQueueing)
-			shared.WaypointManager.ShowTime(0, pos, 1)
+			#shared.WaypointManager.ShowTime(0, pos, 1)
 
 	def ActionEvent(self, data):
 		if self.CurrentDirector!=None:

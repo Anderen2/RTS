@@ -18,22 +18,12 @@ def Line(Name, material, Start, End, Mesh=None):
 	return line
 
 def Path(Name, material, aPath, Mesh=None):
-	DPrint("Render3dShapes",0,"Defining Path: "+Name+" with material "+material+" and path: "+str(aPath))
+	DPrint("Render3dShapes",0,"Defining Path: "+Name+" with material "+material+" and pathlen: "+str(len(aPath)))
 	line=ogre.ManualObject("Path")
 	line.begin(material, ogre.RenderOperation.OT_LINE_LIST)
 	prev = None
 
 	for x in aPath:
-		# if prev!=None:
-		# 	line.position(prev)
-
-		# line.position(x)
-
-		# if aPath.index(x) % 2 == 1:
-		# 	prev=x
-		# else:
-		# 	prev = None
-
 		line.position(x)
 		if aPath.index(x)!=len(aPath)-1:
 			line.position(aPath[aPath.index(x)+1])

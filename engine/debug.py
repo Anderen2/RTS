@@ -100,30 +100,6 @@ def ParseCommand(Txt):
 			ARG=split(PAR[0],"-")
 			return str(shared.decHandeler.Amount(SubType=ARG[0], Type=ARG[3]))
 
-		#RENDER COMMANDS
-		elif CMD=="fow":
-			import Render.render3dfow
-			shared.FOW=Render.render3dfow.FieldOfWar()
-		elif CMD=="fow_vision":
-			shared.FOW.VisionPos((int(PAR[0]),int(PAR[1])))
-		elif CMD=="fow_visionid":
-			shared.FOW.VisionIdx(int(PAR[0]))
-		elif CMD=="fow_update":
-			shared.FOW.Update()
-		elif CMD=="fow_get":
-			return str(shared.FOW.GetVert(int(PAR[0])))
-		elif CMD=="fow_getall":
-			return str(shared.FOW.GetVerts())
-		elif CMD=="fow_circle":
-			shared.FOW.VisionCircle((int(PAR[0]),int(PAR[1])),int(PAR[2]))
-		elif CMD=="fcu":
-			import Render.render3dfow
-			shared.FOW=Render.render3dfow.FieldOfWar()
-			shared.FOW.VisionCircle((300,300),2)
-			shared.FOW.Update()
-		elif CMD=="fow_sq":
-			shared.FOW.VisionSquare((int(PAR[0]),int(PAR[1])),(int(PAR[2]),int(PAR[3])))
-
 		else:
 			#Check for additional commands:
 			if CDict.has_key(CMD):

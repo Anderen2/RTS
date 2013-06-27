@@ -96,7 +96,8 @@ class UnitGroup():
 		shared.WaypointManager.update(None)
 
 	def updateVisuals(self):
-		if self.currentlyselected:
-			shared.gui['unitinfo'].updateQueue()
-			#Update waypoints here
-			shared.WaypointManager.update(self)
+		if shared.side=="Client":
+			if self.currentlyselected:
+				shared.gui['unitinfo'].updateQueue()
+				#Update waypoints here
+				shared.WaypointManager.update(self)

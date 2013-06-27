@@ -139,10 +139,10 @@ class Menu():
 		result = self.raySceneQuery.execute()
 		if len(result)>0:
 			for item in result:
-				if item.movable and item.movable.getName()!="Camera" :
-					#print "____________________________________"
-					#print item.movable.getName()
-					#print item.movable.getParentSceneNode().getName()
+				if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and item.movable.getName()!="Camera" :
+					print "____________________________________"
+					print item.movable.getName()
+					print item.movable.getParentSceneNode().getName()
 
 					if item.movable.getName()[0:5] == "tile[" or item.movable.getName()[0:5] == "Water":
 						self.CurrentContext=2

@@ -25,8 +25,8 @@ class WaypointManager():
 		if group!=None:
 			self.waypoints=[]
 			for action in group.actionQueue:
-				print action.waypointType
-				print action.waypointPos
+				#print action.waypointType
+				#print action.waypointPos
 				self.Create(action.waypointPos, action.waypointType, False)
 
 			if len(self.waypoints)>1:
@@ -43,6 +43,7 @@ class WaypointManager():
 				self.waypointPathNode.detachObject(self.waypointPathEnt)
 				shared.render3dScene.sceneManager.destroyEntity(self.waypointPathEnt)
 				shared.render3dScene.sceneManager.destroySceneNode(self.waypointPathNode)
+				self.waypointPath.unload()
 				self.waypointPathEnt = None
 
 	def Remove(self, Waypoint):
@@ -58,11 +59,11 @@ class WaypointManager():
 		pathlist=[]
 		for waypoint in self.waypoints:
 			pathlist.append((waypoint.node.getPosition().x, waypoint.node.getPosition().y, waypoint.node.getPosition().z))
-		print pathlist
+		#print pathlist
 		self.waypointPath = Shape.Path("WaypointPath"+str(self.waypointPathNumber), "BaseWhiteNoLighting", pathlist, True)
-		print(self.waypointPath)
+		##print(self.waypointPath)
 		self.waypointPathEnt = shared.render3dScene.sceneManager.createEntity("WaypointPath", "WaypointPath"+str(self.waypointPathNumber))
-		print(self.waypointPathEnt)
+		##print(self.waypointPathEnt)
 		self.waypointPathNode = shared.render3dScene.sceneManager.getRootSceneNode().createChildSceneNode("WaypointPath")
 		self.waypointPathNode.attachObject(self.waypointPathEnt)
 

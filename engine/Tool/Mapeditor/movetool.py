@@ -30,7 +30,7 @@ class MoveTool():
 		result = self.raySceneQuery.execute()
 		if len(result)>0:
 			for item in result:
-				if item.movable and item.movable.getName()!="Camera" and item.movable.getName()[0:5] != "tile[" and item.movable.getName()[0:5] != "Water":
+				if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and item.movable.getName()!="Camera" and item.movable.getName()[0:5] != "tile[" and item.movable.getName()[0:5] != "Water":
 					print "____________________________________"
 					print item.movable.getName()
 					print item.movable.getParentSceneNode().getName()
@@ -67,7 +67,7 @@ class MoveTool():
 				result = self.raySceneQuery.execute()
 				if len(result)>0:
 					for item in result:
-						if item.movable and item.movable.getName()[0:5] == "tile[":
+						if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and item.movable.getName()[0:5] == "tile[":
 							hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
 							posMoved=mouseRay.getPoint(hitpoint.second)
 							MovePosition=(posMoved[0],posMoved[1],posMoved[2])
@@ -90,7 +90,7 @@ class MoveTool():
 				result = self.raySceneQuery.execute()
 				if len(result)>0:
 					for item in result:
-						if item.movable and item.movable.getName()[0:5] == "tile[":
+						if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and item.movable.getName()[0:5] == "tile[":
 							hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
 							posMoved=mouseRay.getPoint(hitpoint.second)
 							MovePosition=(posMoved[0],posMoved[1],posMoved[2])

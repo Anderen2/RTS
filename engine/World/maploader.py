@@ -21,7 +21,8 @@ class MapLoader():
 		return self.Map
 
 	def terrainLoad(self, terraincfg):
-		self.createTerrainCFG(terraincfg)
+		#Create the terrain config
+		shared.render3dTerrain.createTerrainCFG(terraincfg)
 
 		#Create a dictionary with textures and alphamaps
 		splattingDict = {}
@@ -32,8 +33,8 @@ class MapLoader():
 			splattingDict[terraincfg["Texture"]["Alpha SplatTextures"][i].replace("[", "").replace("]", "").replace(" ", "")]=Fun
 			i+=1
 
-		shared.render3dScene.createTerrainMaterial(terraincfg["Texture"]["Base Texture"], splattingDict)
-		shared.render3dScene.RldTerrain()
+		shared.render3dTerrain.createTerrainMaterial(terraincfg["Texture"]["Base Texture"], splattingDict)
+		shared.render3dTerrain.RldTerrain()
 
 		if terraincfg["Water"]["Type"]!="None":
 			terrainX=int(terraincfg["Heightmap"]["Scale"][0])
@@ -53,27 +54,6 @@ class MapLoader():
 		if shared.FowManager!=None:
 			if shared.FowManager.created==False:
 				shared.FowManager.Create(int(terraincfg["Heightmap"]["Scale"][0]), int(terraincfg["Heightmap"]["Scale"][1]))
-
-	def createTerrainCFG(self, terraincfg):
-		Comment="# Automaticly generated from current map. Do NOT mod this file manually, your changes will only be overwritten!"
-		PageSource="Heightmap"
-		HeightmapImage=terraincfg["Heightmap"]["Heightmap File"]
-		PageSize=str(terraincfg["Heightmap"]["PageSize"])
-		TileSize=str(terraincfg["Heightmap"]["TileSize"])
-		MaxPixelError="30000"
-		PageWorldX=str(terraincfg["Heightmap"]["Scale"][0])
-		PageWorldZ=str(terraincfg["Heightmap"]["Scale"][1])
-		MaxHeight=str(terraincfg["Heightmap"]["Height"])
-		MaxMipMapLevel="5"
-		LODMorphStart="0.05"
-		CustomMaterialName="Template/Terrain"
-
-		cfgBuffer=Comment+"\nPageSource="+PageSource+"\nHeightmap.image="+HeightmapImage+"\nPageSize="+PageSize+"\nTileSize="+TileSize+"\nMaxPixelError="+MaxPixelError+"\nPageWorldX="+PageWorldX+"\nPageWorldZ="+PageWorldZ+"\nMaxHeight="+MaxHeight+"\nMaxMipMapLevel="+MaxMipMapLevel+"\nLODMorphStart="+LODMorphStart+"\n# YARTS Autoconfig End\n"
-
-		cfgFile=open("./media/terrain2.cfg", "w")
-		cfgFile.write(cfgBuffer)
-		cfgFile.flush()
-		cfgFile.close()
 
 class Map():
 	def __init__(self, mapfile):

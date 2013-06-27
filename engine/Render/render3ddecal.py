@@ -4,6 +4,7 @@
 from engine import shared, debug
 from engine.shared import DPrint
 from random import randrange
+from traceback import print_exc
 import ogre.renderer.OGRE as ogre
 
 class DecalManager():
@@ -11,6 +12,10 @@ class DecalManager():
 	def __init__(self):
 		self.dcount=0
 		self.decals={}
+
+		self.pdecals=[]
+
+		debug.ACC("rdtest", self.TestDecal, info="Decal Test \nargs: x y z", args=3)
 
 	def Declare(self):
 		self.Define("BCircle", "Circle", 1000, 1000)
@@ -55,7 +60,14 @@ class DecalManager():
 		DPrint("Render3dDecal",0,"Creating Decal"+meshname+" with id "+str(self.dcount)+" at "+str(pos)+" Rot: "+str(rot))
 		self.dcount=self.dcount+1
 		return A2Decal(self.dcount,"Decal"+meshname, pos, rot)
-		
+
+	def TestDecal(self, posx, posz, size):
+		try:
+			decal=TerrainPDecal((float(posx), float(posz)), float(size), "burnt.png", True)
+			self.pdecals.append(decal)
+			#decal.makeMaterialReceiveDecal()
+		except:
+			print_exc()
 
 class A2Decal():
 	def __init__(self, ID, mesh, pos, rot):
@@ -146,29 +158,25 @@ class TerrainPDecal():
 		self.mSceneManager=shared.render3dScene.sceneManager
 
 		self.mDecalFrustum=ogre.Frustum()
-		self.mProjectorNode=self.mSceneManager.getRootSceneNode().createChildSceneNode("Decal"+str(randrange(0,900)))
+		#self.mDecalFrustum.setProjectionType(ogre.PT_ORTHOGRAPHIC)
+		#self.mDecalFrustum.setOrthoWindowHeight(100)
+		self.mProjectorNode=self.mSceneManager.getRootSceneNode().createChildSceneNode("PDecal"+str(randrange(0,900)))
 		self.mProjectorNode.attachObject(self.mDecalFrustum)
-		self.mProjectorNode.setPosition(mPos)
+		self.mProjectorNode.setPosition(mPos[0], mSize, mPos[1])
+		self.mProjectorNode.lookAt((int(mPos[0]), 0, int(mPos[1])), self.mProjectorNode.TS_WORLD)
 
-		self.filterFrustum=ogre.Frustum()
-		self.filterFrustum.setProjectionType(ogre.PT_ORTHOGRAPHIC)
-		self.filterNode=self.mProjectorNode.createChildSceneNode("DecalFilterNode"+str(randrange(0,900)))
-		self.filterNode.attachObject(self.filterFrustum)
-		self.filterNode.setOrientation(ogre.Quaternion(ogre.Degree(90),ogre.Vector3().UNIT_Y))
+		if mVisible:
+			self.makeMaterialReceiveDecal()
 
-	def makeMaterialReceiveDecal(self, matName):
-		mat=ogre.MaterialManager.getSingleton().getByName(matName)
+	def makeMaterialReceiveDecal(self):
+		mat=shared.render3dTerrain.Material
 		mPass=mat.getTechnique(0).createPass()
 
 		mPass.setSceneBlending(ogre.SBT_TRANSPARENT_ALPHA)
-		mPass.setDepthBias(1)
 		mPass.setLightingEnabled(False)
-		texState=mPass.createTextureUnitState("decal.png")
+		texState=mPass.createTextureUnitState(self.mTexture)
+		texState.setTextureScale(1, 1)
 		texState.setProjectiveTexturing(True, self.mDecalFrustum)
-		texState.setTextureAddressingMode(ogre.TextureUnitState.TAM_CLAMP)
-		texState.setTextureFiltering(ogre.FO_POINT, ogre.FO_LINEAR, ogre.FO_NONE)
-
-		texState = mPass.createTextureUnitState("decal_filter.png")
-		texState.setProjectiveTexturing(True, self.filterFrustum)
-		texState.setTextureAddressingMode(ogre.TextureUnitState.TAM_CLAMP)
-		texState.setTextureFiltering(ogre.TFO_NONE)
+		texState.setTextureAddressingMode(ogre.TextureUnitState.TAM_BORDER)
+		texState.setTextureBorderColour(ogre.ColourValue(0.0, 0.0, 0.0, 0.0))
+		#texState.setTextureFiltering(ogre.FO_POINT, ogre.FO_LINEAR, ogre.FO_NONE)

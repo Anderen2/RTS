@@ -2,7 +2,7 @@
 #Classes for rendering 3d enviroment
 #By Anderen2 (Dec. 2012)
 
-import render3dent, render3ddecal, render3dterrain, render3dwaypoint, render3dwater, render3dcamera, render3dfow, render3dselection
+import render3dent, render3deffects, render3ddecal, render3dterrain, render3dwaypoint, render3dwater, render3dcamera, render3dfow, render3dselection
 from engine import shared, debug
 import ogre.renderer.OGRE as ogre
 from ogre.gui.CEGUI import MouseCursor
@@ -33,6 +33,10 @@ class Scene():
 
 		shared.DPrint("Render3d",1,"Particle Parameters")
 		ogre.ParticleSystem.defaultNonVisibleUpdateTimeout=1
+
+		shared.DPrint("Render3d",1,"Effects..")
+		self.EffNode=self.sceneManager.getRootSceneNode().createChildSceneNode("EffNode",(0,0,0))
+		shared.EffectManager=render3deffects.EffectManager()
 
 		shared.DPrint("Render3d",1,"Selection..")
 		shared.render3dSelectStuff=render3dselection.SelectStuff(self.root, self)

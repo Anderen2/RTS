@@ -13,24 +13,19 @@ class AB():
 		#Lazy ways ahoy!
 
 		xRel = float(abs(float(dst[0])-float(src[0])))
-		yRel = float(abs(float(dst[1])-float(src[1])))
+		zRel = float(abs(float(dst[1])-float(src[1])))
 
-		if xRel>yRel:
+		if xRel>zRel:
 			xStep = 1
-			#yStep = float((yRel/(xRel/yRel))/10)
-			yStep = float(yRel/xRel)
+			zStep = float(zRel/xRel)
 
-		elif xRel<yRel:
-			#xStep = float((xRel/(yRel/xRel))/10)
-			xStep = float(xRel/yRel)
-			yStep = 1
+		elif xRel<zRel:
+			xStep = float(xRel/zRel)
+			zStep = 1
 
 		else: 
 			xStep = 1
-			yStep = 1
-
-		#print(xStep)
-		#print(yStep)
+			zStep = 1
 
 		if dst[0]<src[0]:
 			x=float(src[0])-xStep
@@ -40,14 +35,63 @@ class AB():
 			x=dst[0]
 
 		if dst[1]<src[1]:
-			z=float(src[1])-yStep
+			y=float(src[1])-zStep
 		elif dst[1]>src[1]:
-			z=float(src[1])+yStep
+			y=float(src[1])+zStep
 		else:
-			z=dst[1]
+			y=dst[1]
 
 		distance=abs((abs(src[0])+abs(src[1]))-(abs(dst[0])+abs(dst[1])))
-		return (x,z,floor(distance))
+		return (x,y,floor(distance))
+
+	def GetNextCoord3D(self, src, dst):
+		#Lazy ways ahoy!
+
+		xRel = float(abs(float(dst[0])-float(src[0])))
+		yRel = float(abs(float(dst[1])-float(src[1])))
+		zRel = float(abs(float(dst[2])-float(src[2])))
+
+		if xRel>zRel:
+			xStep = 1
+			zStep = float(zRel/xRel)
+
+		elif xRel<zRel:
+			xStep = float(xRel/zRel)
+			zStep = 1
+
+		else: 
+			xStep = 1
+			zStep = 1
+
+		if src[1]>dst[1]: #If target is lower
+			if src[1]-dst[1]<2:
+				y=dst[1]
+			else:
+				yStep = float(0.5)
+				y=src[1]-yStep
+		else:
+			if dst[1]-src[1]<2:
+				y=dst[1]
+			else:
+				yStep = float(0.5)
+				y=src[1]+yStep
+
+		if dst[0]<src[0]:
+			x=float(src[0])-xStep
+		elif dst[0]>src[0]:
+			x=float(src[0])+xStep
+		else:
+			x=dst[0]
+
+		if dst[2]<src[2]:
+			z=float(src[2])-zStep
+		elif dst[2]>src[2]:
+			z=float(src[2])+zStep
+		else:
+			z=dst[2]
+
+		distance=abs((abs(src[0])+abs(src[1])+abs(src[2]))-(abs(dst[0])+abs(dst[1])+abs(dst[2])))
+		return (x,y,z,floor(distance))
 
 	def ConsoleFriendly(self, x, z, x2, z2, trig):
 		dist=999999

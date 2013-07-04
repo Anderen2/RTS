@@ -7,7 +7,7 @@ shared.DPrint("Main",1,"Initializing Modules...")
 from engine.Render import render
 from engine.Object import unitmanager, prop, decorator, zone, directormanager
 from engine.Networking.client import client
-from engine.World import maploader
+from engine.World import maploader, pathfinding
 from engine.Tool.Mapeditor import globalgui, toolmanager, backend, mapfile
 
 shared.wd="./Data/Map/"
@@ -49,6 +49,9 @@ shared.DPrint("Main",1,"Initializing DirectorManager...")
 shared.DirectorManager=directormanager.DirectorManager()
 shared.DirectorManager.Init("Mapeditor")
 shared.DirectorManager.Action("Mapeditor")
+
+#Pathfinding
+shared.Pathfinder = pathfinding
 
 #Power it up!
 shared.DPrint("Main",1,"Startin' Powerin' up!..")

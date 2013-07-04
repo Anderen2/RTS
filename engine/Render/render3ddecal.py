@@ -6,6 +6,7 @@ from engine.shared import DPrint
 from random import randrange
 from traceback import print_exc
 import ogre.renderer.OGRE as ogre
+from twisted.internet import reactor
 
 class DecalManager():
 	#If you want to make progress here, you got to goddamn figure it out yourself.. this is my try
@@ -61,9 +62,9 @@ class DecalManager():
 		self.dcount=self.dcount+1
 		return A2Decal(self.dcount,"Decal"+meshname, pos, rot)
 
-	def TestDecal(self, posx, posz, size):
+	def TestDecal(self, posx, posz, size, time):
 		try:
-			decal=TerrainPDecal((float(posx), float(posz)), float(size), "burnt.png", True)
+			decal=TerrainPDecal((float(posx), float(posz)), float(size), "burnt.png", int(time), True)
 			self.pdecals.append(decal)
 			#decal.makeMaterialReceiveDecal()
 		except:
@@ -150,12 +151,15 @@ class TerrainMDecal():
 		decalMesh=shared.render3dScene.sceneManager.createEntity("Decal",self.decal)
 
 class TerrainPDecal():
-	def __init__(self,mPos, mSize, mTexture, mVisible):
+	def __init__(self,mPos, mSize, mTexture, time, mVisible):
 		self.mPos=mPos
 		self.mSize=mSize
 		self.mTexture=mTexture
 		self.mVisible=mVisible
 		self.mSceneManager=shared.render3dScene.sceneManager
+
+		if time!=0:
+			reactor.callLater(time, self.Remove)
 
 		self.mDecalFrustum=ogre.Frustum()
 		#self.mDecalFrustum.setProjectionType(ogre.PT_ORTHOGRAPHIC)
@@ -180,3 +184,8 @@ class TerrainPDecal():
 		texState.setTextureAddressingMode(ogre.TextureUnitState.TAM_BORDER)
 		texState.setTextureBorderColour(ogre.ColourValue(0.0, 0.0, 0.0, 0.0))
 		#texState.setTextureFiltering(ogre.FO_POINT, ogre.FO_LINEAR, ogre.FO_NONE)
+
+	def Remove(self):
+		self.mProjectorNode.detachObject(self.mDecalFrustum)
+		#shared.render3dScene.sceneManager.destroyEntity(self.ent)
+		shared.render3dScene.sceneManager.destroySceneNode(self.mProjectorNode)

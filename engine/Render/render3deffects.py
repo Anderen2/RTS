@@ -29,7 +29,7 @@ class Explosion():
 		self.particle.getEmitter(0).setTimeToLive(time)
 		self.particle.getEmitter(0).setEnabled(True)
 
-		reactor.callLater(5, self.Stop)
+		reactor.callLater(10, self.Stop)
 
 	def Stop(self):
 		for x in range(0, self.particle.getNumEmitters()):

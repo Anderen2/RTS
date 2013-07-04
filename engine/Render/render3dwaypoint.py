@@ -43,7 +43,7 @@ class WaypointManager():
 				self.waypointPathNode.detachObject(self.waypointPathEnt)
 				shared.render3dScene.sceneManager.destroyEntity(self.waypointPathEnt)
 				shared.render3dScene.sceneManager.destroySceneNode(self.waypointPathNode)
-				self.waypointPath.unload()
+				#self.waypointPath.unload()
 				self.waypointPathEnt = None
 
 	def Remove(self, Waypoint):
@@ -60,7 +60,7 @@ class WaypointManager():
 		for waypoint in self.waypoints:
 			pathlist.append((waypoint.node.getPosition().x, waypoint.node.getPosition().y, waypoint.node.getPosition().z))
 		#print pathlist
-		self.waypointPath = Shape.Path("WaypointPath"+str(self.waypointPathNumber), "BaseWhiteNoLighting", pathlist, True)
+		self.waypointPath = Shape.Path("WaypointPath"+str(self.waypointPathNumber), "BaseWhiteNoLighting", pathlist, Mesh=True)
 		##print(self.waypointPath)
 		self.waypointPathEnt = shared.render3dScene.sceneManager.createEntity("WaypointPath", "WaypointPath"+str(self.waypointPathNumber))
 		##print(self.waypointPathEnt)

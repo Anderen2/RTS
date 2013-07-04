@@ -2,6 +2,7 @@
 #Submodules: Render, Networking, Gameplay, Other
 
 from sys import argv
+from traceback import print_exc
 
 #Initialize stuff
 from engine import shared, debug
@@ -65,6 +66,7 @@ try:
 	debug.runFile("./autoexec")
 except:
 	shared.DPrint("Main",2,"No autoexec file exsists!")
+	print_exc()
 
 #CLI Parameters
 shared.DPrint("Main",1,"Executing CLI Parameters")

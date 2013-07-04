@@ -387,4 +387,5 @@ class Entity():
 				self.curranim.addTime(self.animtime)
 
 	def __del__(self):
-		shared.DPrint("Entity",5,"Entity gc'd: "+str(self.ID))
+		if shared!=None:
+			shared.DPrint("Entity",5,"Entity gc'd: "+str(self.ID))

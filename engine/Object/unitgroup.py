@@ -6,7 +6,7 @@ from engine.Object.unit import moveable, structure
 from twisted.internet import reactor
 
 class GroupManager():
-	"""The only real goal with this manager is to keep Groups from getting unintentionaly GC'ed"""
+	#"""The only real goal with this manager is to keep Groups from getting unintentionaly GC'ed""" Not any more bitch
 	def __init__(self):
 		self.groups=[]
 
@@ -33,7 +33,7 @@ class UnitGroup():
 					self.actionQueue[0].beginUnit(unit)
 
 	def rmUnit(self, unit):
-		unit.group = None
+		unit._group = None
 		self.delUnit(unit)
 
 	def delUnit(self, unit):
@@ -82,7 +82,7 @@ class UnitGroup():
 		if len(self.actionQueue)!=0:
 			self.actionQueue[0].update()
 		for unit in self.members:
-			if unit.group!=self:
+			if unit._group!=self:
 				self.delUnit(unit)
 
 		reactor.callLater(0.5, self.actionUpdate)

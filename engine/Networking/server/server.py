@@ -6,6 +6,7 @@ from twisted.internet import reactor, stdio
 from engine import debug, shared
 from engine.Networking import TwCLI, sh_netObject, sh_netMethod
 
+from groupmanager import GroupManager
 from playermanager import PlayerManager
 from unitmanager import UnitManager
 from chat import ChatManager
@@ -67,13 +68,14 @@ class Server():
 		}
 
 	def SI(self, Protocol):
-		return (pickle.dumps(self.ServerInfo))
+		return ([self.ServerInfo])
 
 def Startup():
 	shared.Server=Server()
 
 	ChatManager()
 	UnitManager()
+	GroupManager()
 
 	reactor.listenTCP(1337, sh_netMethod.MethodFactory())
 	reactor.run()

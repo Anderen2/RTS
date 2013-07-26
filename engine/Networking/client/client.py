@@ -1,5 +1,4 @@
 #TwistedClient
-import pickle
 from traceback import print_exc
 from string import split
 from twisted.internet import reactor
@@ -7,7 +6,7 @@ from twisted.internet.defer import Deferred
 
 from engine import shared, debug
 from engine.Networking import sh_netObject, sh_netMethod
-from engine.Networking.client import playermanager, unitmanager, chat
+from engine.Networking.client import playermanager, unitmanager, groupmanager, chat
 
 class Service():
 	def __init__(self):
@@ -72,10 +71,11 @@ class Tjener():
 
 		shared.PlayerManager=playermanager.PlayerManager()
 		shared.netUnitManager=unitmanager.UnitManager()
+		groupmanager.GroupManager()
 		shared.ChatManager=chat.ChatManager()
 
 	def GimmeServerInfo(self, method, serverinfo):
-		self.ServerInfo=pickle.loads(serverinfo)
+		self.ServerInfo=serverinfo
 		shared.DPrint("Tjener", 0, "Got serverinfo")
 
 	def PrintNice(self):

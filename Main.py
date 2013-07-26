@@ -31,7 +31,7 @@ shared.render=render.RenderApplication()
 shared.DPrint("Main",1,"Initializing Managers...")
 shared.unitManager=unitmanager.UnitManager()
 shared.unitHandeler=shared.unitManager
-shared.unitGroup=unitgroup.GroupManager()
+#shared.unitGroup=unitgroup.GroupManager() This is now initialized under networking.client
 shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
 shared.zoneManager=zone.zoneManager()

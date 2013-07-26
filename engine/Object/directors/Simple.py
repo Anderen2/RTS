@@ -93,26 +93,26 @@ class Director():
 		if len(self.CurrentSelection)>0:
 			if actionQueueing==True:
 				if len(self.CurrentSelection)==1:
-					if self.CurrentSelection[0].group!=None:
+					if self.CurrentSelection[0]._group!=None:
 						self.deselectAll()
-						self.CurrentSelection=self.CurrentSelection[0].group.members[:]
-						self.CurrentSelectedGroup=self.CurrentSelection[0].group
+						self.CurrentSelection=self.CurrentSelection[0]._group.members[:]
+						self.CurrentSelectedGroup=self.CurrentSelection[0]._group
 						self.selectAll()
 
 				if len(self.CurrentSelection)>1:
 					if self.OldSelectedGroup!=None:
 						newunits = list(set(self.CurrentSelection) - set(self.OldSelection))
 						for unit in newunits:
-							unit.group = self.OldSelectedGroup
+							unit._group = self.OldSelectedGroup
 							self.OldSelectedGroup.addUnit(unit)
 
 
-			if self.CurrentSelection[0].group!=None:
+			if self.CurrentSelection[0]._group!=None:
 				if len(self.CurrentSelection)==1:
-					self.CurrentSelectedGroup=self.CurrentSelection[0].group
+					self.CurrentSelectedGroup=self.CurrentSelection[0]._group
 
-				elif self.CurrentSelection[0].group.members[:] == self.CurrentSelection[:]:
-					self.CurrentSelectedGroup=self.CurrentSelection[0].group
+				elif self.CurrentSelection[0]._group.members[:] == self.CurrentSelection[:]:
+					self.CurrentSelectedGroup=self.CurrentSelection[0]._group
 
 		if self.CurrentSelectedGroup!=None:
 			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
@@ -131,7 +131,7 @@ class Director():
 			group = shared.unitGroup.newGroup(persistent=False, members=self.CurrentSelection[:])
 			self.CurrentSelectedGroup=group
 			for unit in self.CurrentSelection:
-				unit.group = group
+				unit._group = group
 
 		if self.CurrentSelectedGroup!=None:
 			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)

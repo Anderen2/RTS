@@ -1,4 +1,5 @@
 #MethodProtocol
+import pickle, base64
 from traceback import print_exc
 from time import time
 from twisted.internet.protocol import Protocol, Factory
@@ -8,6 +9,7 @@ from engine import shared, debug
 
 VERBOSE=True
 PVERBOSE=True
+RAWVERBOSE=False
 HUMANOSE=False #Warning, this means that the server will read in Humanose form. It will break everything!
 PHUMANOSE=False #Warning, this means that the server will transmit in Humanose form. It will break everything!
 
@@ -37,6 +39,7 @@ class MethodProtocol(Protocol):
 		global PVERBOSE
 		global HUMANOSE
 		global PHUMANOSE
+		global RAWVERBOSE
 		#OBJECT.METHOD-ARG/ARG/ARG
 		# chr 1^ chr 2^  chr 3^
 		if HUMANOSE:
@@ -74,9 +77,13 @@ class MethodProtocol(Protocol):
 				
 				obj=Foo[0]
 				method=Bar[0]
-				print("Recived: "+Bar[1].replace(chr(3),"\n___\n"))
-				arg=split(Bar[1], slash)
+				#print("Recived: "+Bar[1].replace(chr(3),"\n___\n"))
+				#arg=split(Bar[1], slash)
+				arg=pickle.loads(base64.b64decode(Bar[1]))
+				if RAWVERBOSE:
+					print("Recived: "+str(arg))
 				if VERBOSE:
+					print("\nRecieved:")
 					print("Object: " + obj + "\nMethod: " + method + "\nArgument: " + str(type(arg)))
 				if PVERBOSE:
 					print("Arguments:\n"+str(arg))
@@ -139,7 +146,7 @@ class MethodProtocol(Protocol):
 		self.transport.write(method)
 
 	def txMeth(self, obj, func, arg):
-		global VERBOSE, PHUMANOSE
+		global VERBOSE, PHUMANOSE, RAWVERBOSE
 		if PHUMANOSE:
 			rdot="."
 			rdash="-"
@@ -152,19 +159,24 @@ class MethodProtocol(Protocol):
 			rend=""
 
 		try:
-			args=""
-			if arg!=None:
-				if type(arg) is list:
-					for x in arg:
-						args=str(args)+str(x)+rslash
-					args=args[:len(args)-1]
-				else:
-					args=arg
-			else:
-				args=""
+			# args=""
+			# if arg!=None:
+			# 	if type(arg) is list:
+			# 		for x in arg:
+			# 			args=str(args)+str(x)+rslash
+			# 		args=args[:len(args)-1]
+			# 	else:
+			# 		args=arg
+			# else:
+			# 	args=""
+
+			args=base64.b64encode(pickle.dumps(arg))
 
 			method=str(obj)+rdot+str(func)+rdash+args+rend
 			if VERBOSE:
+				print("\nTransmitting: ")
+				print("Object: " + str(obj) + "\nMethod: " + str(func) + "\nArgument: " + str(type(arg)))
+			if RAWVERBOSE:
 				print(split(method.replace(chr(1), ".").replace(chr(2), "-").replace(chr(3), "/"), "-"))
 				print method
 			self.transport.write(method)

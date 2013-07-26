@@ -34,7 +34,7 @@ class ChatManager():
 			self.channels.append(Channel(attr[0], attr[1], int(CID), members=attr[2]))
 
 	def ChatSay(self, channel, mesg):
-		shared.protocol.sendMethod(3, "SA", [channel, mesg])
+		shared.protocol.sendMethod(3, "SA", [channel, str(mesg)])
 
 	def getFromCID(self, CID):
 		for x in self.channels:

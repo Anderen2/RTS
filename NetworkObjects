@@ -8,9 +8,11 @@ Server:
 2 = PlayerManager
 3 = Chat
 4 = UnitManager
+5 = GroupManager
 
 Client:
 1 = ??
 2 = PlayerManager
-3 = Chat (NOT IMPLEMENTED)
+3 = Chat
 4 = UnitManager
+5 = GroupManager

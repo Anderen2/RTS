@@ -19,7 +19,7 @@ class Director():
 
 	def UnitBuild(self, name):
 		shared.DPrint(0, "NetDir", "Sending building request..")
-		shared.protocol.sendMethod(4, "req_build", [name])
+		shared.protocol.sendMethod(4, "req_build", [name, 100, 100, 100])
 	
 	def deselectAll(self):
 		for unit in self.CurrentSelection:
@@ -45,9 +45,10 @@ class Director():
 
 		for x in self.selections:
 			unitID=int(split(x.getName(),"_")[1])
-			unit=shared.unitHandeler.Get(unitID)
-			unit._selected()
-			self.CurrentSelection.append(unit)
+			unit=shared.netUnitManager.getFromUID(unitID)
+			if unit.GetOwner() == shared.SelfPlayer:
+				unit._selected()
+				self.CurrentSelection.append(unit)
 
 
 		#Check unit group and if the ActionQueueing key is down
@@ -56,10 +57,10 @@ class Director():
 				#If only one were selected while AQ was down, and he has a group ...
 				#... select all the units in his group
 				if len(self.CurrentSelection)==1:
-					if self.CurrentSelection[0].group!=None:
+					if self.CurrentSelection[0]._group!=None:
 						self.deselectAll()
-						self.CurrentSelection=self.CurrentSelection[0].group.members[:]
-						self.CurrentSelectedGroup=self.CurrentSelection[0].group
+						self.CurrentSelection=self.CurrentSelection[0]._group.members[:]
+						self.CurrentSelectedGroup=self.CurrentSelection[0]._group
 						self.selectAll()
 
 				#If only one were selected while AQ was down, and they do not have a group ...
@@ -69,18 +70,19 @@ class Director():
 					if self.OldSelectedGroup!=None:
 						newunits = list(set(self.CurrentSelection) - set(self.OldSelection))
 						for unit in newunits:
-							unit.group = self.OldSelectedGroup
-							self.OldSelectedGroup.addUnit(unit)
+							unit._group = self.OldSelectedGroup
+							self.OldSelectedGroup.requestUnitAdd(unit)
 
 			#Groupchecks
-			if self.CurrentSelection[0].group!=None:
+			if self.CurrentSelection[0]._group!=None:
 				#Sets the current group if only one unit was selected
 				if len(self.CurrentSelection)==1:
-					self.CurrentSelectedGroup=self.CurrentSelection[0].group
+					self.CurrentSelectedGroup=self.CurrentSelection[0]._group
+					print("Currently selected group = "+str(self.CurrentSelectedGroup))
 
 				#Sets the current group if all the units selected is in the same group
-				elif self.CurrentSelection[0].group.members[:] == self.CurrentSelection[:]:
-					self.CurrentSelectedGroup=self.CurrentSelection[0].group
+				elif self.CurrentSelection[0]._group.members[:] == self.CurrentSelection[:]:
+					self.CurrentSelectedGroup=self.CurrentSelection[0]._group
 
 		#Update the GUI after the new data
 		if self.CurrentSelectedGroup!=None:
@@ -93,12 +95,26 @@ class Director():
 		self.OldSelectedGroup=None
 
 	def evt_moveclick(self, pos, actionQueueing):
-		selectedIDS=[]
-		for x in self.CurrentSelection:
-			shared.DPrint("NetDir", 0, "Moving unit: "+str(x))
-			selectedIDS.append(x.ID)
-			
-		shared.SelfPlayer.MoveUnits(selectedIDS, pos)
+		if self.CurrentSelectedGroup==None and actionQueueing==False and len(self.CurrentSelection)>0:
+			print("CurrentSelection: "+str(self.CurrentSelection[:]))
+			group = shared.GroupManager.req_newgroup(False, self.CurrentSelection[:])
+			self.CurrentSelectedGroup=group
+			print("Moving group: "+str(self.CurrentSelectedGroup))
+			for unit in self.CurrentSelection:
+				unit._group = group
+
+		#Setting up GUI according to group
+		if self.CurrentSelectedGroup!=None:
+			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
+			self.CurrentSelectedGroup.selected()
+		else:
+			shared.gui['unitinfo'].noSelection()
+
+		if self.CurrentSelectedGroup!=None:
+			#Sending an move action to the currently selected group
+			evt = {"3dMouse":pos}
+			#self.CurrentSelectedGroup.addAction(move.ActMove(self.CurrentSelectedGroup, evt))
+			self.CurrentSelectedGroup.requestActionAdd("move", evt)
 
 	def evt_actionclick(self, data, actionQueueing):
 		for x in self.CurrentSelection:

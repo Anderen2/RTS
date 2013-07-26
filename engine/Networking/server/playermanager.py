@@ -1,5 +1,4 @@
 #Serverside Playermanager
-import pickle
 
 from twisted.internet import reactor
 from engine import debug, shared
@@ -14,11 +13,11 @@ class PlayerManager():
 
 		self.brandwidthsaver=[]
 
-	def HI(self, Username, PickledExtras, Protocol=None):
+	def HI(self, Username, Extras, Protocol=None):
 		if not self.getFromProto(Protocol):
 			self.PlayerCount+=1
-			self.Broadcast(2, "HI", [Username, str(self.PlayerCount), PickledExtras])
-			self.PDict[self.PlayerCount]=Player(self.PlayerCount, Username, Protocol, PickledExtras)
+			self.Broadcast(2, "HI", [Username, str(self.PlayerCount), Extras])
+			self.PDict[self.PlayerCount]=Player(self.PlayerCount, Username, Protocol, Extras)
 			reactor.callLater(1, self.PDict[self.PlayerCount].Setup)
 			return [str(self.PlayerCount)]
 		else:
@@ -29,11 +28,11 @@ class PlayerManager():
 		for x in self.PDict:
 			foolist.append({"uid":self.PDict[x].UID, "username":self.PDict[x].username, "info":self.PDict[x].PlayerInfo})
 
-		return pickle.dumps(foolist)
+		return [foolist]
 
 	def req_moveunit(self, selected, x, y, z, Protocol=None):
 		if selected!="0":
-			self.brandwidthsaver=pickle.loads(selected)
+			self.brandwidthsaver=selected
 
 		## IF PLAYER OWNS ALL UNITS CHECK HERE! ! !
 		## Tempoary testing workaround (All players could move all units)

@@ -10,3 +10,7 @@ class Player():
 		self.username=Username
 
 		self.Units=[]
+
+	def Think(self, delta):
+		for unit in self.Units:
+			unit._think(delta)

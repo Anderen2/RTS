@@ -2,6 +2,7 @@
 #This is the class which all units derive from and bases itself on
 from traceback import print_exc
 from engine import shared, debug
+from engine.Object.unitact import cl_move
 
 class BaseUnit():
 	#Setup Constants
@@ -13,8 +14,16 @@ class BaseUnit():
 		self._owner=owner
 		self._group=None
 
+		#Actions
+		self._currentaction=None
+		self._globalactions = [cl_move.Action]
+
+		#Movement
+		self._movetopoint=None
+
 		self.Initialize()
-		self._setposition(pos)
+		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
+		self._setPosition(pos)
 		self.OnCreation(pos)
 
 	### UnitScript Functions
@@ -29,7 +38,7 @@ class BaseUnit():
 		return self._owner.team
 
 	def GetPosition(self):
-		return self._pos
+		return self._getPosition()
 
 	def SetEntity(self, ent):
 		self._entityname = ent
@@ -57,7 +66,7 @@ class BaseUnit():
 		return MOVETYPE_AIR
 
 	def GetMoveSpeed(self):
-		return 1
+		return 100
 
 	def GetHealth(self):
 		return 100
@@ -79,23 +88,76 @@ class BaseUnit():
 		if debug.AABB:
 			self._entity.node.showBoundingBox(False)
 
-	def _think(self):
+	def _think(self, delta):
 		self._entity.text.update()
 		self._entity.Think()
+		if self._currentaction!=None:
+			self._currentaction.update()
+
+		if self._movetopoint!=None:
+			dst = (self._movetopoint[0], self._movetopoint[2])
+			dist = self._movestep(dst, delta)
+			if dist<1:
+				self._movetopoint=None
 
 	### Internal Functions
 
-	def _setposition(self, pos):
+	# Movement
+	def _movestep(self, dst, delta):
+		src = (self._pos[0], self._pos[2])
+		speed = (self.GetMoveSpeed()*delta)
+		nx, ny, dist = shared.Pathfinder.ABPath.GetNextCoord(src, dst, speed)
+		newpos = (nx, self._pos[1], ny)
+		
+		self._setPosition(newpos)
+		return dist
+
+	def _moveto(self, pos):
+		self._movetopoint=pos
+		self._look(self._movetopoint)
+		self.OnMove(pos)
+
+	def _stopmove(self):
+		self._movetopoint=None
+
+	# ENTITY
+	def _setPosition(self, pos):
 		self._pos=pos
 		self._entity.SetPosition(pos[0], pos[1], pos[2])
 		#if shared.FowManager!=None and shared.FowManager!=True:
 		#	shared.FowManager.nodeUpdate(self.entity.node)
 
+	def _getPosition(self):
+		return (self._entity.node.getPosition().x, self._entity.node.getPosition().y, self._entity.node.getPosition().z)
+
 	def _setrotation(self, rot):
 		self._entity.Rotate(rot[0], rot[1], rot[2])
 
-	def _look(self, x, y, z):
-		self._entity.LookAtZ(x, y, z)
+	def _look(self, pos):
+		self._entity.LookAtZ(pos[0], pos[1], pos[2])
 
-	def _setaction(self, act, evt):
+	# ACTIONS
+	def _loadActions(self):
+		pass
+
+	def _getActionByID(self, aid):
+		for action in self._globalactions:
+			if action.actionid == aid:
+				return action
+
+		for action in self.Actions:
+			if action.actionid == aid:
+				return action
+
+	def _getAllActions(self):
+		allactions = []
+		allactions.extend(self._globalactions)
+		allactions.extend(self.Actions)
+		return allactions
+
+	def _setAction(self, act, evt):
+		self._currentaction=act(self, evt)
+		self._currentaction.begin()
+
+	def _endAction(self):
 		pass

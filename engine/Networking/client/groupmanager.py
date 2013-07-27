@@ -61,12 +61,21 @@ class GroupManager():
 
 	def recv_setaction(self, gid, actionid, data, Protocol=None):
 		print("Starting action: "+actionid+" w/ "+str(data))
+		group = self.getFromGID(gid)
+		action = group.getActionByID(actionid)
+		if action!=None:
+			group.setCurrentAction(action, data)
 
 	def recv_setactionstate(self, gid, state, Protocol=None):
 		pass
 
 	def recv_groupactionqueue(self, groupid, queue, Protocol=None):
-		pass
+		group = self.getFromGID(groupid)
+		ActionAndData = []
+		for ActionID, Data in queue:
+			ActionAndData.append((group.getActionByID(ActionID), Data))
+
+		group.updateActionQueue(ActionAndData)
 
 	def unpackUnitList(self, uidlist, owner):
 		units=[]
@@ -138,14 +147,17 @@ class UnitGroup():
 	def requestActionAbort(self, action):
 		pass
 
-	def requestMove(self, pos):
-		shared.protocol.sendMethod(5, "req_groupmove", [self.gid, pos])
-
-	def requestPrimary(self):
-		pass
+	def requestActionQueue(self):
+		shared.protocol.sendMethod(5, "req_groupactionqueue", [self.gid])
 
 	## Group Functions
 
+	def getActionByID(self, actionid):
+		## Algorithm to get all common actions here!
+		print(self.members)
+		return self.members[0]._getActionByID(actionid)
+
+	## Unit Functions
 	def addUnit(self, unit):
 		self.members.append(unit)
 		unit._group = self
@@ -159,17 +171,17 @@ class UnitGroup():
 		if len(self.members)==0 and self.persistent==False:
 			shared.GroupManager.rmGroup(self)
 
-	def addAction(self, action):
-		self.actionQueue.append(action)
-		print(self.actionQueue)
-		self.updateVisuals()
+	## Action Functions
 
-	def rmAction(self, action):
-		self.actionQueue.remove(action)
-		self.updateVisuals()
+	def setCurrentAction(self, action, data):
+		self.waitingfor = []
+		for unit in self.members:
+			if action in unit._getAllActions():
+				self.waitingfor.append(unit)
+				unit._setAction(action, data)
 
-	def setCurrentAction(self, action):
-		pass
+		if self.owner==shared.SelfPlayer:
+			self.requestActionQueue()
 
 	def abortCurrentAction(self):
 		pass
@@ -177,11 +189,19 @@ class UnitGroup():
 	def finishCurrentAction(self):
 		pass
 
+	## ActionQueue Functions
+
+	def updateActionQueue(self, ActionAndDataQueue):
+		self.actionQueue = ActionAndDataQueue[:]
+		if self.currentlyselected==True:
+			self.updateVisuals()
+
+
 	## Visuals
 
 	def selected(self):
 		self.currentlyselected=True
-		self.updateVisuals()
+		self.requestActionQueue()
 
 	def deselected(self):
 		self.currentlyselected=False

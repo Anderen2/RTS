@@ -1,5 +1,6 @@
 #Serverside Playermanager
 
+from time import time
 from twisted.internet import reactor
 from engine import debug, shared
 from player import Player
@@ -13,13 +14,17 @@ class PlayerManager():
 
 		self.brandwidthsaver=[]
 
+		#Player Thinking
+		self.lastframe=time()
+		self.ThinkPlayers()
+
 	def HI(self, Username, Extras, Protocol=None):
 		if not self.getFromProto(Protocol):
 			self.PlayerCount+=1
-			self.Broadcast(2, "HI", [Username, str(self.PlayerCount), Extras])
+			self.Broadcast(2, "HI", [Username, self.PlayerCount, Extras])
 			self.PDict[self.PlayerCount]=Player(self.PlayerCount, Username, Protocol, Extras)
 			reactor.callLater(1, self.PDict[self.PlayerCount].Setup)
-			return [str(self.PlayerCount)]
+			return [self.PlayerCount]
 		else:
 			Protocol.sendMethod(3, "SA", ["-1", "0", "You are already in the game."])
 
@@ -57,3 +62,11 @@ class PlayerManager():
 			return False
 		except:
 			return None
+
+	def ThinkPlayers(self):
+		reactor.callLater(0, self.ThinkPlayers)
+		deltatime = time()-self.lastframe
+		self.lastframe=time()
+
+		for pid, player in self.PDict.iteritems():
+			player.Think(deltatime)

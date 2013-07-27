@@ -9,7 +9,7 @@ class Unit(BaseUnit):
 	def Initialize(self):
 		self.Name = "MIG"
 		self.SetEntity("plane")
-		self.SetSelectedText("MIG - "+str(self.GetID()))
+		self.SetSelectedText("MIG "+str(self.GetID()))
 		self.Actions={cl_act.Action}
 
 	def OnCreation(self, pos):
@@ -28,7 +28,7 @@ class Unit(BaseUnit):
 		pass
 
 	def OnMove(self, pos):
-		pass
+		self.GetEntity().actMove(True)
 
 	def Act1(self, data):
 		#This is an dummy action, but it should cover the networking part of additional actions

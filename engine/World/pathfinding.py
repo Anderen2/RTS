@@ -9,23 +9,23 @@ class AB():
 		debug.ACC("path_ab_getnext", self.GetNextCoord, args=2, info="Get next point in the path")
 		debug.ACC("path_ab_trace", self.ConsoleFriendly, args=5, info="Get a trace of the path from a point to a point. \nUsage: path_trace srcX srcZ dstX dstY trig")
 
-	def GetNextCoord(self, src, dst):
+	def GetNextCoord(self, src, dst, speed):
 		#Lazy ways ahoy!
 
 		xRel = float(abs(float(dst[0])-float(src[0])))
 		zRel = float(abs(float(dst[1])-float(src[1])))
 
 		if xRel>zRel:
-			xStep = 1
-			zStep = float(zRel/xRel)
+			xStep = 1*speed
+			zStep = float(zRel/xRel)*speed
 
 		elif xRel<zRel:
-			xStep = float(xRel/zRel)
-			zStep = 1
+			xStep = float(xRel/zRel)*speed
+			zStep = 1*speed
 
 		else: 
-			xStep = 1
-			zStep = 1
+			xStep = 1*speed
+			zStep = 1*speed
 
 		if dst[0]<src[0]:
 			x=float(src[0])-xStep

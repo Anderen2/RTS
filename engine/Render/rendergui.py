@@ -1,6 +1,7 @@
 import ogre.gui.CEGUI as CEGUI
 from string import split
 from traceback import print_exc
+from twisted.internet import reactor
 
 from engine import shared, debug
 from engine.Render.gui import chat, debugGUI, gameinfo, minimap, moneybar, options, powerbar, tactical, unitinfo, unitopt
@@ -47,11 +48,15 @@ class GUI():
 		self.system.setDefaultMouseCursor("TaharezLook", "MouseArrow")
 		self.system.setDefaultFont("BlueHighway-12")
 		CEGUI.MouseCursor.getSingleton().setImage("TaharezLook", "MouseArrow")
+		CEGUI.System.getSingleton().setDefaultTooltip("TaharezLook/Tooltip")
 
 		self.root = self.windowManager.getWindow("Root")
 
 		#Create the rest of the gui elements
 		self.CreateGuiElements()
+
+		#Inject the time to CEGUI
+		self.ceguiTimer()
 
 	def iterChilds(self, window):
 		element=self.windowManager.getWindow(window)
@@ -184,6 +189,10 @@ class GUI():
 
 	def ShowAll(self):
 		self.root.show()
+
+	def ceguiTimer(self):
+		reactor.callLater(1, self.ceguiTimer)
+		CEGUI.System.getSingleton().injectTimePulse(1)
 
 	debug.ACC("gui_hideall", HideAll, info="Hide all the gui elements", args=0)
 	debug.ACC("gui_showall", ShowAll, info="Show all the gui elements", args=0)

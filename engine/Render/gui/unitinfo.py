@@ -33,9 +33,9 @@ class UnitInfo():
 		self.Imageset.defineImage("move", CEGUI.Vector2(0,0), CEGUI.Size(128,128), CEGUI.Vector2(0,0))
 
 	def updateQueue(self):
-		self.queuedActions = []
-		for action in self.currentGroup.actionQueue:
-			self.queuedActions.append(action)
+		self.queuedActions = self.currentGroup.actionQueue[:]
+		# for action in self.currentGroup.actionQueue:
+		# 	self.queuedActions.append(action)
 
 		borderh=0
 		borderv=0
@@ -47,12 +47,12 @@ class UnitInfo():
 		column=0
 		row=0
 
-		for x in self.queuedActionWindows:
-			x.destroy()
+		for actionwindow in self.queuedActionWindows:
+			actionwindow.destroy()
 
 		self.queuedActionWindows = []
 
-		for x in self.queuedActions:
+		for action, data in self.queuedActions:
 			if column>3:
 				column=0
 				row+=1
@@ -60,13 +60,17 @@ class UnitInfo():
 			fh = borderh+column*(btnh)
 			fv = borderv+row*(btnv)
 
-			print x
+			print action
+			queueImage = action.queueImage
+			name = action.name
+			desc = action.description
 
 			current = len(self.queuedActionWindows)
 			self.queuedActionWindows.append(self.windowManager.createWindow("TaharezLook/Button", "Root/UnitInfo/UnitQueue/"+str(current)))
 			self.queuedActionWindows[current].setPosition(CEGUI.UVector2(CEGUI.UDim(fh, 0), CEGUI.UDim(fv, 0)))
 			self.queuedActionWindows[current].setSize(CEGUI.UVector2(CEGUI.UDim(btnh, 0), CEGUI.UDim(btnv, 0)))
-			self.queuedActionWindows[current].setProperty("NormalImage","set:actionimages image:"+x.queueImage)
+			self.queuedActionWindows[current].setProperty("NormalImage","set:actionimages image:"+queueImage)
+			self.queuedActionWindows[current].setTooltipText(name+"\n\t"+desc)
 			self.queuedActionWindows[current].subscribeEvent(self.queuedActionWindows[current].EventMouseButtonDown, self, "queue_Click")
 			self.UnitQueue.addChildWindow(self.queuedActionWindows[current])
 
@@ -78,7 +82,7 @@ class UnitInfo():
 		self.currentView.hide()
 		self.currentView = self.UnitQueue
 		self.currentView.show()
-		for action in group.actionQueue:
+		for action, data in group.actionQueue:
 			print action.queueImage
 
 		self.currentGroup = group

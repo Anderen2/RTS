@@ -21,6 +21,10 @@ class SelfPlayer():
 		shared.protocol.sendMethod(2, "HI", [self.username, self.PickledExtras])
 		shared.client.RetMeBack(self.recv_HI, "HI")
 
+	def Think(self, delta):
+		for unit in self.Units:
+			unit._think(delta)
+
 	### RECIEVE / Incoming messages (Server Request)
 
 	def recv_HI(self, method, UID):
@@ -29,14 +33,14 @@ class SelfPlayer():
 
 	### TRANSMITT / Outgoing messages (Client Request)
 
-	def MoveUnits(self, selected, pos):
-		if selected!=self.brandwidthsaver:
-			juicypickle=selected
-		else:
-			juicypickle="0"
-		shared.protocol.sendMethod(2, "req_moveunit", [juicypickle, pos[0], pos[1], pos[2]])
+	# def MoveUnits(self, selected, pos):
+	# 	if selected!=self.brandwidthsaver:
+	# 		juicypickle=selected
+	# 	else:
+	# 		juicypickle="0"
+	# 	shared.protocol.sendMethod(2, "req_moveunit", [juicypickle, pos[0], pos[1], pos[2]])
 
-	def AddGroup(self, persistent, unitids):
-		pickledunits = unitids
-		persistent = str(int(persistent))
-		shared.protocol.sendMethod(5, "req_newgroup", [persistent, pickledunits])
+	# def AddGroup(self, persistent, unitids):
+	# 	pickledunits = unitids
+	# 	persistent = str(int(persistent))
+	# 	shared.protocol.sendMethod(5, "req_newgroup", [persistent, pickledunits])

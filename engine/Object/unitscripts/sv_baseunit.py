@@ -14,12 +14,17 @@ class BaseUnit():
 		self.ID=int(ID)
 		self._owner=owner
 		self._group=None
+
+		#Actions
 		self._currentaction=None
 		self._globalactions = [sv_move.Action]
 
+		#Movement
+		self._movetopoint=None
+
 		self.Initialize()
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
-		self._setposition(pos)
+		self._setPosition(pos)
 		self.OnCreation(pos)
 
 	### UnitScript Functions
@@ -57,30 +62,47 @@ class BaseUnit():
 
 	### Trigger Hooks
 
-	def _think(self):
+	def _think(self, delta):
 		if self._currentaction!=None:
 			self._currentaction.update()
 
+		if self._movetopoint!=None:
+			dst = (self._movetopoint[0], self._movetopoint[2])
+			dist = self._movestep(dst, delta)
+			if dist<1:
+				self._movetopoint=None
+
 	def _actionfinish(self):
 		if self._group!=None:
-			self._group.actionDone(self._currentaction)
+			self._group.unitActionDone(self)
 
 	### Internal Functions
 
 
 	# MOVEMENT
+	def _movestep(self, dst, delta):
+		src = (self._pos[0], self._pos[2])
+		speed = (self._movespeed*delta)
+		nx, ny, dist = shared.Pathfinder.ABPath.GetNextCoord(src, dst, speed)
+		newpos = (nx, self._pos[1], ny)
+		
+		self._setPosition(newpos)
+		return dist
+
 	def _moveto(self, pos):
-		pass
+		print("Moving unit: "+str(self.ID)+"to "+str(pos))
+		self._movetopoint=pos
+		self.OnMove(pos)
 
 	def _stopmove(self):
-		pass
+		self._movetopoint=None
 
 
 	# ENTITY
-	def _setposition(self, pos):
+	def _setPosition(self, pos):
 		self._pos = pos
 
-	# ACTION
+	# ACTIONS
 	def _loadActions(self):
 		pass
 
@@ -101,3 +123,7 @@ class BaseUnit():
 
 	def _setAction(self, act, evt):
 		self._currentaction=act(self, evt)
+		self._currentaction.begin()
+
+	def _endAction(self):
+		self._currentaction=None

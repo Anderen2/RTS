@@ -41,7 +41,7 @@ class Service():
 			shared.playerManager.DCONN(proto)
 			self.connections.remove(proto)
 		except KeyError:
-			shared.DPrint("Service", 1, "Client not exsisting!")
+			shared.DPrint("Service", 1, "Client does not exsist!")
 		#proto.loseConnection()
 
 	def PingAll(self):

@@ -24,10 +24,10 @@ class WaypointManager():
 	def update(self, group):
 		if group!=None:
 			self.waypoints=[]
-			for action in group.actionQueue:
+			for action, data in group.actionQueue:
 				#print action.waypointType
 				#print action.waypointPos
-				self.Create(action.waypointPos, action.waypointType, False)
+				self.Create(data["3dMouse"], action.waypointType, False)
 
 			if len(self.waypoints)>1:
 				self.drawPath()
@@ -84,6 +84,9 @@ class Waypoint():
 		self.decal.ent.setRenderQueueGroup(RENDER_QUEUE_SKIES_LATE)
 
 	def __del__(self):
+		print("Waypoint: Detaching node")
 		self.node.detachObject(self.ent)
+		print("Waypoint: Deleting Entity")
 		shared.render3dScene.sceneManager.destroyEntity(self.ent)
+		print("Waypoint: Deleting Node")
 		shared.render3dScene.sceneManager.destroySceneNode(self.node)

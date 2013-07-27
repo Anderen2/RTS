@@ -62,8 +62,8 @@ class UnitManager():
 					return Unit
 
 			for PID, player in shared.PlayerManager.PDict.iteritems():
-				print("UID: "+str(UnitID)+" / "+str(Unit.ID))
 				for Unit in player.Units:
+					print("UID: "+str(UnitID)+" / "+str(Unit.ID))
 					if Unit.ID == UnitID:
 						return Unit
 

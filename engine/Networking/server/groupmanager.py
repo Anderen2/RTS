@@ -61,12 +61,12 @@ class GroupManager():
 		group = self.getFromGID(groupid)
 		requestingPlayer = shared.PlayerManager.getFromProto(Protocol)
 		if group.owner == requestingPlayer:
-			actionids = []
+			actionidsAndData = []
 
-			for action in group.actionQueue:
-				actionids.append(action.actionid)
+			for actionAnddata in group.actionQueue:
+				actionidsAndData.append((actionAnddata[0].actionid, actionAnddata[1]))
 
-			Protocol.sendMethod(5, "recv_groupactionqueue", [group.gid, actionids])
+			Protocol.sendMethod(5, "recv_groupactionqueue", [group.gid, actionidsAndData])
 
 
 	def req_groupactionadd(self, groupid, actionid, data, Protocol=None):
@@ -180,6 +180,7 @@ class UnitGroup():
 
 	def unitActionDone(self, unit):
 		self.waitingfor.remove(unit)
+		unit._endAction() #We make the unit destroy its action and wait
 		if len(self.waitingfor)==0:
 			self.currentActionFinished()
 
@@ -193,9 +194,10 @@ class UnitGroup():
 		self.beginNextAction()
 	
 	def beginNextAction(self, doNotPop=False):
+		if doNotPop==False:
+			self.actionQueue.pop(0)
+
 		if len(self.actionQueue)>0:
-			if doNotPop==False:
-				self.actionQueue.pop(0)
 			action = self.actionQueue[0][0]
 			data = self.actionQueue[0][1]
 			print("GROUPMEMBERS: "+str(self.members))
@@ -203,10 +205,12 @@ class UnitGroup():
 				if action in unit._getAllActions():
 					self.waitingfor.append(unit)
 					unit._setAction(action, data)
-					shared.PlayerManager.Broadcast(5, "recv_setaction", [self.gid, action.actionid, data])
 
 				else:
 					print("Unit is unable to execute action: "+str(action))
 					pass
 					#If one of the units in this group is missing the action which were requested ..
 					# .. do not wait for him, and let him do nothing for the moment
+
+			shared.PlayerManager.Broadcast(5, "recv_setaction", [self.gid, action.actionid, data])
+		

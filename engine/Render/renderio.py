@@ -261,6 +261,8 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 
 		if evt.key==self.keys["camstear"]:
 			self.CurrentMiceInterface=self.OldMiceInterface
+			if self.CurrentMiceInterface==0:
+				self.CurrentMiceInterface=2
 			MouseCursor.getSingleton().show() #Show mousecursor
 
 		if evt.key==OIS.KC_ESCAPE:

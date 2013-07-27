@@ -18,3 +18,7 @@ class Player():
 
 	def addUnit(self, unit):
 		self.Units.append(unit)
+
+	def Think(self, delta):
+		for unit in self.Units:
+			unit._think(delta)

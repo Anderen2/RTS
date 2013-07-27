@@ -1,6 +1,8 @@
 #Clientside Playermanager
 from traceback import print_exc
+from time import time
 from engine import debug, shared
+from twisted.internet import reactor
 
 from player import Player
 import selfplayer
@@ -22,6 +24,10 @@ class PlayerManager():
 
 		#Initialize the clientside versions of the players in the game
 		self.PDict={}
+
+		#Start thinking!
+		self.lastframe=time()
+		self.ThinkPlayers()
 
 	def getFromUID(self, uid):
 		print(str(uid) +"|=|"+ str(shared.SelfPlayer.UID))
@@ -48,3 +54,12 @@ class PlayerManager():
 		self.playerlist.append({"uid":ID, "username":username, "info":extras})
 		self.PDict[ID]=Player(ID, username, extras)
 		shared.DPrint("PlayerManager", 1, "Player "+username+" ("+str(ID)+")"+" joined the game!")
+
+	def ThinkPlayers(self):
+		reactor.callLater(0, self.ThinkPlayers)
+		deltatime = time()-self.lastframe
+		self.lastframe=time()
+
+		shared.SelfPlayer.Think(deltatime)
+		for pid, player in self.PDict.iteritems():
+			player.Think(deltatime)

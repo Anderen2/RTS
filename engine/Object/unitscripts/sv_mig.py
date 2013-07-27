@@ -19,7 +19,7 @@ class Unit(BaseUnit):
 
 		#self.SetMoveType(MOVETYPE_AIR)
 		self.SetMoveType(0)
-		self.SetMoveSpeed(1)
+		self.SetMoveSpeed(100)
 		self.SetHealth(100)
 		self.SetViewRange(200)
 

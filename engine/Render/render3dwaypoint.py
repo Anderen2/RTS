@@ -16,18 +16,18 @@ class WaypointManager():
 	def Load(self):
 		self.MoveWaypointShape=Shape.Tetra("Move", "blah", 20, True)
 
-	def Create(self, pos, waypointtype, fade):
-		wp = Waypoint(len(self.waypoints), pos, waypointtype, fade)
+	def Create(self, pos, waypointType, fade):
+		wp = Waypoint(len(self.waypoints), pos, waypointType, fade)
 		self.waypoints.append(wp)
 		return wp
 
-	def update(self, group):
+	def update(self, group, wpdata):
 		if group!=None:
-			self.waypoints=[]
-			for action, data in group.actionQueue:
-				#print action.waypointType
-				#print action.waypointPos
-				self.Create(data["3dMouse"], action.waypointType, False)
+			self.clearAllWaypoints()
+			for waypointType, position in wpdata:
+				if waypointType!=None and position!=None:
+					print(waypointType, position)
+					self.Create(position, waypointType, False)
 
 			if len(self.waypoints)>1:
 				self.drawPath()
@@ -38,13 +38,18 @@ class WaypointManager():
 					shared.render3dScene.sceneManager.destroySceneNode(self.waypointPathNode)
 					self.waypointPathEnt = None
 		else:
-			self.waypoints=[]
+			self.clearAllWaypoints()
 			if self.waypointPathEnt!=None:
 				self.waypointPathNode.detachObject(self.waypointPathEnt)
 				shared.render3dScene.sceneManager.destroyEntity(self.waypointPathEnt)
 				shared.render3dScene.sceneManager.destroySceneNode(self.waypointPathNode)
 				#self.waypointPath.unload()
 				self.waypointPathEnt = None
+
+	def clearAllWaypoints(self):
+		for waypoint in self.waypoints:
+			waypoint.Delete()
+		self.waypoints=[]
 
 	def Remove(self, Waypoint):
 		self.waypoints.remove(Waypoint)
@@ -83,7 +88,7 @@ class Waypoint():
 		self.decal.SetPosition((pos[0],pos[1]+1,pos[2]+25))
 		self.decal.ent.setRenderQueueGroup(RENDER_QUEUE_SKIES_LATE)
 
-	def __del__(self):
+	def Delete(self):
 		print("Waypoint: Detaching node")
 		self.node.detachObject(self.ent)
 		print("Waypoint: Deleting Entity")

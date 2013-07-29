@@ -9,6 +9,7 @@ Server:
 3 = Chat
 4 = UnitManager
 5 = GroupManager
+6 = Projectiles
 
 Client:
 1 = ??
@@ -16,3 +17,4 @@ Client:
 3 = Chat
 4 = UnitManager
 5 = GroupManager
+6 = Projectiles

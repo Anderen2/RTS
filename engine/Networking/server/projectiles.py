@@ -1,0 +1,219 @@
+#Serverside Projectiles/Launchers
+
+from time import time
+from twisted.internet import reactor
+from engine import shared, debug
+
+class LauncherManager():
+	UNITLAUNCHER = 1
+	SUPERWEAPONLAUNCHER = 2
+	def __init__(self):
+		shared.LauncherManager = self
+		shared.objectManager.addEntry(0, 6, self)
+		self.projectilecount = 0
+		self.ProjectilesAvailible={"rocket":Rocket}
+
+	def create(self, type, unit):
+		if type == self.UNITLAUNCHER:
+			return UnitLauncher(unit)
+		
+class UnitLauncher():
+	def __init__(self, unit):
+		shared.DPrint("Projectiles", 0, "Projectile Launcher Created")
+		self.Projectiles=[]
+		self.lastframe=time()
+		reactor.callLater(0, self.update)
+		self.unit = unit
+
+		#Defaults
+		self.pos = unit._pos
+		self.oldunitpos = self.pos
+		self.trans = (0,0,0)
+		self.rot = (0,0,0)
+		self.projtype=Rocket
+		self.firerange=100
+		self.firespeed=1
+		self.reloadspeed=2
+		self.magcap=10
+		self.rellive=True
+
+		#Variables
+		self.magazine=self.magcap
+		self.lastfired=time()
+		self.reloading=False
+		self.uidcount = 0
+
+	#Sets And Gets
+	def SetPosition(self, x, y, z):
+		"""Set Launchers position (Relative to unit pos)"""
+		self.trans = (x,y,z)
+		print("Unit: "+str(self.unit._pos))
+		print("Trans: "+str(self.trans))
+		self.pos=tuple(map(sum, zip(self.unit._pos, self.trans)))
+		print("Result: "+str(self.pos))
+
+	def SetRotation(self, x, y, z):
+		"""Set Launchers rotation (Relative to unit rot)"""
+		self.rot = (x, y, z)
+
+	def SetProjectile(self, projtype):
+		"""Set Launchers projectile"""
+		if projtype in shared.LauncherManager.ProjectilesAvailible:
+			self.projtype=shared.LauncherManager.ProjectilesAvailible[projtype]
+		else:
+			return False
+
+	def SetFireRange(self, firerange):
+		"""Set Launchers Fire Range (Max. fire distance)"""
+		self.firerange=firerange
+
+	def SetFiringSpeed(self, firespeed):
+		"""Set Launchers Firing speed (Time between projectile fires)"""
+		self.firespeed=firespeed
+
+	def SetReloadingSpeed(self, reloadspeed):
+		"""Set Launchers reloading speed (Time to wait after magazine is empty)"""
+		self.reloadspeed=reloadspeed
+
+	def SetMagasineCapasity(self, magcap):
+		"""Set Launchers magazine capasity (Set this to -1 if you do not want reloading)"""
+		self.magcap=magcap
+
+	def CanReloadLive(self, rellive):
+		"""Set if the launcher can reload while on the move, or if it needs some kind of 
+		condition to be in before being able to reload"""
+		self.rellive=rellive
+
+	#Actions
+	def Reload(self):
+		if self.reloading==False and self.magazine<self.magcap:
+			self.reloading=time()
+			shared.DPrint("Projectiles", 0, "Reloading..")
+		elif (time()-self.reloading)>self.reloadspeed:
+			self.magazine=self.magcap
+			self.reloading=False
+			shared.DPrint("Projectiles", 0, "Reloaded!")
+			return True
+		return False
+
+
+	def FireAtPos(self, x, y, z):
+		pos = (x,y,z)
+		if self.isAbleToFire(pos):
+			projectile = self.createProjectile(self.pos)
+			projectile.ignite(pos)
+
+	def FireAtUnit(self, unit):
+		if self.isAbleToFireAtUnit(unit):
+			projectile = self.createProjectile(self.pos)
+			projectile.ignite(unit)
+			
+	def update(self):
+		deltatime = time()-self.lastframe
+		self.lastframe=time()
+
+		for projectile in self.Projectiles:
+			projectile._think(deltatime)
+		reactor.callLater(0, self.update)
+
+		if self.oldunitpos!=self.unit._pos:
+			self.pos=tuple(map(sum, zip(self.unit._pos, self.trans)))
+			self.oldunitpos=self.unit._pos
+
+	#Internal Functions
+	def createProjectile(self, pos):
+		uid = shared.LauncherManager.projectilecount
+		shared.DPrint("Projectiles", 0, "Creating projectile: "+str(uid))
+		projectile = self.projtype(self.pos, uid, self)
+		self.Projectiles.append(projectile)
+		shared.LauncherManager.projectilecount+=1
+		return projectile
+
+	def isAbleToFireAtUnit(self, unit):
+		if unit._owner.team!=self.unit._owner.team:
+			return self.isAbleToFire(unit._pos)
+		else:
+			#shared.DPrint("Projectiles", 0, "Friendly fire")
+			return self.isAbleToFire(unit._pos)
+			#return False
+
+	def isAbleToFire(self, pos):
+		#If position is within range and free line of fire:
+		if (time()-self.lastfired)>self.firespeed:
+			self.lastfired=time()
+			if self.magazine>0:
+				self.magazine-=1
+				return True
+			else:
+				return self.Reload()
+
+		return False
+
+	def removeProjectile(self, projectile):
+		self.Projectiles.remove(projectile)
+
+class Rocket():
+	S_ARMED = 3
+	S_IGNITED = 2
+	S_TARGETHIT = 1
+	S_EXPLODED = 0
+	S_GC = -1
+
+	def __init__(self, position, uid, launcher):
+		self.pos = position
+		self.uid = uid
+		self.launcher = launcher
+		self.target = None
+		self.oldstate = None
+		self.state = None
+
+		self._setState(self.S_ARMED)
+
+		self.speed = 100
+
+	def ignite(self, target):
+		if self.state == self.S_ARMED:
+			if type(target) == tuple:
+				self.target = target
+				self._setState(self.S_IGNITED)
+
+			else:
+				self.target = target._pos
+				self._setState(self.S_IGNITED)
+
+	def _setState(self, state):
+		if self.oldstate!=state:
+			shared.DPrint("Projectile", 0, "Projectile: "+str(self.uid)+" at state: "+str(state))
+			if state == self.S_IGNITED:
+				shared.PlayerManager.Broadcast(6, "recv_rocket", [self.uid, self.pos, self.target, self.speed])
+			elif state == self.S_EXPLODED:
+				shared.PlayerManager.Broadcast(6, "recv_explode", [self.uid, self.pos])
+			self.oldstate = self.state
+			self.state = state
+
+	def _think(self, delta):
+		if self.state == self.S_IGNITED:
+			if self.target!=None:
+				dist = self._movestep(self.target, delta)
+				if dist<1:
+					self._setState(self.S_TARGETHIT)
+
+		if self.state == self.S_TARGETHIT:
+			self._explode()
+
+	def _movestep(self, dst, delta):
+		src = self.pos
+		speed = (self.speed*delta)
+		nx, ny, nz, dist = shared.Pathfinder.ABPath.GetNextCoord3D(src, dst, speed)
+		newpos = (nx, ny, nz)
+		
+		self.pos = newpos
+		return dist
+
+	def _explode(self):
+		self._setState(self.S_EXPLODED)
+		reactor.callLater(5, self._blown)
+
+	def _blown(self):
+		self._setState(self.S_GC)
+		self.launcher.removeProjectile(self)

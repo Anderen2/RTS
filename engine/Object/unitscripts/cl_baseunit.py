@@ -2,7 +2,7 @@
 #This is the class which all units derive from and bases itself on
 from traceback import print_exc
 from engine import shared, debug
-from engine.Object.unitact import cl_move
+from engine.Object.unitact import cl_move, cl_fau
 
 class BaseUnit():
 	#Setup Constants
@@ -16,7 +16,7 @@ class BaseUnit():
 
 		#Actions
 		self._currentaction=None
-		self._globalactions = [cl_move.Action]
+		self._globalactions = [cl_move.Action, cl_fau.Action]
 
 		#Movement
 		self._movetopoint=None
@@ -159,5 +159,12 @@ class BaseUnit():
 		self._currentaction=act(self, evt)
 		self._currentaction.begin()
 
-	def _endAction(self):
-		pass
+	def _finishAction(self):
+		if self._currentaction!=None:
+			self._currentaction.finish()
+			self._currentaction=None
+
+	def _abortAction(self):
+		if self._currentaction!=None:
+			self._currentaction.abort()
+			self._currentaction=None

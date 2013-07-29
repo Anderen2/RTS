@@ -60,11 +60,18 @@ class GroupManager():
 			group.rmUnit(unit)
 
 	def recv_setaction(self, gid, actionid, data, Protocol=None):
-		print("Starting action: "+actionid+" w/ "+str(data))
+		print("Starting action: "+str(actionid)+" w/ "+str(data))
 		group = self.getFromGID(gid)
-		action = group.getActionByID(actionid)
-		if action!=None:
-			group.setCurrentAction(action, data)
+		group.finishCurrentAction()
+
+		if actionid!=None:
+			action = group.getActionByID(actionid)
+			if action!=None:
+				group.setCurrentAction(action, data)
+
+	def recv_abortaction(self, gid, Protocol=None):
+		group = self.getFromGID(gid)
+		group.abortCurrentAction()
 
 	def recv_setactionstate(self, gid, state, Protocol=None):
 		pass
@@ -125,6 +132,8 @@ class UnitGroup():
 		for unit in self.members:
 			unit._group=self
 
+		self.getAllCommonActions()
+
 	## Group Requests
 	def requestUnitAdd(self, unit):
 		unitid = unit.ID
@@ -139,28 +148,59 @@ class UnitGroup():
 			self.actiondelay.append((actionid, data))
 		else:
 			shared.protocol.sendMethod(5, "req_groupactionadd", [self.gid, actionid, data])
+			self.requestActionQueue()
 
 	def requestResend(self):
 		for request in self.actiondelay:
 			shared.protocol.sendMethod(5, "req_groupactionadd", [self.gid, request[0], request[1]])
 
-	def requestActionAbort(self, action):
-		pass
+	def requestActionAbort(self, queuedactionid):
+		shared.protocol.sendMethod(5, "req_groupactionrm", [self.gid, queuedactionid])
+		self.requestActionQueue()
 
 	def requestActionQueue(self):
-		shared.protocol.sendMethod(5, "req_groupactionqueue", [self.gid])
+		if self.gid>=0:
+			#print("Requesting..")
+			shared.protocol.sendMethod(5, "req_groupactionqueue", [self.gid])
+			self.updateVisuals()
+		else:
+			print("Group is not ready yet: "+str(self.gid))
 
 	## Group Functions
 
 	def getActionByID(self, actionid):
-		## Algorithm to get all common actions here!
-		print(self.members)
-		return self.members[0]._getActionByID(actionid)
+		if actionid in self.allAvailibleActions:
+			return self.allAvailibleActions[actionid][0]
+		else:
+			return None
+
+	def getAllCommonActions(self):
+		allUniqueActions=[]
+		aUAWithUnit={}
+		allCommonActions=[]
+		ucount = 0
+		for unit in self.members:
+			for action in unit._getAllActions():
+				if action.actionid not in allUniqueActions:
+					allUniqueActions.append(action.actionid)
+					aUAWithUnit[action.actionid]=(action, unit)
+				if ucount==0:
+					allCommonActions.append(action.actionid)
+				else:
+					if action.actionid not in allCommonActions:
+						allCommonActions.remove(action.actionid)
+			ucount+=1
+
+		self.allUniqueActions=allUniqueActions
+		self.allCommonActions=allCommonActions
+		self.allAvailibleActions=aUAWithUnit
 
 	## Unit Functions
 	def addUnit(self, unit):
 		self.members.append(unit)
 		unit._group = self
+		self.getAllCommonActions()
+		self.updateSelectedVisuals()
 
 	def rmUnit(self, unit):
 		self.members.remove(unit)
@@ -170,6 +210,9 @@ class UnitGroup():
 
 		if len(self.members)==0 and self.persistent==False:
 			shared.GroupManager.rmGroup(self)
+
+		self.getAllCommonActions()
+		self.updateSelectedVisuals()
 
 	## Action Functions
 
@@ -181,13 +224,20 @@ class UnitGroup():
 				unit._setAction(action, data)
 
 		if self.owner==shared.SelfPlayer:
-			self.requestActionQueue()
+			if self.currentlyselected:
+				self.requestActionQueue()
 
 	def abortCurrentAction(self):
-		pass
+		for unit in self.waitingfor:
+			unit._abortAction()
+
+		if self.owner==shared.SelfPlayer:
+			if self.currentlyselected:
+				self.requestActionQueue()
 
 	def finishCurrentAction(self):
-		pass
+		for unit in self.members:
+			unit._finishAction()
 
 	## ActionQueue Functions
 
@@ -196,20 +246,51 @@ class UnitGroup():
 		if self.currentlyselected==True:
 			self.updateVisuals()
 
-
 	## Visuals
 
 	def selected(self):
 		self.currentlyselected=True
+		self.updateSelectedVisuals()
 		self.requestActionQueue()
 
 	def deselected(self):
 		self.currentlyselected=False
-		shared.WaypointManager.update(None)
+		self.updateSelectedVisuals()
+		shared.WaypointManager.update(None, None)
+
+	def guiCancelAction(self, aid):
+		self.requestActionAbort(aid)
+
+	def guiAddAction(self, actionid):
+		self.requestActionAdd(actionid, {})
+
+	def updateSelectedVisuals(self):
+		if self.currentlyselected:
+			buttonlist = []
+			for actionid in self.allCommonActions:
+				action = self.getActionByID(actionid)
+				buttonlist.append((action.name, action.description, action.actguiPlacement, actionid))
+			
+			shared.gui['unitopt'].updateActions(self, buttonlist)
+
+		else:
+			shared.gui['unitopt'].updateActions(None, None)
 
 	def updateVisuals(self):
-		if shared.side=="Client":
-			if self.currentlyselected:
-				shared.gui['unitinfo'].updateQueue()
-				#Update waypoints here
-				shared.WaypointManager.update(self)
+		if self.currentlyselected:
+			shared.gui['unitinfo'].updateQueue()
+
+			#Update waypoints
+			waypointdata = []
+
+			for action, data in self.actionQueue:
+				if "3dMouse" in data:
+					wpdata = data["3dMouse"]
+				elif "unitid" in data:
+					wpdata = shared.netUnitManager.getFromUID(data["unitid"]).GetPosition()
+				else:
+					wpdata = None
+				print("\tAD: "+str((action.waypointType, wpdata)))
+				waypointdata.append((action.waypointType, wpdata))
+
+			shared.WaypointManager.update(self, waypointdata)

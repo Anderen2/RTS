@@ -13,6 +13,7 @@ class ObjectManager():
 	def runMethod(self, prot, obj, method, arg):
 		try:
 			if obj==0:
+				#RETBACK
 				if arg!=None:
 					ret=getattr(self.olist[obj], "RetBack")(prot, method, *arg)
 					if ret!=None:
@@ -22,6 +23,7 @@ class ObjectManager():
 					if ret!=None:
 						prot.sendMethod(0, method, ret)
 			else:
+				#NON-RETBACK
 				if arg!=None:
 					ret=getattr(self.olist[obj], method)(Protocol=prot, *arg)
 					if ret!=None:

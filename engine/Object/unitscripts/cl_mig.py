@@ -27,15 +27,11 @@ class Unit(BaseUnit):
 	def OnPrimaryAction(self, unit):
 		pass
 
+	def OnPrimaryActionAbort(self):
+		pass
+
+	def OnPrimaryActionFinish(self):
+		pass
+
 	def OnMove(self, pos):
 		self.GetEntity().actMove(True)
-
-	def Act1(self, data):
-		#This is an dummy action, but it should cover the networking part of additional actions
-		if "unit" in data:
-			print("Doing some action on a unit!")
-			print(data["unit"])
-
-		if "ground" in data:
-			print("Havin' some action on the ground")
-			print(data["pos"])

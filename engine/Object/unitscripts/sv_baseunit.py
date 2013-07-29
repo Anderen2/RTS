@@ -3,7 +3,7 @@
 from traceback import print_exc
 from importlib import import_module
 from engine import shared, debug
-from engine.Object.unitact import sv_move
+from engine.Object.unitact import sv_move, sv_fau
 
 class BaseUnit():
 	#Setup Constants
@@ -17,17 +17,22 @@ class BaseUnit():
 
 		#Actions
 		self._currentaction=None
-		self._globalactions = [sv_move.Action]
+		self._globalactions = [sv_move.Action, sv_fau.Action]
 
 		#Movement
 		self._movetopoint=None
 
+		self._setPosition(pos)
 		self.Initialize()
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
-		self._setPosition(pos)
 		self.OnCreation(pos)
 
 	### UnitScript Functions
+	def SetPosition(self, x, y, z):
+		self._setPosition((x,y,z))
+
+	def GetPosition(self):
+		return self._pos
 
 	def SetEntity(self, ent):
 		#Setup Pathfinding variables here (sizes, etc)
@@ -51,8 +56,9 @@ class BaseUnit():
 	def SetViewRange(self, viewrange):
 		self._viewrange = viewrange
 
-	def CreateProjectileLauncher(self):
-		pass
+	def CreateProjectileLauncher(self, type):
+		launcher = shared.LauncherManager.create(type, self)
+		return launcher
 
 	def SetAction(self, action, data):
 		self._setAction(action, data)
@@ -122,8 +128,17 @@ class BaseUnit():
 		return allactions
 
 	def _setAction(self, act, evt):
+		if self._currentaction:
+			self._currentaction.finish()
 		self._currentaction=act(self, evt)
 		self._currentaction.begin()
 
-	def _endAction(self):
-		self._currentaction=None
+	def _finishAction(self):
+		if self._currentaction!=None:
+			self._currentaction.finish()
+			self._currentaction=None
+
+	def _abortAction(self):
+		if self._currentaction!=None:
+			self._currentaction.abort()
+			self._currentaction=None

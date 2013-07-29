@@ -9,6 +9,7 @@ from engine.Networking import TwCLI, sh_netObject, sh_netMethod
 from groupmanager import GroupManager
 from playermanager import PlayerManager
 from unitmanager import UnitManager
+from projectiles import LauncherManager
 from chat import ChatManager
 
 class Service():
@@ -76,6 +77,7 @@ def Startup():
 	ChatManager()
 	UnitManager()
 	GroupManager()
+	LauncherManager()
 
 	reactor.listenTCP(1337, sh_netMethod.MethodFactory())
 	reactor.run()

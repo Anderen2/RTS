@@ -9,71 +9,68 @@ class BaseProjectile():
 		pass
 
 class Rocket(BaseProjectile):
-	def __init__(self, pos):
-		self.ID=randrange(0,9999,1)
+	def __init__(self, uid, pos, target, speed):
+		self.uid=uid
+		self.target = None
+		self.speed = speed
 		self.team=0
-		self.entity=shared.EntityHandeler.Create(self.ID, "rocket", "proj", self.team)
+
+		self.entity=shared.EntityHandeler.Create(self.uid, "rocket", "proj", self.team)
 		self.entity.SetPosition(pos[0], pos[1], pos[2])
 		self.entity.CreateTextOverlay()
-		self.entity.text.setText("dist: 10 - TTI: 5")
+		self.entity.text.setText("dist: 0 - TTI: 0")
 
-		self.target=None
-
-	def ignite(self, pos):
-		print("Firing at "+str(pos))
-		self.target=pos
+	def ignite(self, target):
+		print("Firing at "+str(target))
+		self.target=target
 		self.entity.actMove(True)
 
-	def _think_(self):
+	def _think(self, delta):
 		if self.target!=None:
 			if type(self.target) is tuple:
-				if self._step_(self.target[0], self.target[1], self.target[2])<2:
+				dist = self._movestep(self.target, delta)
+				self.UpdateText(dist)
+				if dist<1:
 					self.target=None
-					self._explode_()
-			if self.target == False:
-				return False
 
-		return True
+	def _movestep(self, dst, delta):
+		src = self.GetPosition()
+		speed = (self.speed*delta)
+		nx, ny, nz, dist = shared.Pathfinder.ABPath.GetNextCoord3D(src, dst, speed)
+		newpos = (nx, ny, nz)
+		
+		self.SetPosition(newpos)
+		return dist
 
-	def _step_(self, x, y, z):
-		src=self.entity.node.getPosition()
-		src3d=(src[0], src[1], src[2]) #2D Coordinates (X, Z) or Longitude and Latitude (Not Altitude!)
-		xzd=shared.Pathfinder.ABPath.GetNextCoord3D(src3d, (x,y,z)) #Returns next Xcoord, Zcoord and a measure of how much distance which is left (x, z, dist)
-
-		self.entity.LookAtZ(self.target[0], self.target[1], self.target[2])
-		self.entity.SetPosition(xzd[0], xzd[1], xzd[2])
-		self.entity.RPYRotate(0, 90, 0)
-		return xzd[3]
-
-	def _explode_(self):
+	def _explode(self, pos):
 		print("Exploded.")
-		pos=self.entity.node.getPosition()
-		src3d=(pos[0], pos[1], pos[2])
+		#pos=self.entity.node.getPosition()
 		shared.EffectManager.Create("explosion", pos[0], pos[1], pos[2], 1, 2)
-		reactor.callLater(5, self.blown)
+
 		self.entity.actNone()
 		self.entity.Delete()
-		self.target=True
 
-	def blown(self):
-		self.target=False
+		reactor.callLater(5, self._blown)
+		
+		self.target=None
+
+	def _blown(self):
+		pass
+
+	def UpdateText(self, dist):
+		TTI = dist/self.speed
+		self.entity.text.setText("dist: "+str(dist)+" - TTI: "+str(TTI))
+		self.entity.text.update()
+
+	def SetPosition(self, pos):
+		self.entity.node.setPosition(pos[0], pos[1], pos[2])
+
+	def GetPosition(self):
+		pos = self.entity.node.getPosition()
+		return (pos.x, pos.y, pos.z)
 
 	def __del__(self):
 		shared.DPrint("Projectiles",5,"Projectile deleted: "+str(self.ID))
-
-		# try:
-		# 	xExsist=None
-		# 	for x in shared.render3dSelectStuff.CurrentSelection:
-		# 		if self.entity.node.getName() == x.getName():
-		# 			xExsist=x
-		# 	if xExsist!=None:
-		# 		shared.render3dSelectStuff.CurrentSelection.remove(xExsist)
-
-		# 	if not entity.error:
-		# 		self.entity.Delete()
-
-		# except:
-		# 	shared.DPrint("Projectiles",5,"Projectile Deletion Failed! Projectile may still be in memory and/or in game world!")
 
 class DummyLauncher():
 	def __init__(self):

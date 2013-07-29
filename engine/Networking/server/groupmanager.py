@@ -81,6 +81,14 @@ class GroupManager():
 		else:
 			print("Group is not owned by player!")
 
+	def req_groupactionrm(self, groupid, queuedactionid, Protocol=None):
+		group = self.getFromGID(groupid)
+		requestingPlayer = shared.PlayerManager.getFromProto(Protocol)
+		if group.owner == requestingPlayer:
+				group.rmAction(queuedactionid)
+		else:
+			print("Group is not owned by player!")
+
 	## FUNCTIONS
 
 	def unpackUnitList(self, uidlist, owner):
@@ -172,15 +180,16 @@ class UnitGroup():
 		if self.actionQueue[0]==(action, data):
 			self.beginNextAction(doNotPop=True)
 
-	def rmAction(self, action):
-		if self.actionQueue[0][0] == action:
-			self.abortCurrentAction()
+	def rmAction(self, queuedactionid):
+		if queuedactionid==0:
+			if self.actionQueue[0][0].abortable:
+				self.abortCurrentAction()
 		else:
-			self.actionQueue.remove(getActionData(action))
+			self.actionQueue.pop(queuedactionid)
 
 	def unitActionDone(self, unit):
 		self.waitingfor.remove(unit)
-		unit._endAction() #We make the unit destroy its action and wait
+		unit._finishAction() #We make the unit destroy its action and wait
 		if len(self.waitingfor)==0:
 			self.currentActionFinished()
 
@@ -189,18 +198,24 @@ class UnitGroup():
 
 	def abortCurrentAction(self):
 		for unit in self.waitingfor:
-			unit._abortaction()
+			unit._abortAction()
 
-		self.beginNextAction()
+		print("\t Groupaction Aborted")
+		shared.PlayerManager.Broadcast(5, "recv_abortaction", [self.gid])
+		print("\t Groupaction Aborted - Next Action")
+		self.beginNextAction(False)
 	
 	def beginNextAction(self, doNotPop=False):
 		if doNotPop==False:
 			self.actionQueue.pop(0)
 
 		if len(self.actionQueue)>0:
+			print("\t beginNextAction")
 			action = self.actionQueue[0][0]
 			data = self.actionQueue[0][1]
-			print("GROUPMEMBERS: "+str(self.members))
+
+			self.waitingfor = []
+
 			for unit in self.members:
 				if action in unit._getAllActions():
 					self.waitingfor.append(unit)
@@ -213,4 +228,6 @@ class UnitGroup():
 					# .. do not wait for him, and let him do nothing for the moment
 
 			shared.PlayerManager.Broadcast(5, "recv_setaction", [self.gid, action.actionid, data])
+		else:
+			shared.PlayerManager.Broadcast(5, "recv_setaction", [self.gid, None, None])
 		

@@ -44,7 +44,7 @@ class AB():
 		distance=abs((abs(src[0])+abs(src[1]))-(abs(dst[0])+abs(dst[1])))
 		return (x,y,floor(distance))
 
-	def GetNextCoord3D(self, src, dst):
+	def GetNextCoord3D(self, src, dst, speed):
 		#Lazy ways ahoy!
 
 		xRel = float(abs(float(dst[0])-float(src[0])))
@@ -52,28 +52,28 @@ class AB():
 		zRel = float(abs(float(dst[2])-float(src[2])))
 
 		if xRel>zRel:
-			xStep = 1
-			zStep = float(zRel/xRel)
+			xStep = 1*speed
+			zStep = float(zRel/xRel)*speed
 
 		elif xRel<zRel:
-			xStep = float(xRel/zRel)
-			zStep = 1
+			xStep = float(xRel/zRel)*speed
+			zStep = 1*speed
 
 		else: 
-			xStep = 1
-			zStep = 1
+			xStep = 1*speed
+			zStep = 1*speed
 
 		if src[1]>dst[1]: #If target is lower
 			if src[1]-dst[1]<2:
 				y=dst[1]
 			else:
-				yStep = float(0.5)
+				yStep = float(0.5)*speed
 				y=src[1]-yStep
 		else:
 			if dst[1]-src[1]<2:
 				y=dst[1]
 			else:
-				yStep = float(0.5)
+				yStep = float(0.5)*speed
 				y=src[1]+yStep
 
 		if dst[0]<src[0]:

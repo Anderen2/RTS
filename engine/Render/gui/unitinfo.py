@@ -99,7 +99,7 @@ class UnitInfo():
 			pass
 		elif evt.button==CEGUI.RightButton:
 			#Cancel the action
-			self.currentGroup.removeActionID(int(str(evt.window.getName()).split("/")[3]))
+			self.currentGroup.guiCancelAction(int(str(evt.window.getName()).split("/")[3]))
 		elif evt.button==CEGUI.MiddleButton:
 			#Do some magic
 			pass

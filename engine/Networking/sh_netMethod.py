@@ -186,13 +186,17 @@ class MethodProtocol(Protocol):
 
 	def Frame(self):
 		if len(self.queue)!=0:
-			first=self.queue.pop()
+			first=self.queue.pop(0)
 			print first
 			self.txMeth(first[0], first[1], first[2])
-		reactor.callLater(0, self.Frame)
+		reactor.callLater(0.05, self.Frame)
 
 	def sendMethod(self, obj, func, arg):
 		self.queue.append([obj, func, arg])
+		print("\nNetwork Queue:")
+		for x in self.queue:
+			print("\t"+str(x))
+		print("\n")
 
 class MethodFactory(Factory):
 	protocol=MethodProtocol

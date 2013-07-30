@@ -37,6 +37,10 @@ class UnitLauncher():
 		self.magcap=10
 		self.rellive=True
 
+		self.dmgradius=10
+		self.dmgdrain = 50
+		self.dmgrelative = False
+
 		#Variables
 		self.magazine=self.magcap
 		self.lastfired=time()
@@ -84,6 +88,18 @@ class UnitLauncher():
 		condition to be in before being able to reload"""
 		self.rellive=rellive
 
+	def SetDamageRadius(self, radius):
+		"""Set the how big the radius for the damage is (0 for only damaging what it hit)"""
+		self.dmgradius=radius
+
+	def SetDamageHealth(self, dmg):
+		"""Set how much health the projectile should drain from what it hits"""
+		self.dmgdrain=dmg
+
+	def SetRelativeDamage(self, reldam):
+		"""Set if damage is relative to how close it is to the center of the radius"""
+		self.dmgrelative=reldam
+
 	#Actions
 	def Reload(self):
 		if self.reloading==False and self.magazine<self.magcap:
@@ -123,7 +139,7 @@ class UnitLauncher():
 	#Internal Functions
 	def createProjectile(self, pos):
 		uid = shared.LauncherManager.projectilecount
-		shared.DPrint("Projectiles", 0, "Creating projectile: "+str(uid))
+		#shared.DPrint("Projectiles", 0, "Creating projectile: "+str(uid))
 		projectile = self.projtype(self.pos, uid, self)
 		self.Projectiles.append(projectile)
 		shared.LauncherManager.projectilecount+=1
@@ -151,6 +167,43 @@ class UnitLauncher():
 
 	def removeProjectile(self, projectile):
 		self.Projectiles.remove(projectile)
+
+	def generateDamageSquare(self, centerpos):
+		dist = self.dmgradius/2
+		TopX = centerpos[0]+dist
+		TopY = centerpos[2]+dist
+		BtmX = centerpos[0]-dist
+		BtmY = centerpos[2]-dist
+
+		print "\n\n\n\n"
+		print "Generating Damage Square"
+		print "centerpos: "+str(centerpos)
+		print "Dist: "+str(dist)
+		print ((TopX, TopY), (BtmX, BtmY))
+
+		return ((TopX, TopY), (BtmX, BtmY))
+
+	def calculateRelativeDamage(self, dmgsquare, position):
+		pass
+
+	#Triggers
+	def projectileExploded(self, projectile):
+		if self.dmgradius!=None and self.dmgradius!=0:
+			dmgsquare = self.generateDamageSquare(projectile.pos)
+			for unit in shared.UnitManager.generateUnitsWithin(dmgsquare):
+				print "\n\n\n\n"
+				print "Unit is within DMGSQARE"
+				print unit.ID
+				print unit._pos
+				print dmgsquare
+				if not self.dmgrelative:
+					unit.TakeDamage(self.dmgdrain)
+				else:
+					self.calculateRelativeDamage(dmgsquare, unit._pos)
+		else:
+			unit = shared.UnitManager.getUnitAtPos(projectile.pos)
+			if unit:
+				unit.TakeDamage(self.dmgdrain)
 
 class Rocket():
 	S_ARMED = 3
@@ -183,7 +236,7 @@ class Rocket():
 
 	def _setState(self, state):
 		if self.oldstate!=state:
-			shared.DPrint("Projectile", 0, "Projectile: "+str(self.uid)+" at state: "+str(state))
+			#shared.DPrint("Projectile", 0, "Projectile: "+str(self.uid)+" at state: "+str(state))
 			if state == self.S_IGNITED:
 				shared.PlayerManager.Broadcast(6, "recv_rocket", [self.uid, self.pos, self.target, self.speed])
 			elif state == self.S_EXPLODED:
@@ -212,6 +265,7 @@ class Rocket():
 
 	def _explode(self):
 		self._setState(self.S_EXPLODED)
+		self.launcher.projectileExploded(self)
 		reactor.callLater(5, self._blown)
 
 	def _blown(self):

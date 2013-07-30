@@ -22,6 +22,9 @@ class BaseUnit():
 		#Movement
 		self._movetopoint=None
 
+		#State
+		self._health = 100
+
 		self._setPosition(pos)
 		self.Initialize()
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
@@ -51,7 +54,10 @@ class BaseUnit():
 		self._movespeed = speed
 
 	def SetHealth(self, health):
-		self._health = health
+		self._sethealth(health)
+
+	def TakeDamage(self, damage):
+		self._sethealth(self._health-damage)
 
 	def SetViewRange(self, viewrange):
 		self._viewrange = viewrange
@@ -84,6 +90,23 @@ class BaseUnit():
 
 	### Internal Functions
 
+	## Networked
+	#Health
+	def _sethealth(self, health):
+		if health != self._health:
+			self._health = health
+			shared.PlayerManager.Broadcast(4, "recv_unithealth", [self.ID, self._health])
+
+		if health<1:
+			self.OnDie()
+			self._die()
+
+	def _die(self):
+		self._group.unitDown(self)
+		self._owner.Units.remove(self)
+
+
+	## NON-Networked (Mostly stuff handeled by the groupmanager instead)
 
 	# MOVEMENT
 	def _movestep(self, dst, delta):

@@ -20,7 +20,10 @@ class Action():
 
 		self.targetunitid = evt["unitid"]
 		self.targetunit = shared.UnitManager.getFromUID(self.targetunitid)
-		self.waypointPos = self.targetunit.GetPosition()
+		if self.targetunit:
+			self.waypointPos = self.targetunit.GetPosition()
+		else:
+			self.unit._actionfinish()
 
 		self.abortable = True
 		self.progress=0
@@ -43,8 +46,11 @@ class Action():
 		self.fire=False
 
 	def update(self):
-		if self.targetunit._health<0:
-			self.unit._actionfinish()
+		if self.targetunit:
+			if self.targetunit._health<1:
+				self.unit._actionfinish()
 
-		if self.fire == True:
-			self.unit.PrimaryFire(self.targetunit)
+			if self.fire == True:
+				self.unit.PrimaryFire(self.targetunit)
+		else:
+			self.unit._actionfinish()

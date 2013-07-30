@@ -46,9 +46,10 @@ class Director():
 		for x in self.selections:
 			unitID=int(split(x.getName(),"_")[1])
 			unit=shared.netUnitManager.getFromUID(unitID)
-			if unit.GetOwner() == shared.SelfPlayer:
-				unit._selected()
-				self.CurrentSelection.append(unit)
+			if unit:
+				if unit.GetOwner() == shared.SelfPlayer:
+					unit._selected()
+					self.CurrentSelection.append(unit)
 
 
 		#Check unit group and if the ActionQueueing key is down
@@ -121,26 +122,27 @@ class Director():
 		unitID=int(split(data,"_")[1])
 		print("UnitID: "+str(unitID))
 		unitRclicked=shared.netUnitManager.getFromUID(unitID)
-		print("Unit: "+str(unitRclicked))
-		print("Owner: "+str(unitRclicked._owner.username))
-		
-		if self.CurrentSelectedGroup==None and actionQueueing==False and len(self.CurrentSelection)>0:
-			group = shared.GroupManager.req_newgroup(False, self.CurrentSelection[:])
-			self.CurrentSelectedGroup=group
-			for unit in self.CurrentSelection:
-				unit._group = group
+		if unitRclicked:
+			print("Unit: "+str(unitRclicked))
+			print("Owner: "+str(unitRclicked._owner.username))
+			
+			if self.CurrentSelectedGroup==None and actionQueueing==False and len(self.CurrentSelection)>0:
+				group = shared.GroupManager.req_newgroup(False, self.CurrentSelection[:])
+				self.CurrentSelectedGroup=group
+				for unit in self.CurrentSelection:
+					unit._group = group
 
-		#Setting up GUI according to group
-		if self.CurrentSelectedGroup!=None:
-			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
-			self.CurrentSelectedGroup.selected()
-		else:
-			shared.gui['unitinfo'].noSelection()
+			#Setting up GUI according to group
+			if self.CurrentSelectedGroup!=None:
+				shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
+				self.CurrentSelectedGroup.selected()
+			else:
+				shared.gui['unitinfo'].noSelection()
 
-		if self.CurrentSelectedGroup!=None:
-			#Sending an move action to the currently selected group
-			evt = {"unitid":unitID}
-			self.CurrentSelectedGroup.requestActionAdd("fau", evt)
+			if self.CurrentSelectedGroup!=None:
+				#Sending an move action to the currently selected group
+				evt = {"unitid":unitID}
+				self.CurrentSelectedGroup.requestActionAdd("fau", evt)
 
 	def Frame(self):
 		#This will get executed each frame

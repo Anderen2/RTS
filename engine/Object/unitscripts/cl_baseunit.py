@@ -13,6 +13,7 @@ class BaseUnit():
 		self.ID=int(ID)
 		self._owner=owner
 		self._group=None
+		self._text = ""
 
 		#Actions
 		self._currentaction=None
@@ -20,6 +21,9 @@ class BaseUnit():
 
 		#Movement
 		self._movetopoint=None
+
+		#State
+		self._health=100
 
 		self.Initialize()
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
@@ -57,7 +61,7 @@ class BaseUnit():
 		return self._entity
 
 	def SetSelectedText(self, text):
-		self._entity.text.setText(text+": HP "+str(self.GetHealth()))
+		self._text=text
 
 	def GetSolid(self):
 		return True
@@ -69,7 +73,7 @@ class BaseUnit():
 		return 100
 
 	def GetHealth(self):
-		return 100
+		return self._health
 
 	def GetViewRange(self):
 		return 100
@@ -89,6 +93,7 @@ class BaseUnit():
 			self._entity.node.showBoundingBox(False)
 
 	def _think(self, delta):
+		self._entity.text.setText(self._text+": HP "+str(self.GetHealth()))
 		self._entity.text.update()
 		self._entity.Think()
 		if self._currentaction!=None:
@@ -101,6 +106,17 @@ class BaseUnit():
 				self._movetopoint=None
 
 	### Internal Functions
+
+	# Health
+	def _setHealth(self, health):
+		self._health=health
+		if self._health<1:
+			self.OnDie()
+			self._die()
+
+	def _die(self):
+		self._group.rmUnit(self)
+		self._owner.Units.remove(self)
 
 	# Movement
 	def _movestep(self, dst, delta):

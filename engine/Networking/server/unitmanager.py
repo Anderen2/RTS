@@ -23,13 +23,9 @@ class UnitManager():
 		#Find and import all availible UnitScripts HERE
 		modpath = "engine.Object.unitscripts."
 		self.unitscripts["mig"] = import_module(modpath+"sv_mig").Unit
-		
-		#self.create("rawr", "mig", 10, (10, 10, 10))
 
 	def req_build(self, name, x, y, z, Protocol=None):
 		shared.DPrint(0, "netUnitManager", "Building "+str(name))
-
-		## UNIT VALIDATION AND SERVERSIDE CREATION HERE
 
 		player = shared.PlayerManager.getFromProto(Protocol)
 		team = player.team
@@ -44,17 +40,7 @@ class UnitManager():
 		else:
 			shared.DPrint(5, "netUnitManager", "Player: "+player.username+" tried to build an unit ("+str(name)+") but failed!")
 
-	def massMove(self, unitlist, pos):
-		amount=len(unitlist)
-		shared.DPrint(0, "netUnitManager", "Massmoving "+str(amount)+ "units to "+str(pos))
-
-		## PATHFINDING SPLITTING AND PATH VALIDATION HERE
-		pickledunits=unitlist
-		x, y, z = pos
-		shared.PlayerManager.Broadcast(4, "massmove", [pickledunits, x, y, z])
-
 	def create(self, owner, name, uid, pos):
-		#NAME CHECK HERE
 		if name in self.unitscripts:
 			try:
 				newunit=self.unitscripts[name](uid, owner, pos)
@@ -70,17 +56,62 @@ class UnitManager():
 			shared.DPrint(0, "netUnitManager", "Unitscript for unit :"+str(name)+" does not exsist!")
 			return False
 
-	def getFromUID(self, uid, Player=None):
+	def generateAllUnits(self, Player=None):
 		if not Player:
 			for player in shared.PlayerManager.PDict:
 				for unit in shared.PlayerManager.PDict[player].Units:
-					if unit.ID==uid:
-						return unit
+					yield unit
 
-		if Player:
-			print("PlayerUnits:"+str(Player.Units))
+		elif Player:
 			for unit in Player.Units:
-				if int(unit.ID)==int(uid):
-					return unit
+				yield unit
+
+
+	def getFromUID(self, uid, Player=None):
+		for unit in self.generateAllUnits(Player):
+			if unit.ID==uid:
+				return unit
 
 		return False
+
+	def getUnitAtPos(self, position, exact=False):
+		if len(position)==2: #2D Matching
+			if exact==False:
+				position=(int(position[0]), int(position[1]))
+
+			for unit in self.generateAllUnits(None):
+				if exact==False:
+					if int(unit._pos[0]) == position[0]:
+						if int(unit._pos[2]) == position[1]:
+							return unit
+				else:
+					if unit._pos[0] == position[0]:
+						if unit._pos[2] == position[1]:
+							return unit
+
+		if len(position)==3: #3D Matching
+			if exact==False:
+				position=(int(position[0]), int(position[1]), int(position[2]))
+			for unit in self.generateAllUnits(None):
+				if exact==False:
+					if int(unit._pos[0]) == position[0]:
+						if int(unit._pos[1]) == position[1]:
+							if int(unit._pos[2]) == position[2]:
+								return unit
+				else:
+					if unit._pos[0] == position[0]:
+						if unit._pos[1] == position[1]:
+							if unit._pos[2] == position[2]:
+								return unit
+
+	def generateUnitsWithin(self, square):
+		for unit in self.generateAllUnits(None):
+			if unit._pos[0] < square[0][0]: #Top X
+				if unit._pos[0] > square[1][0]: #Bottom X
+					if unit._pos[2] < square[0][1]: #Top Y
+						if unit._pos[2] > square[1][1]: #Bottom Y
+							#print("\n\n\n\n")
+							#print "Units Within:"
+							#print (unit._pos)
+							#print (square)
+							yield unit

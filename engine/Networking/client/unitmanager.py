@@ -47,10 +47,12 @@ class UnitManager():
 			shared.DPrint(5, "netUnitManager", "Unitscript for "+str(name)+" does not exsist!")
 			print(self.unitscripts)
 
-	def massmove(self, pickledunits, x, y, z, Protocol=None):
-		units=pickledunits
+	#Netwerks
+	def recv_unithealth(self, unitid, health, Protocol=False):
+		unit = self.getFromUID(unitid)
+		unit._setHealth(health)
+		print("HEALTH: "+str(unit.ID)+" = "+str(health))
 
-		shared.unitManager.massMove(units, (float(x), float(y), float(z)))
 
 	def getFromUID(self, UnitID, Player=None):
 		#This function probleary needs to be optimized!

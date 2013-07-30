@@ -20,12 +20,13 @@ class ChatManager():
 
 	def addMember(self, uid, cid):
 		if not uid in self.Channels[cid].members:
-			#Add him serverside
 			channel = self.Channels[cid]
-			channel.members.append(uid) 
-
+			
 			#Notify the members of the channel
 			channel.broadcast("NCU", [cid, uid])
+
+			#Add him serverside
+			channel.members.append(uid) 
 
 			#Add him clientside
 			player = shared.PlayerManager.getFromUID(uid)

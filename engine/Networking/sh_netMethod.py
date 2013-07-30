@@ -7,9 +7,10 @@ from twisted.internet import reactor
 from string import split
 from engine import shared, debug
 
-VERBOSE=True
-PVERBOSE=True
+VERBOSE=False
+PVERBOSE=False
 RAWVERBOSE=False
+QUEUEVERBOSE=False
 HUMANOSE=False #Warning, this means that the server will read in Humanose form. It will break everything!
 PHUMANOSE=False #Warning, this means that the server will transmit in Humanose form. It will break everything!
 
@@ -187,16 +188,17 @@ class MethodProtocol(Protocol):
 	def Frame(self):
 		if len(self.queue)!=0:
 			first=self.queue.pop(0)
-			print first
 			self.txMeth(first[0], first[1], first[2])
 		reactor.callLater(0.05, self.Frame)
 
 	def sendMethod(self, obj, func, arg):
 		self.queue.append([obj, func, arg])
-		print("\nNetwork Queue:")
-		for x in self.queue:
-			print("\t"+str(x))
-		print("\n")
+
+		if QUEUEVERBOSE:
+			print("\nNetwork Queue:")
+			for x in self.queue:
+				print("\t"+str(x))
+			print("\n")
 
 class MethodFactory(Factory):
 	protocol=MethodProtocol

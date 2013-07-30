@@ -26,7 +26,7 @@ class Unit(BaseUnit):
 		self.SetupProjectileLaunchers()
 
 	def SetupProjectileLaunchers(self):
-		self.Launcher1 = self.CreateProjectileLauncher(1)
+		self.Launcher1 = self.CreateProjectileLauncher(shared.LauncherManager.UNITLAUNCHER)
 		self.Launcher1.SetPosition(0, 0, 0)
 		self.Launcher1.SetRotation(10, 10, 10)
 		self.Launcher1.SetProjectile("rocket")
@@ -34,9 +34,12 @@ class Unit(BaseUnit):
 		self.Launcher1.SetFiringSpeed(2)
 		self.Launcher1.SetReloadingSpeed(5)
 		self.Launcher1.SetMagasineCapasity(5)
-		self.Launcher1.CanReloadLive(True) #Can this unit reload while in air/movement? Or does it have to stop or reload at a buildning
+		self.Launcher1.CanReloadLive(True)
+		self.Launcher1.SetDamageRadius(20)
+		self.Launcher1.SetDamageHealth(10)
+		self.Launcher1.SetRelativeDamage(False)
 
-		self.Launcher2 = self.CreateProjectileLauncher(1)
+		self.Launcher2 = self.CreateProjectileLauncher(shared.LauncherManager.UNITLAUNCHER)
 		self.Launcher2.SetPosition(10, 10, 10)
 		self.Launcher2.SetRotation(30, 30, 30)
 		self.Launcher2.SetProjectile("rocket")
@@ -44,7 +47,10 @@ class Unit(BaseUnit):
 		self.Launcher2.SetFiringSpeed(2)
 		self.Launcher2.SetReloadingSpeed(5)
 		self.Launcher2.SetMagasineCapasity(5)
-		self.Launcher2.CanReloadLive(True) #Can this unit reload while in air/movement? Or does it have to stop or reload at a buildning
+		self.Launcher2.CanReloadLive(True)
+		self.Launcher2.SetDamageRadius(20)
+		self.Launcher2.SetDamageHealth(10)
+		self.Launcher2.SetRelativeDamage(False)
 
 	def OnCreation(self, pos):
 		pass

@@ -270,7 +270,7 @@ class UnitGroup():
 			for actionid in self.allCommonActions:
 				action = self.getActionByID(actionid)
 				buttonlist.append((action.name, action.description, action.actguiPlacement, actionid))
-			
+
 			shared.gui['unitopt'].updateActions(self, buttonlist)
 
 		else:
@@ -287,7 +287,11 @@ class UnitGroup():
 				if "3dMouse" in data:
 					wpdata = data["3dMouse"]
 				elif "unitid" in data:
-					wpdata = shared.netUnitManager.getFromUID(data["unitid"]).GetPosition()
+					unit = shared.netUnitManager.getFromUID(data["unitid"])
+					if unit:
+						wpdata = unit.GetPosition()
+					else:
+						continue
 				else:
 					wpdata = None
 				print("\tAD: "+str((action.waypointType, wpdata)))

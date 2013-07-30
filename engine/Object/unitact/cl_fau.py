@@ -20,10 +20,11 @@ class Action():
 
 		self.targetunitid = evt["unitid"]
 		self.targetunit = shared.netUnitManager.getFromUID(self.targetunitid)
-		self.waypointPos = self.targetunit.GetPosition()
-		print("\n\n\n waypointPos")
-		print(self.waypointPos)
-		print("\n\n\n")
+		if self.targetunit:
+			self.waypointPos = self.targetunit.GetPosition()
+			print("\n\n\n waypointPos")
+			print(self.waypointPos)
+			print("\n\n\n")
 
 		self.abortable = True
 		self.progress=0

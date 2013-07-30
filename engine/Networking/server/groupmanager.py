@@ -161,6 +161,13 @@ class UnitGroup():
 		if len(self.members)==0 and self.persistent==False:
 			shared.GroupManager.rmGroup(self)
 
+	def unitDown(self, unit):
+		if unit in self.waitingfor:
+			self.waitingfor.remove(unit)
+		unit._abortAction()
+		self.rmUnit(unit)
+
+
 	def getActionByID(self, actionid):
 		## Algorithm to get all common actions here!
 		print(self.members)

@@ -20,6 +20,7 @@ class Unit(BaseUnit):
 		#self.PlayAnim("SpiralDown") #Create a function/Class for simple movement animations
 		self.GetEntity().actNone()
 		self.GetEntity().actDead(True)
+		shared.EffectManager.Create("explosion", self._pos[0], self._pos[1], self._pos[2], 1, 1)
 
 	def OnThink(self, delta):
 		pass

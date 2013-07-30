@@ -7,7 +7,7 @@ from twisted.internet import reactor
 
 class EffectManager():
 	def __init__(self):
-		self.types={"explosion":Explosion, "atomic":Atomic, "rain":Rain, "snow":Snow}
+		self.types={"explosion":Explosion, "smallexplosion":SmallExplosion, "atomic":Atomic, "rain":Rain, "snow":Snow}
 		self.effects=[]
 		self.count=0
 		debug.ACC("recreate", self.Create, info="Create effect\nusage: type x y z size time", args=6)
@@ -24,8 +24,36 @@ class Explosion():
 		self.node = shared.render3dScene.sceneManager.getSceneNode("EffNode").createChildSceneNode("expeff"+str(self.ID))
 
 		self.node.setPosition(position)
-		self.node.setScale(size, size, size)
 		self.node.attachObject(self.particle)
+		self.node.setScale(size, size, size)
+		self.particle.getEmitter(0).setTimeToLive(time)
+		self.particle.getEmitter(0).setEnabled(True)
+
+		reactor.callLater(10, self.Stop)
+
+	def Stop(self):
+		for x in range(0, self.particle.getNumEmitters()):
+			self.particle.getEmitter(x).setEnabled(False)
+
+		reactor.callLater(5, self.Remove)
+
+	def Remove(self):
+		shared.EffectManager.effects.remove(self)
+
+	def __del__(self):
+		self.node.detachObject(self.particle)
+		shared.render3dScene.sceneManager.destroyParticleSystem(self.particle)
+		shared.render3dScene.sceneManager.destroySceneNode(self.node)
+
+class SmallExplosion():
+	def __init__(self, ID, position, size, time):
+		self.ID = ID
+		self.particle=shared.render3dScene.sceneManager.createParticleSystem("expeff"+str(self.ID),"SmallExplosion")
+		self.node = shared.render3dScene.sceneManager.getSceneNode("EffNode").createChildSceneNode("expeff"+str(self.ID))
+
+		self.node.setPosition(position)
+		self.node.attachObject(self.particle)
+		self.node.setScale(size, size, size)
 		self.particle.getEmitter(0).setTimeToLive(time)
 		self.particle.getEmitter(0).setEnabled(True)
 

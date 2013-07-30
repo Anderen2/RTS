@@ -45,7 +45,7 @@ class Rocket(BaseProjectile):
 	def _explode(self, pos):
 		print("Exploded.")
 		#pos=self.entity.node.getPosition()
-		shared.EffectManager.Create("explosion", pos[0], pos[1], pos[2], 1, 2)
+		shared.EffectManager.Create("smallexplosion", pos[0], pos[1], pos[2], 1, 1)
 
 		self.entity.actNone()
 		self.entity.Delete()
@@ -64,6 +64,9 @@ class Rocket(BaseProjectile):
 
 	def SetPosition(self, pos):
 		self.entity.node.setPosition(pos[0], pos[1], pos[2])
+		if self.target!=None and type(self.target) is tuple:
+			self.entity.LookAtZ(self.target[0], self.target[1], self.target[2]) 
+			self.entity.RPYRotate(0, 90, 0)
 
 	def GetPosition(self):
 		pos = self.entity.node.getPosition()

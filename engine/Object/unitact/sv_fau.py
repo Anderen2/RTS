@@ -1,6 +1,7 @@
 #Serverside Global-Action
 
 from engine import shared, debug
+from engine.World import posalgo
 
 class Action():
 	actionid = "fau"
@@ -47,10 +48,12 @@ class Action():
 
 	def update(self):
 		if self.targetunit:
-			if self.targetunit._health<1:
-				self.unit._actionfinish()
+			if self.targetunit._owner.team!=self.unit._owner.team:
+				if shared.UnitManager.getIfActionPossible(self.unit, self.targetunit, True, True):
+					if self.targetunit._health<1:
+						self.unit._actionfinish()
 
-			if self.fire == True:
-				self.unit.PrimaryFire(self.targetunit)
-		else:
-			self.unit._actionfinish()
+					if self.fire == True:
+						self.unit.PrimaryFire(self.targetunit)
+				else:
+					self.unit._actionfinish()

@@ -3,7 +3,7 @@ from twisted.internet import reactor
 from engine import debug, shared
 
 class Player():
-	def __init__(self, UID, Username, Protocol, Extras):
+	def __init__(self, UID, Username, Team, Extras, Protocol):
 		self.PlayerInfo=Extras
 		self.UID=UID
 		self.username=Username
@@ -18,6 +18,10 @@ class Player():
 
 	def addUnit(self, unit):
 		self.Units.append(unit)
+
+	def changeTeam(self, team):
+		self.team = team
+		shared.PlayerManager.Broadcast(2, "recv_chteam", [self.UID, self.team])
 
 	def Think(self, delta):
 		for unit in self.Units:

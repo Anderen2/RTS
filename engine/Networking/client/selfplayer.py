@@ -9,8 +9,8 @@ from engine.Networking import sh_netObject, sh_netMethod
 class SelfPlayer():
 	def __init__(self):
 		self.username="Anderen2"+str(randrange(0,100,1))
-		self.team=randrange(1,2,1)
-		self.PickledExtras={"team":self.team, "land":"Of the dead"}
+		self.team=0
+		self.Extras={"team":self.team, "land":"Of the dead"}
 		self.UID=None
 
 		self.Units=[]
@@ -18,8 +18,11 @@ class SelfPlayer():
 
 		#Player join Handshake
 		shared.DPrint("SelfPlayer", 0, "Sending Join Handshake..")
-		shared.protocol.sendMethod(2, "HI", [self.username, self.PickledExtras])
+		shared.protocol.sendMethod(2, "HI", [self.username, self.team, self.Extras])
 		shared.client.RetMeBack(self.recv_HI, "HI")
+
+		#Console Commands
+		debug.ACC("self_chteam", self.requestChangeTeam, info="Request to change team", args=1)
 
 	def Think(self, delta):
 		for unit in self.Units:
@@ -33,14 +36,6 @@ class SelfPlayer():
 
 	### TRANSMITT / Outgoing messages (Client Request)
 
-	# def MoveUnits(self, selected, pos):
-	# 	if selected!=self.brandwidthsaver:
-	# 		juicypickle=selected
-	# 	else:
-	# 		juicypickle="0"
-	# 	shared.protocol.sendMethod(2, "req_moveunit", [juicypickle, pos[0], pos[1], pos[2]])
-
-	# def AddGroup(self, persistent, unitids):
-	# 	pickledunits = unitids
-	# 	persistent = str(int(persistent))
-	# 	shared.protocol.sendMethod(5, "req_newgroup", [persistent, pickledunits])
+	def requestChangeTeam(self, team):
+		team = int(team)
+		shared.protocol.sendMethod(2, "req_changeteam", [team])

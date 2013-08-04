@@ -3,6 +3,7 @@
 from time import time
 from twisted.internet import reactor
 from engine import shared, debug
+from engine.World import posalgo
 
 class LauncherManager():
 	UNITLAUNCHER = 1
@@ -118,11 +119,18 @@ class UnitLauncher():
 		if self.isAbleToFire(pos):
 			projectile = self.createProjectile(self.pos)
 			projectile.ignite(pos)
+		else:
+			pass
+			#Move closer to target
 
 	def FireAtUnit(self, unit):
 		if self.isAbleToFireAtUnit(unit):
-			projectile = self.createProjectile(self.pos)
-			projectile.ignite(unit)
+			if self.isAbleToFire(unit._pos):
+				projectile = self.createProjectile(self.pos)
+				projectile.ignite(unit)
+			else:
+				pass
+				#Move closer to target
 			
 	def update(self):
 		deltatime = time()-self.lastframe
@@ -147,21 +155,22 @@ class UnitLauncher():
 
 	def isAbleToFireAtUnit(self, unit):
 		if unit._owner.team!=self.unit._owner.team:
-			return self.isAbleToFire(unit._pos)
+			return True
 		else:
 			#shared.DPrint("Projectiles", 0, "Friendly fire")
-			return self.isAbleToFire(unit._pos)
+			return True
 			#return False
 
 	def isAbleToFire(self, pos):
-		#If position is within range and free line of fire:
-		if (time()-self.lastfired)>self.firespeed:
-			self.lastfired=time()
-			if self.magazine>0:
-				self.magazine-=1
-				return True
-			else:
-				return self.Reload()
+		#If free line of fire:
+		if posalgo.in_circle(self.pos[0], self.pos[2], self.firerange, pos[0], pos[2]):
+			if (time()-self.lastfired)>self.firespeed:
+				self.lastfired=time()
+				if self.magazine>0:
+					self.magazine-=1
+					return True
+				else:
+					return self.Reload()
 
 		return False
 

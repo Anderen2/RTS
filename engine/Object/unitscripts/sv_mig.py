@@ -21,7 +21,7 @@ class Unit(BaseUnit):
 		self.SetMoveType(0)
 		self.SetMoveSpeed(100)
 		self.SetHealth(100)
-		self.SetViewRange(200)
+		self.SetViewRange(256)
 
 		self.SetupProjectileLaunchers()
 

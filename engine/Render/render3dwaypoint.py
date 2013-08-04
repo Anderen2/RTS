@@ -26,7 +26,7 @@ class WaypointManager():
 			self.clearAllWaypoints()
 			for waypointType, position in wpdata:
 				if waypointType!=None and position!=None:
-					print(waypointType, position)
+					#print(waypointType, position)
 					self.Create(position, waypointType, False)
 
 			if len(self.waypoints)>1:
@@ -89,9 +89,9 @@ class Waypoint():
 		self.decal.ent.setRenderQueueGroup(RENDER_QUEUE_SKIES_LATE)
 
 	def Delete(self):
-		print("Waypoint: Detaching node")
+		#print("Waypoint: Detaching node")
 		self.node.detachObject(self.ent)
-		print("Waypoint: Deleting Entity")
+		#print("Waypoint: Deleting Entity")
 		shared.render3dScene.sceneManager.destroyEntity(self.ent)
-		print("Waypoint: Deleting Node")
+		#print("Waypoint: Deleting Node")
 		shared.render3dScene.sceneManager.destroySceneNode(self.node)

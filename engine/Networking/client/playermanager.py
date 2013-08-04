@@ -30,7 +30,6 @@ class PlayerManager():
 		self.ThinkPlayers()
 
 	def getFromUID(self, uid):
-		print(str(uid) +"|=|"+ str(shared.SelfPlayer.UID))
 		if int(uid)==int(shared.SelfPlayer.UID):
 			return shared.SelfPlayer
 		try:
@@ -38,7 +37,12 @@ class PlayerManager():
 		except:
 			print_exc()
 			return False
+
+
+	#### REQUESTS
 		
+	#### SERVERUPDATES / COMMANDS
+
 	def recv_playerlist(self, method, playerlist):
 		shared.DPrint("PlayerManager", 0, "Got Playerlist")
 		self.playerlist=playerlist
@@ -46,14 +50,20 @@ class PlayerManager():
 
 		for x in self.playerlist:
 			if x["uid"]!=shared.SelfPlayer.UID:
-				self.PDict[x["uid"]]=Player(x["uid"], x["username"], x["info"])
+				self.PDict[x["uid"]]=Player(x["uid"], x["username"], x["team"], x["info"])
 				shared.DPrint("PlayerManager", 1, "Player "+x["username"]+" ("+str(x["uid"])+")"+" joined the game")
 
+	def recv_chteam(self, ID, team, Protocol=None):
+		player = self.getFromUID(ID)
+		player.team = team
+		shared.DPrint("PlayerManager", 1, "Player "+player.username+" ("+str(ID)+")"+" changed team to "+str(player.team))
 
-	def HI(self, username, ID, extras, Protocol=None):
+	def HI(self, ID, username, team, extras, Protocol=None):
 		self.playerlist.append({"uid":ID, "username":username, "info":extras})
-		self.PDict[ID]=Player(ID, username, extras)
+		self.PDict[ID]=Player(ID, username, team, extras)
 		shared.DPrint("PlayerManager", 1, "Player "+username+" ("+str(ID)+")"+" joined the game!")
+
+	#### EVENTS
 
 	def ThinkPlayers(self):
 		reactor.callLater(0, self.ThinkPlayers)

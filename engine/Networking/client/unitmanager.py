@@ -17,42 +17,46 @@ class UnitManager():
 		modpath = "engine.Object.unitscripts."
 		self.unitscripts["mig"] = import_module(modpath+"cl_mig").Unit
 
+
+	#SERVER UPDATES/COMMANDS
+
 	def build(self, name, x, y, z, userid, unitid, Protocol=None):
 		pos = (int(x), int(y), int(z))
 		userid = int(userid)
 		unitid = int(unitid)
 		shared.DPrint(0, "netUnitManager", "Erecting "+str(name)+" at "+str(pos))
 
-		# if int(team) == int(shared.SelfPlayer.team):
-		# 	shared.DPrint("netUnitManager", 0, "Adding unit as ally")
-		# 	shared.FowManager.addAlly(unit.entity.node, 500)
-		# else:
-		# 	shared.DPrint("netUnitManager", 0, "Adding unit as enemy")
-		# 	shared.FowManager.addEnemy(unit.entity.node)
-
-		# shared.FowManager.nodeUpdate(unit.entity.node)
-
 		if name in self.unitscripts:
-			if userid==shared.SelfPlayer.UID:
-				newunit = self.unitscripts[name](unitid, shared.SelfPlayer, pos)
-				shared.SelfPlayer.Units.append(newunit)
+			owner = shared.PlayerManager.getFromUID(userid)
+			newunit = self.unitscripts[name](unitid, owner, pos)
+			owner.Units.append(newunit)
+
+			if owner == shared.SelfPlayer:
 				shared.DPrint(0, "netUnitManager", "The unit is ours "+str(userid)+" = "+str(shared.SelfPlayer.UID))
 			else:
-				owner = shared.PlayerManager.getFromUID(userid)
-				newunit = self.unitscripts[name](unitid, owner, pos)
-				owner.Units.append(newunit)
 				shared.DPrint(0, "netUnitManager", "The unit is player "+str(owner.username)+" at team "+str(owner.team))
+
+			if int(owner.team) == int(shared.SelfPlayer.team):
+				shared.DPrint("netUnitManager", 0, "Adding unit as ally")
+				newunit._fowview = shared.FowManager.addAlly(newunit._entity.node, 256)
+			else:
+				shared.DPrint("netUnitManager", 0, "Adding unit as enemy")
+				newunit._fowview = shared.FowManager.addEnemy(newunit._entity.node)
+
+			shared.FowManager.nodeUpdate(newunit._entity.node)
 
 		else:
 			shared.DPrint(5, "netUnitManager", "Unitscript for "+str(name)+" does not exsist!")
 			print(self.unitscripts)
 
-	#Netwerks
+	
 	def recv_unithealth(self, unitid, health, Protocol=False):
 		unit = self.getFromUID(unitid)
 		unit._setHealth(health)
 		print("HEALTH: "+str(unit.ID)+" = "+str(health))
 
+
+	#INTERNALS
 
 	def getFromUID(self, UnitID, Player=None):
 		#This function probleary needs to be optimized!
@@ -76,3 +80,4 @@ class UnitManager():
 					return unit
 
 		return False
+

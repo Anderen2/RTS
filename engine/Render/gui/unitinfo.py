@@ -60,7 +60,7 @@ class UnitInfo():
 			fh = borderh+column*(btnh)
 			fv = borderv+row*(btnv)
 
-			print action
+			#print action
 			queueImage = action.queueImage
 			name = action.name
 			desc = action.description

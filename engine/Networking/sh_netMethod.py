@@ -80,7 +80,25 @@ class MethodProtocol(Protocol):
 				method=Bar[0]
 				#print("Recived: "+Bar[1].replace(chr(3),"\n___\n"))
 				#arg=split(Bar[1], slash)
-				arg=pickle.loads(base64.b64decode(Bar[1]))
+				try:
+					b64 = base64.b64decode(Bar[1])
+					arg=pickle.loads(b64)
+				except TypeError:
+					print "\n\n\n\n\n\n\n"
+					print("Got invalid package (Invalid Padding)\nTrying to reconstruct package.")
+					print(Bar[1])
+					print "\n\n\n\n\n\n\n"
+					# if "==" in Bar[1]: #If padding exsists
+					# 	if not "==" in Bar[1][len(Bar[1])-2:]: #But not at the end
+					# 		try:
+					# 			foo = Bar[1].split("==")
+
+					# 			b64 = base64.b64decode(Bar[1])
+					# 			arg=pickle.loads(b64)
+					# 		except:
+					# 			pass
+					# 	if 
+
 				if RAWVERBOSE:
 					print("Recived: "+str(arg))
 				if VERBOSE:

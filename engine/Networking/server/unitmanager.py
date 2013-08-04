@@ -5,6 +5,7 @@ from engine import shared, debug
 from random import randrange
 from engine.Object.unitscripts import sv_baseunit
 import engine.World.pathfinding as pathfinding
+from engine.World import posalgo
 
 class UnitManager():
 	def __init__(self):
@@ -56,6 +57,8 @@ class UnitManager():
 			shared.DPrint(0, "netUnitManager", "Unitscript for unit :"+str(name)+" does not exsist!")
 			return False
 
+	### UnitGetters
+
 	def generateAllUnits(self, Player=None):
 		if not Player:
 			for player in shared.PlayerManager.PDict:
@@ -65,7 +68,6 @@ class UnitManager():
 		elif Player:
 			for unit in Player.Units:
 				yield unit
-
 
 	def getFromUID(self, uid, Player=None):
 		for unit in self.generateAllUnits(Player):
@@ -110,8 +112,17 @@ class UnitManager():
 				if unit._pos[0] > square[1][0]: #Bottom X
 					if unit._pos[2] < square[0][1]: #Top Y
 						if unit._pos[2] > square[1][1]: #Bottom Y
-							#print("\n\n\n\n")
-							#print "Units Within:"
-							#print (unit._pos)
-							#print (square)
 							yield unit
+
+	### UnitCheckers
+	def getIfActionPossible(self, unit, targetunit, damaging, view):
+		if unit._health>0:
+			if damaging:
+				if unit._owner.team!=targetunit._owner.team:
+					if view or posalgo.in_circle(self.unit._pos[0], self.unit._pos[2], self.unit._viewrange, self.targetunit._pos[0], self.targetunit._pos[2]):
+						return True
+			else:
+				if view or posalgo.in_circle(self.unit._pos[0], self.unit._pos[2], self.unit._viewrange, self.targetunit._pos[0], self.targetunit._pos[2]):
+					return True
+
+		return False

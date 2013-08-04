@@ -18,11 +18,13 @@ class PlayerManager():
 		self.lastframe=time()
 		self.ThinkPlayers()
 
-	def HI(self, Username, Extras, Protocol=None):
+	#### CLIENT REQUESTS
+
+	def HI(self, Username, Team, Extras, Protocol=None):
 		if not self.getFromProto(Protocol):
 			self.PlayerCount+=1
-			self.Broadcast(2, "HI", [Username, self.PlayerCount, Extras])
-			self.PDict[self.PlayerCount]=Player(self.PlayerCount, Username, Protocol, Extras)
+			self.Broadcast(2, "HI", [self.PlayerCount, Username, Team, Extras])
+			self.PDict[self.PlayerCount]=Player(self.PlayerCount, Username, Team, Extras, Protocol)
 			reactor.callLater(1, self.PDict[self.PlayerCount].Setup)
 			return [self.PlayerCount]
 		else:
@@ -31,17 +33,14 @@ class PlayerManager():
 	def LP(self, Protocol=None):
 		foolist=[]
 		for x in self.PDict:
-			foolist.append({"uid":self.PDict[x].UID, "username":self.PDict[x].username, "info":self.PDict[x].PlayerInfo})
+			foolist.append({"uid":self.PDict[x].UID, "username":self.PDict[x].username, "team":self.PDict[x].team, "info":self.PDict[x].PlayerInfo})
 
 		return [foolist]
 
-	def req_moveunit(self, selected, x, y, z, Protocol=None):
-		if selected!="0":
-			self.brandwidthsaver=selected
-
-		## IF PLAYER OWNS ALL UNITS CHECK HERE! ! !
-		## Tempoary testing workaround (All players could move all units)
-		shared.UnitManager.massMove(self.brandwidthsaver, (x, y, z))
+	def req_changeteam(self, team, Protocol=None):
+		### Trigger for Gamemode handeling here!
+		Player = self.getFromProto(Protocol)
+		Player.changeTeam(team)
 
 
 	def Broadcast(self, obj, method, args):

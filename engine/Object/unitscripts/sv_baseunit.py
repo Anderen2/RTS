@@ -72,6 +72,10 @@ class BaseUnit():
 	def GetAction(self):
 		return self._currentaction
 
+	def SetOwner(self, newowner):
+		"""This is used if the unit is ex. captured by an another player"""
+		pass
+
 	### Trigger Hooks
 
 	def _think(self, delta):

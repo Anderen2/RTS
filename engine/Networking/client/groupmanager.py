@@ -294,7 +294,7 @@ class UnitGroup():
 						continue
 				else:
 					wpdata = None
-				print("\tAD: "+str((action.waypointType, wpdata)))
+				#print("\tAD: "+str((action.waypointType, wpdata)))
 				waypointdata.append((action.waypointType, wpdata))
 
 			shared.WaypointManager.update(self, waypointdata)

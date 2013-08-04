@@ -3,7 +3,8 @@
 import ogre.renderer.OGRE as ogre
 import math
 from engine import shared, debug
-from random import randrange
+from engine.World import posalgo
+from traceback import print_exc
 
 class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 	def __init__(self, terrain):
@@ -16,7 +17,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		debug.ACC("turn", self.ChangeShit, info="Enable a nein", args=3)
 
 		self.AllyNodes={}
-		self.EnemyNodes=[]
+		self.EnemyNodes={}
 
 		self.CircleEnts=[]
 		self.CircleNodes=[]
@@ -59,7 +60,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		#__________________________________________________________________________________________________________________________________________________________
 
-		#establish the entity that will act as each ally's visible sight range
+		#establish the entity that will act as each ally's vision sight range
 		circle = ogre.MovablePlane("circleMovablePlane") 
 		circle.normal = ogre.Vector3().UNIT_Y 
 		circle.d = 0 
@@ -105,49 +106,111 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.terrainTarget.update()
 
 	def addView(self, size):
+		size = float(size)/float(256)
 		circleEnt = self.fogManager.createEntity( "Circle"+str(len(self.CircleEnts)), "FOW_Circle" ) 
 		circleNode = self.fogManager.getRootSceneNode().createChildSceneNode() 
 		circleNode.attachObject(circleEnt) 
 		circleNode.setPosition(0, 1+(len(self.CircleEnts)), 0)
-		print("!!!")
-		print(1+(len(self.CircleEnts)))
+		circleNode.setScale(1*size, 1*size, 1*size)
 
 		self.CircleEnts.append(circleEnt)
 		self.CircleNodes.append(circleNode)
 
-		return (circleEnt, circleNode)
+		return (circleEnt, circleNode, size)
 
 	def nodeUpdate(self, node):
-		if node in self.EnemyNodes:
-			pass
+		if node.getName() in self.EnemyNodes:
+			EnodeIndex = self.EnemyNodes[node.getName()]
+			Enode = EnodeIndex["node"]
+			EnodePos = self.ogre2pyNodeCoord(Enode)
+
+			#print("Enode Defaulting to False")
+			EnodeIndex["viewedby"]=[]
+
+			for AnodeName, AnodeIndex in self.AllyNodes.iteritems():
+				Anode = AnodeIndex["node"]
+				AnodePos = self.ogre2pyNodeCoord(Anode)
+
+				if posalgo.in_circle(AnodePos[0], AnodePos[2], AnodeIndex["size"]-5, EnodePos[0], EnodePos[2]):
+					#print("ENODE: Unit is in circle! VISIBLE")
+					#print(AnodePos[0], AnodePos[2], 256, EnodePos[0], EnodePos[2])
+					AnodeIndex["vision"].append(EnodeIndex)
+					EnodeIndex["viewedby"].append(AnodeIndex)
+					Enode.setVisible(True)
+				else:
+					if EnodeIndex in AnodeIndex["vision"]:
+						#print("ENODE: Im not visible for him, removing myself")
+						AnodeIndex["vision"].remove(EnodeIndex)
+
+			if len(EnodeIndex["viewedby"])==0:
+				Enode.setVisible(False)
+
+
+
+		elif node.getName() in self.AllyNodes:
+			AnodeIndex=self.AllyNodes[node.getName()]
+			Anode = AnodeIndex["node"]
+			AnodePos = self.ogre2pyNodeCoord(Anode)
+
+			#Set new view placement
+			UnitPos=node.getPosition()
+			Anode.setPosition(UnitPos.x, AnodePos[1], UnitPos.z)
+
+			#Update the fowplane with the new viewplacements
+			self.update()
+
+			#Set everything that was previously in view, to be invision if they are not in viewrange anymore
+			for EnodeIndex in AnodeIndex["vision"]:
+				if AnodeIndex in EnodeIndex["viewedby"]:
+					#print("ANODE: Removing myself from Enode")
+					EnodeIndex["viewedby"].remove(AnodeIndex)
+
+					if len(EnodeIndex["viewedby"])==0:
+						#print("ANODE: Enode is empty, hiding")
+						EnodeIndex["node"].setVisible(False)
+				#print(EnodeIndex)
+
+			AnodeIndex["vision"] = []
+
+			#Find everything that is currently in the units view now
+			for EnodeName, EnodeIndex in self.EnemyNodes.iteritems():
+				Enode = EnodeIndex["node"]
+				EnodePos = self.ogre2pyNodeCoord(Enode)
+
+				if posalgo.in_circle(AnodePos[0], AnodePos[2], AnodeIndex["size"]-5, EnodePos[0], EnodePos[2]):
+					#print("ANODE: Unit is in circle! VISIBLE")
+					AnodeIndex["vision"].append(EnodeIndex)
+					EnodeIndex["viewedby"].append(AnodeIndex)
+					Enode.setVisible(True)
+
 		else:
-			try:
-				#print(node.getName())
-				View=self.AllyNodes[node.getName()]
-				#print(View)
-				pos=node.getPosition()
-				y = View[1].getPosition().y
-				#print(View[1].getPosition())
-				View[1].setPosition(pos.x, y, pos.z)
-				self.update()
-				#print("Uptidate")
-				#print(pos.x, y, pos.z)
-			except:
-				shared.DPrint("FOWManager", 3, "Non-registered unit tried to update View!")
+			print("Node not found!")
+			print node
 
-	def addAlly(self, allynode, viewsize):
-		View = self.addView(viewsize)
+	def addAlly(self, node, viewsize):
+		tupview = self.addView(viewsize)
+		allynodeIndex = {"ent":tupview[0], "node":tupview[1], "size":viewsize, "vision":[]}
 
-		self.AllyNodes[allynode.getName()]=View
-		self.nodeUpdate(allynode)
+		self.AllyNodes[node.getName()]=allynodeIndex
+		self.nodeUpdate(node)
 
-		return View[1]
+		return allynodeIndex
 
-	def addEnemy(self, enemynode):
-		self.EnemyNodes.append(enemynode)
-		self.nodeUpdate(enemynode)
+	def addEnemy(self, node):
+		enemynodeIndex = {"node":node, "viewedby":[]}
+
+		self.EnemyNodes[node.getName()]=enemynodeIndex
+		self.nodeUpdate(node)
+
+		return enemynodeIndex
 
 	def ChangeShit(self, x, y, z):
 		#self.circleNode.setPosition(float(x),float(y),float(z))
 		self.addView(200)[1].setPosition(float(x), 0, float(z))
 		self.update()
+
+	def ogre2pyNodeCoord(self, node):
+		if type(node) == str:
+			print(node)
+		else:
+			return (int(node.getPosition().x), int(node.getPosition().y), int(node.getPosition().z))

@@ -140,8 +140,8 @@ class BaseUnit():
 	def _setPosition(self, pos):
 		self._pos=pos
 		self._entity.SetPosition(pos[0], pos[1], pos[2])
-		#if shared.FowManager!=None and shared.FowManager!=True:
-		#	shared.FowManager.nodeUpdate(self.entity.node)
+		if shared.FowManager!=None and shared.FowManager!=True:
+			shared.FowManager.nodeUpdate(self._entity.node)
 
 	def _getPosition(self):
 		return (self._entity.node.getPosition().x, self._entity.node.getPosition().y, self._entity.node.getPosition().z)

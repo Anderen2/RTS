@@ -34,6 +34,36 @@ console=None
 ParseCommand=None
 
 LogFile=None
+
+#Additional Types
+class Vector( object ):
+	def __init__(self, *data):
+		if type(data[0])==tuple:
+			self.data = data[0]
+		elif type(data[0])==list:
+			self.data = tuple(data[0])
+		else:
+			self.data = data
+
+		if len(self.data)>2:
+			self.x = self.data[0]
+			self.y = self.data[1]
+			self.z = self.data[2]
+		elif len(self.data)==2:
+			self.x = self.data[0]
+			self.y = self.data[1]
+			
+	def __repr__(self):
+		return repr(self.data) 
+	def __add__(self, other):
+		return tuple( (a+b for a,b in zip(self.data, other.data) ) )  
+	def __sub__(self, other):
+		return tuple( (float(float(a)-float(b)) for a,b in zip(self.data, other.data) ) )
+	def __mul__(self, other):
+		return tuple( (a*b for a,b in zip(self.data, other.data) ) )
+	def __div__(self, other):
+		return tuple( (a/b for a,b in zip(self.data, other.data) ) )
+
 def logInit(name):
 	global LogFile
 	try:

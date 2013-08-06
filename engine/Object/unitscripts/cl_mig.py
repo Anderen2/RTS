@@ -20,7 +20,9 @@ class Unit(BaseUnit):
 		#self.PlayAnim("SpiralDown") #Create a function/Class for simple movement animations
 		self.GetEntity().actNone()
 		self.GetEntity().actDead(True)
-		shared.EffectManager.Create("explosion", self._pos[0], self._pos[1], self._pos[2], 1, 1)
+		self.StartMoveEffect("globDiveDie")
+		#shared.EffectManager.Create("explosion", self._pos[0], self._pos[1], self._pos[2], 1, 1)
+		return True #Return true here if you are handeling the destruction of the unit yourself (See OnMoveEffectDone)
 
 	def OnThink(self, delta):
 		pass
@@ -33,6 +35,12 @@ class Unit(BaseUnit):
 
 	def OnPrimaryActionFinish(self):
 		pass
+
+	def OnMoveEffectDone(self, moveeffect):
+		if moveeffect=="globDiveDie":
+			self.GetPosition()
+			shared.EffectManager.Create("explosion", self._pos[0], self._pos[1], self._pos[2], 1, 1)
+			self.Destroy()
 
 	def OnMove(self, pos):
 		self.GetEntity().actMove(True)

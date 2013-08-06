@@ -19,7 +19,19 @@ class Director():
 
 	def UnitBuild(self, name):
 		shared.DPrint(0, "NetDir", "Sending building request..")
-		shared.protocol.sendMethod(4, "req_build", [name, 100, 100, 100])
+		shared.protocol.sendMethod(4, "req_build", [name, 100, 300, 100])
+
+	def deselectUnit(self, unit):
+		if unit in self.CurrentSelection:
+			unit._deselected()
+			self.CurrentSelection.remove(unit)
+			if len(self.CurrentSelection)==0:
+				if self.CurrentSelectedGroup:
+					self.CurrentSelectedGroup.deselected()
+				self.CurrentSelectedGroup=None
+
+			#Update the GUI after the new data
+			self.updateGUI()
 	
 	def deselectAll(self):
 		for unit in self.CurrentSelection:
@@ -86,11 +98,7 @@ class Director():
 					self.CurrentSelectedGroup=self.CurrentSelection[0]._group
 
 		#Update the GUI after the new data
-		if self.CurrentSelectedGroup!=None:
-			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
-			self.CurrentSelectedGroup.selected()
-		else:
-			shared.gui['unitinfo'].noSelection()
+		self.updateGUI()
 
 		self.OldSelection=[]
 		self.OldSelectedGroup=None
@@ -104,12 +112,8 @@ class Director():
 			for unit in self.CurrentSelection:
 				unit._group = group
 
-		#Setting up GUI according to group
-		if self.CurrentSelectedGroup!=None:
-			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
-			self.CurrentSelectedGroup.selected()
-		else:
-			shared.gui['unitinfo'].noSelection()
+		#Update the GUI after the new data
+		self.updateGUI()
 
 		if self.CurrentSelectedGroup!=None:
 			#Sending an move action to the currently selected group
@@ -143,6 +147,14 @@ class Director():
 				#Sending an move action to the currently selected group
 				evt = {"unitid":unitID}
 				self.CurrentSelectedGroup.requestActionAdd("fau", evt)
+
+	def updateGUI(self):
+		#Setting up GUI according to group
+		if self.CurrentSelectedGroup!=None:
+			shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
+			self.CurrentSelectedGroup.selected()
+		else:
+			shared.gui['unitinfo'].noSelection()
 
 	def Frame(self):
 		#This will get executed each frame

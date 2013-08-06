@@ -118,6 +118,12 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		return (circleEnt, circleNode, size)
 
+	def rmView(self, Index):
+		Index["node"].detachObject(Index["ent"])
+		shared.render3dScene.sceneManager.destroyEntity(Index["ent"].getName())
+		#shared.render3dScene.sceneManager.destroySceneNode(Index["node"].getName())
+		self.update()
+
 	def nodeUpdate(self, node):
 		if node.getName() in self.EnemyNodes:
 			EnodeIndex = self.EnemyNodes[node.getName()]
@@ -203,6 +209,13 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.nodeUpdate(node)
 
 		return enemynodeIndex
+
+	def rmNode(self, node):
+		if node.getName() in self.AllyNodes:
+			self.rmView(self.AllyNodes[node.getName()])
+			del self.AllyNodes[node.getName()]
+		elif node.getName() in self.EnemyNodes:
+			del self.EnemyNodes[node.getName()]
 
 	def ChangeShit(self, x, y, z):
 		#self.circleNode.setPosition(float(x),float(y),float(z))

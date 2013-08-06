@@ -5,6 +5,7 @@
 import render3dtext as text
 from engine import shared, debug
 from engine.shared import DPrint
+from engine.shared import Vector
 from engine.Lib import YModConfig
 from random import randrange
 from traceback import format_exc
@@ -38,6 +39,9 @@ class Entity():
  		self.Team=Team
  		self.Type=Type
  		self.text=None
+
+ 		#Used in movement effects
+ 		self.lastMovementDirection = Vector(0,0,0)
 
  		DPrint("Entity",0,"Loading Entity: "+str(self.Type))
  		try:
@@ -107,7 +111,7 @@ class Entity():
 			self.dieeffnode=None
 			if not self.params["dieeff"]==None:
 				DPrint("Entity",0,"	DieEffect")
-				dieeff=shared.render3dScene.sceneManager.createParticleSystem("dieeff0-"+str(self.ID)+"-"+str(randrange(0,100,1)),self.params["dieeff"])
+				dieeff=shared.render3dScene.sceneManager.createParticleSystem("dieeff0-"+str(self.ID)+"-"+str(Interactive),self.params["dieeff"])
 				dieeffnode=self.node.createChildSceneNode()
 				dieeff.getEmitter(0).setTimeToLive(self.params["dieefftime"])
 				dieeff.getEmitter(0).setEnabled(False)
@@ -125,7 +129,7 @@ class Entity():
 				for x in range(0, self.params["acteff"]):
 					y=x+1
 					DPrint("Entity",0,"	ActEffect: "+str(y))
-					actpart=shared.render3dScene.sceneManager.createParticleSystem("acteff"+str(y)+"-"+str(self.ID)+"-"+str(randrange(0,100,1)),self.params["acteff"+str(y)])
+					actpart=shared.render3dScene.sceneManager.createParticleSystem("acteff"+str(y)+"-"+str(self.ID)+"-"+str(Interactive),self.params["acteff"+str(y)])
 					actpartnode=self.node.createChildSceneNode()
 					actpart.getEmitter(0).setTimeToLive(self.params["actefftime"+str(y)])
 					actpart.getEmitter(0).setEnabled(False)
@@ -143,7 +147,7 @@ class Entity():
 				for x in range(0, self.params["light"]):
 					y=x+1
 					DPrint("Entity",0,"	Light: "+str(y))
-					light=shared.render3dScene.sceneManager.createLight("light"+str(y)+"-"+str(self.ID)+"-"+str(randrange(0,100,1)))
+					light=shared.render3dScene.sceneManager.createLight("light"+str(y)+"-"+str(self.ID)+"-"+str(Interactive))
 					light.type = ogre.Light.LT_POINT
 					light.diffuseColour = (.5, .5, .0)
 					light.spectacularColour=(.75,.75,.75)
@@ -242,9 +246,13 @@ class Entity():
 		self.text.enable(False)
 
 	def Delete(self):
+		print("detachObject")
 		self.node.detachObject(self.mesh)
+		print("destroyEntity")
 		shared.render3dScene.sceneManager.destroyEntity(self.mesh.getName())
+		print("destroySceneNode")
 		shared.render3dScene.sceneManager.destroySceneNode(self.node.getName())
+		print("text.destroy")
 		if self.text:
 			self.text.destroy()
 
@@ -334,11 +342,20 @@ class Entity():
 			self.nodeturret.rotate((0,1,0),ogre.Degree(ang))
 
 	def SetPosition(self, x, y, z):
+		self.lastMovementDirection = Vector(x,y,z) - Vector(self.GetPosition())
+		#print(self.lastMovementDirection)
 		self.node.setPosition(x, y, z)
 		return self.node.getPosition()
 
+	def GetPosition(self):
+		pos = self.node.getPosition()
+		return (pos.x, pos.y, pos.z)
+
 	def Translate(self, x, y, z):
+		lastpos = Vector(self.GetPosition())
 		self.node.translate(x, y, z)
+		newpos = Vector(self.GetPosition())
+		self.lastMovementDirection = newpos - lastpos
 		return self.node.getPosition()
 
 	def setOrientation(self, w, x, y, z):
@@ -380,6 +397,16 @@ class Entity():
 		# src = self.node.getOrientation() * ogre.Vector3().NEGATIVE_UNIT_Z
 		# quat = src.getRotationTo(direction)
 		# self.node.rotate(quat)
+
+	def getAltitude(self):
+		Pos = self.GetPosition()
+		Raytrace=ogre.Ray()
+		Raytrace.setOrigin(Pos)
+		Raytrace.setDirection(ogre.Vector3().NEGATIVE_UNIT_Y)
+		self.raySceneQuery=shared.render3dScene.sceneManager.createRayQuery(Raytrace)
+		for queryResult in self.raySceneQuery.execute():
+			if queryResult.worldFragment is not None:  
+				return queryResult.distance
 
 	def Think(self):
 		if self.error!=True:

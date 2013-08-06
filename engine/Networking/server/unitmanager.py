@@ -118,11 +118,11 @@ class UnitManager():
 	def getIfActionPossible(self, unit, targetunit, damaging, view):
 		if unit._health>0:
 			if damaging:
-				if unit._owner.team!=targetunit._owner.team:
-					if view or posalgo.in_circle(self.unit._pos[0], self.unit._pos[2], self.unit._viewrange, self.targetunit._pos[0], self.targetunit._pos[2]):
+				if unit._owner.team==targetunit._owner.team:
+					if not view or posalgo.in_circle(unit._pos[0], unit._pos[2], unit._viewrange, targetunit._pos[0], targetunit._pos[2]):
 						return True
 			else:
-				if view or posalgo.in_circle(self.unit._pos[0], self.unit._pos[2], self.unit._viewrange, self.targetunit._pos[0], self.targetunit._pos[2]):
+				if not view or posalgo.in_circle(unit._pos[0], unit._pos[2], unit._viewrange, targetunit._pos[0], targetunit._pos[2]):
 					return True
 
 		return False

@@ -1,8 +1,12 @@
 #BaseUnit - Clientside
 #This is the class which all units derive from and bases itself on
+from sys import getrefcount
+from twisted.internet import reactor
 from traceback import print_exc
 from engine import shared, debug
+from engine.shared import Vector
 from engine.Object.unitact import cl_move, cl_fau
+from engine.Object import moveeff
 
 class BaseUnit():
 	#Setup Constants
@@ -22,6 +26,9 @@ class BaseUnit():
 		#Movement
 		self._movetopoint=None
 
+		#MoveEffects
+		self._currentmoveeff = None
+
 		#State
 		self._health=100
 
@@ -29,6 +36,13 @@ class BaseUnit():
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
 		self._setPosition(pos)
 		self.OnCreation(pos)
+
+		#Testfuck
+		debug.ACC("u_dive", self.testdive, info="Test dive", args=0)
+
+	def testdive(self):
+		self._movetopoint=None
+		self.CurrentMoveEff = "diedive"
 
 	### UnitScript Functions
 
@@ -78,6 +92,12 @@ class BaseUnit():
 	def GetViewRange(self):
 		return 100
 
+	def StartMoveEffect(self, mveff):
+		self._currentmoveeff = self._getMoveEffect(mveff)
+
+	def Destroy(self):
+		self._die()
+
 	### Trigger Hooks
 
 	def _selected(self):
@@ -105,18 +125,36 @@ class BaseUnit():
 			if dist<1:
 				self._movetopoint=None
 
+		if self._currentmoveeff!=None:
+			if self._currentmoveeff(self._entity, delta):
+				self.OnMoveEffectDone(self._currentmoveeff.func_name)
+				print("On MVDone")
+				self._currentmoveeff=None
+
 	### Internal Functions
 
 	# Health
 	def _setHealth(self, health):
 		self._health=health
 		if self._health<1:
-			self.OnDie()
-			self._die()
+			self._predie()
+			if not self.OnDie():
+				self._die()
+
+	def _predie(self):
+		#Removing from interaction with game
+		shared.DirectorManager.CurrentDirector.deselectUnit(self)
+		self._group.rmUnit(self)
+		self._movetopoint=None
+
+		if shared.FowManager!=None and shared.FowManager!=True:
+			shared.FowManager.rmNode(self._entity.node)
 
 	def _die(self):
-		self._group.rmUnit(self)
+		#Removing all visuals and itself
 		self._owner.Units.remove(self)
+		self._entity.Delete()
+		print("Dead Referances: "+str(getrefcount(self)))
 
 	# Movement
 	def _movestep(self, dst, delta):
@@ -136,6 +174,10 @@ class BaseUnit():
 	def _stopmove(self):
 		self._movetopoint=None
 
+	def _getMoveEffect(self, mveff):
+		if mveff in dir(moveeff):
+			return getattr(moveeff, mveff)
+
 	# ENTITY
 	def _setPosition(self, pos):
 		self._pos=pos
@@ -144,7 +186,8 @@ class BaseUnit():
 			shared.FowManager.nodeUpdate(self._entity.node)
 
 	def _getPosition(self):
-		return (self._entity.node.getPosition().x, self._entity.node.getPosition().y, self._entity.node.getPosition().z)
+		self._pos = self._entity.GetPosition()
+		return self._pos
 
 	def _setrotation(self, rot):
 		self._entity.Rotate(rot[0], rot[1], rot[2])

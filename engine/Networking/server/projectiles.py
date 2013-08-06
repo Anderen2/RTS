@@ -154,12 +154,7 @@ class UnitLauncher():
 		return projectile
 
 	def isAbleToFireAtUnit(self, unit):
-		if unit._owner.team!=self.unit._owner.team:
-			return True
-		else:
-			#shared.DPrint("Projectiles", 0, "Friendly fire")
-			return True
-			#return False
+		return True
 
 	def isAbleToFire(self, pos):
 		#If free line of fire:
@@ -231,7 +226,7 @@ class Rocket():
 
 		self._setState(self.S_ARMED)
 
-		self.speed = 100
+		self.speed = 250
 
 	def ignite(self, target):
 		if self.state == self.S_ARMED:

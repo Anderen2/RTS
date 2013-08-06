@@ -7,7 +7,7 @@ from twisted.internet import reactor
 from string import split
 from engine import shared, debug
 
-VERBOSE=False
+VERBOSE=True
 PVERBOSE=False
 RAWVERBOSE=False
 QUEUEVERBOSE=False

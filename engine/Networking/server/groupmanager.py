@@ -89,6 +89,31 @@ class GroupManager():
 		else:
 			print("Group is not owned by player!")
 
+	def req_groupactionnow(self, groupid, actionid, data, Protocol=None):
+		group = self.getFromGID(groupid)
+		requestingPlayer = shared.PlayerManager.getFromProto(Protocol)
+		if group.owner == requestingPlayer:
+			action = group.getActionByID(actionid)
+			if action!=None:
+				group.addActionNow(action, data)
+			else:
+				print("Cannot find action!")
+		else:
+			print("Group is not owned by player!")
+
+	def req_groupactiondo(self, groupid, actionid, data, Protocol=None):
+		group = self.getFromGID(groupid)
+		requestingPlayer = shared.PlayerManager.getFromProto(Protocol)
+		if group.owner == requestingPlayer:
+			action = group.getActionByID(actionid)
+			if action!=None:
+				group.doAction(action, data)
+			else:
+				print("Cannot find action!")
+		else:
+			print("Group is not owned by player!")
+
+
 	## FUNCTIONS
 
 	def unpackUnitList(self, uidlist, owner):
@@ -138,7 +163,7 @@ class UnitGroup():
 		
 		uidlist = []
 		for unit in members:
-			unit._group = self
+			unit._changegroup(self)
 			## Networking
 			uidlist.append(unit.ID)
 
@@ -146,7 +171,7 @@ class UnitGroup():
 
 	def addUnit(self, unit):
 		self.members.append(unit)
-		unit._group = self
+		unit._changegroup(self)
 
 		if len(self.actionQueue)!=0:
 			if self.actionQueue[0][0] in unit.Actions:
@@ -167,6 +192,11 @@ class UnitGroup():
 		unit._abortAction()
 		self.rmUnit(unit)
 
+	def unitSwitchGroup(self, unit):
+		if unit in self.waitingfor:
+			self.waitingfor.remove(unit)
+		unit._abortAction()
+		self.rmUnit(unit)
 
 	def getActionByID(self, actionid):
 		## Algorithm to get all common actions here!
@@ -182,6 +212,22 @@ class UnitGroup():
 			if action == actionAndData[0]:
 				return actionAndData
 
+	#doAction simply makes all the units screw what ever they are doing, forget it and do the action
+	def doAction(self, action, data):
+		if len(self.actionQueue)!=0:
+			self.abortCurrentAction(wait=True)
+		self.actionQueue=[]
+		self.actionQueue.insert(0, (action, data))
+		self.beginNextAction(doNotPop=True)
+
+	#addActionNow allows the unit to "pause" the current action to do something else, for then to continue after it is done with the new action
+	def addActionNow(self, action, data):
+		if len(self.actionQueue)!=0:
+			self.abortCurrentAction(wait=True)
+		self.actionQueue.insert(0, (action, data))
+		self.beginNextAction(doNotPop=True)
+
+	#addAction puts the action at the end of their action queue, finishing all other actions before doing the new one
 	def addAction(self, action, data):
 		self.actionQueue.append((action, data))
 		if self.actionQueue[0]==(action, data):
@@ -203,14 +249,15 @@ class UnitGroup():
 	def currentActionFinished(self):
 		self.beginNextAction()
 
-	def abortCurrentAction(self):
+	def abortCurrentAction(self, wait=False):
 		for unit in self.waitingfor:
 			unit._abortAction()
 
 		print("\t Groupaction Aborted")
 		shared.PlayerManager.Broadcast(5, "recv_abortaction", [self.gid])
 		print("\t Groupaction Aborted - Next Action")
-		self.beginNextAction(False)
+		if not wait:
+			self.beginNextAction(False)
 	
 	def beginNextAction(self, doNotPop=False):
 		if doNotPop==False:

@@ -130,7 +130,7 @@ class UnitGroup():
 			self.owner.persistentgroups.append(self)
 
 		for unit in self.members:
-			unit._group=self
+			unit._changegroup(self)
 
 		self.getAllCommonActions()
 
@@ -143,11 +143,28 @@ class UnitGroup():
 		unitid = unit.ID
 		shared.protocol.sendMethod(5, "req_rmunits", [self.gid, [unitid]])
 
+	#addAction puts the action at the end of their action queue, finishing all other actions before doing the new one
 	def requestActionAdd(self, actionid, data):
 		if self.gid<0:
 			self.actiondelay.append((actionid, data))
 		else:
 			shared.protocol.sendMethod(5, "req_groupactionadd", [self.gid, actionid, data])
+			self.requestActionQueue()
+
+	#ActionNow allows the unit to "pause" the current action to do something else, for then to continue after it is done with the new action
+	def requestActionNow(self, actionid, data):
+		if self.gid<0:
+			self.actiondelay.append((actionid, data))
+		else:
+			shared.protocol.sendMethod(5, "req_groupactionnow", [self.gid, actionid, data])
+			self.requestActionQueue()
+
+	#doAction simply makes all the units screw what ever they are doing, forget it and do the action
+	def requestActionDo(self, actionid, data):
+		if self.gid<0:
+			self.actiondelay.append((actionid, data))
+		else:
+			shared.protocol.sendMethod(5, "req_groupactiondo", [self.gid, actionid, data])
 			self.requestActionQueue()
 
 	def requestResend(self):
@@ -156,7 +173,7 @@ class UnitGroup():
 
 	def requestActionAbort(self, queuedactionid):
 		shared.protocol.sendMethod(5, "req_groupactionrm", [self.gid, queuedactionid])
-		self.requestActionQueue()
+		#self.requestActionQueue()
 
 	def requestActionQueue(self):
 		if self.gid>=0:
@@ -198,21 +215,22 @@ class UnitGroup():
 	## Unit Functions
 	def addUnit(self, unit):
 		self.members.append(unit)
-		unit._group = self
+		unit._changegroup(self)
 		self.getAllCommonActions()
 		self.updateSelectedVisuals()
 
 	def rmUnit(self, unit):
-		self.members.remove(unit)
-		
-		if unit._group == self:
-			unit._group = None
+		if unit in self.members:
+			self.members.remove(unit)
+			
+			if unit._group == self:
+				unit._group = None
 
-		if len(self.members)==0 and self.persistent==False:
-			shared.GroupManager.rmGroup(self)
+			if len(self.members)==0 and self.persistent==False:
+				shared.GroupManager.rmGroup(self)
 
-		self.getAllCommonActions()
-		self.updateSelectedVisuals()
+			self.getAllCommonActions()
+			self.updateSelectedVisuals()
 
 	## Action Functions
 

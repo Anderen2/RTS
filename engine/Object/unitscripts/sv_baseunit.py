@@ -106,7 +106,8 @@ class BaseUnit():
 			self._die()
 
 	def _die(self):
-		self._group.unitDown(self)
+		if self._group!=None:
+			self._group.unitDown(self)
 		self._owner.Units.remove(self)
 
 
@@ -169,3 +170,10 @@ class BaseUnit():
 		if self._currentaction!=None:
 			self._currentaction.abort()
 			self._currentaction=None
+
+	# GROUP
+	def _changegroup(self, newgroup):
+		print("CHANGING GROUP from "+str(self._group)+ " to "+str(newgroup))
+		if self._group!=None:
+			self._group.unitSwitchGroup(self)
+		self._group=newgroup

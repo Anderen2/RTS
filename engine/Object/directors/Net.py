@@ -67,6 +67,7 @@ class Director():
 		#Check unit group and if the ActionQueueing key is down
 		if len(self.CurrentSelection)>0:
 			if actionQueueing==True:
+				print("NET: AQ")
 				#If only one were selected while AQ was down, and he has a group ...
 				#... select all the units in his group
 				if len(self.CurrentSelection)==1:
@@ -83,7 +84,7 @@ class Director():
 					if self.OldSelectedGroup!=None:
 						newunits = list(set(self.CurrentSelection) - set(self.OldSelection))
 						for unit in newunits:
-							unit._group = self.OldSelectedGroup
+							#unit._changegroup(self.OldSelectedGroup)
 							self.OldSelectedGroup.requestUnitAdd(unit)
 
 			#Groupchecks
@@ -105,21 +106,47 @@ class Director():
 
 	def evt_moveclick(self, pos, actionQueueing):
 		if self.CurrentSelectedGroup==None and actionQueueing==False and len(self.CurrentSelection)>0:
-			print("CurrentSelection: "+str(self.CurrentSelection[:]))
+			#print("CurrentSelection: "+str(self.CurrentSelection[:]))
 			group = shared.GroupManager.req_newgroup(False, self.CurrentSelection[:])
 			self.CurrentSelectedGroup=group
-			print("Moving group: "+str(self.CurrentSelectedGroup))
-			for unit in self.CurrentSelection:
-				unit._group = group
+			#print("Moving group: "+str(self.CurrentSelectedGroup))
 
 		#Update the GUI after the new data
 		self.updateGUI()
 
-		if self.CurrentSelectedGroup!=None:
-			#Sending an move action to the currently selected group
-			evt = {"3dMouse":pos}
-			#self.CurrentSelectedGroup.addAction(move.ActMove(self.CurrentSelectedGroup, evt))
-			self.CurrentSelectedGroup.requestActionAdd("move", evt)
+		if self.CurrentSelectedGroup!=None and actionQueueing:
+			#If we have selected an unit(s) with a groupmembership, check if we got all his members
+			#print(self.CurrentSelection)
+			#print(self.CurrentSelectedGroup.members)
+			if self.CurrentSelection == self.CurrentSelectedGroup.members:
+				#Sending an move action to the currently selected group
+				evt = {"3dMouse":pos}
+				self.CurrentSelectedGroup.requestActionAdd("move", evt)
+
+			#If some members are missing, or not right, create a new group and move it
+			else:
+				group = shared.GroupManager.req_newgroup(False, self.CurrentSelection[:])
+				self.CurrentSelectedGroup=group
+
+				evt = {"3dMouse":pos}
+				self.CurrentSelectedGroup.requestActionAdd("move", evt)
+
+		#If we do not have the AQ-Key down, it means we want immidiate action
+		elif self.CurrentSelectedGroup!=None and not actionQueueing:
+			if self.CurrentSelection == self.CurrentSelectedGroup.members:
+				#Sending an move action to the currently selected group
+				evt = {"3dMouse":pos}
+				self.CurrentSelectedGroup.requestActionDo("move", evt)
+
+			#If some members are missing, or not right, create a new group and move it
+			else:
+				group = shared.GroupManager.req_newgroup(False, self.CurrentSelection[:])
+				self.CurrentSelectedGroup=group
+
+				evt = {"3dMouse":pos}
+				self.CurrentSelectedGroup.requestActionDo("move", evt)
+
+
 
 	def evt_actionclick(self, data, actionQueueing):
 		print("Data: "+str(data))
@@ -133,20 +160,40 @@ class Director():
 			if self.CurrentSelectedGroup==None and actionQueueing==False and len(self.CurrentSelection)>0:
 				group = shared.GroupManager.req_newgroup(False, self.CurrentSelection[:])
 				self.CurrentSelectedGroup=group
-				for unit in self.CurrentSelection:
-					unit._group = group
 
-			#Setting up GUI according to group
-			if self.CurrentSelectedGroup!=None:
-				shared.gui['unitinfo'].groupSelected(self.CurrentSelectedGroup)
-				self.CurrentSelectedGroup.selected()
-			else:
-				shared.gui['unitinfo'].noSelection()
+			#Update the GUI after the new data
+			self.updateGUI()
+				
+			if self.CurrentSelectedGroup!=None and actionQueueing:
+				#If we have selected an unit(s) with a groupmembership, check if we got all his members
+				if self.CurrentSelection == self.CurrentSelectedGroup.members:
+					#Sending an move action to the currently selected group
+					evt = {"unitid":unitID}
+					self.CurrentSelectedGroup.requestActionAdd("fau", evt)
 
-			if self.CurrentSelectedGroup!=None:
-				#Sending an move action to the currently selected group
-				evt = {"unitid":unitID}
-				self.CurrentSelectedGroup.requestActionAdd("fau", evt)
+				#If some members are missing, or not right, create a new group and move it
+				else:
+					group = shared.GroupManager.req_newgroup(False, self.CurrentSelection[:])
+					self.CurrentSelectedGroup=group
+						
+					evt = {"unitid":unitID}
+					self.CurrentSelectedGroup.requestActionAdd("fau", evt)
+
+			#If we do not have the AQ-Key down, it means we want immidiate action
+			elif self.CurrentSelectedGroup!=None and not actionQueueing:
+				#If we have selected an unit(s) with a groupmembership, check if we got all his members
+				if self.CurrentSelection == self.CurrentSelectedGroup.members:
+					#Sending an move action to the currently selected group
+					evt = {"unitid":unitID}
+					self.CurrentSelectedGroup.requestActionDo("fau", evt)
+
+				#If some members are missing, or not right, create a new group and move it
+				else:
+					group = shared.GroupManager.req_newgroup(False, self.CurrentSelection[:])
+					self.CurrentSelectedGroup=group
+						
+					evt = {"unitid":unitID}
+					self.CurrentSelectedGroup.requestActionDo("fau", evt)
 
 	def updateGUI(self):
 		#Setting up GUI according to group

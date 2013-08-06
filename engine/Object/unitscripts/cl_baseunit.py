@@ -227,3 +227,10 @@ class BaseUnit():
 		if self._currentaction!=None:
 			self._currentaction.abort()
 			self._currentaction=None
+
+	# GROUP
+	def _changegroup(self, newgroup):
+		print("CHANGING GROUP from "+str(self._group)+ " to "+str(newgroup))
+		if self._group!=None:
+			self._group.rmUnit(self)
+		self._group=newgroup

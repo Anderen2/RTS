@@ -172,8 +172,10 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		if self.CurrentMiceInterface==2:
 			#Grouprelated
 			if self.Keyboard.isKeyDown(self.keys["queueaction"]):
+				print("IO: AQ TRUE")
 				shared.DirectorManager.actionQueueing=True
 			else:
+				print("IO: AQ FALSE")
 				shared.DirectorManager.actionQueueing=False
 
 			#Selectionstuff

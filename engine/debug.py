@@ -1,6 +1,6 @@
 import traceback
 from string import split
-from twisted.internet.reactor import stop
+#from twisted.internet.reactor import stop
 import shared
 
 #DEBUG OPTIONS:

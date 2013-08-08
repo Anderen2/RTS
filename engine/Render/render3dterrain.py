@@ -89,4 +89,4 @@ class Terrain():
 		self.raySceneQuery=shared.render3dScene.sceneManager.createRayQuery(Raytrace)
 		for queryResult in self.raySceneQuery.execute():
 			if queryResult.worldFragment is not None:  
-				return queryResult.distance
+				return 1000-queryResult.distance

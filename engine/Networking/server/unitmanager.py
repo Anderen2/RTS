@@ -34,8 +34,11 @@ class UnitManager():
 		unitid = self.unitcount
 		pos = (int(x), int(y), int(z))
 
-		if self.create(player, name, unitid, pos):
-			shared.PlayerManager.Broadcast(4, "build", [name, x, y, z, userid, unitid])
+		newunit = self.create(player, name, unitid, pos)
+		if newunit:
+			nx, ny, nz = newunit._pos
+			print("GHAP: "+str(y))
+			shared.PlayerManager.Broadcast(4, "build", [name, nx, ny, nz, userid, unitid])
 			self.unitcount+=1
 
 		else:
@@ -46,7 +49,7 @@ class UnitManager():
 			try:
 				newunit=self.unitscripts[name](uid, owner, pos)
 				owner.addUnit(newunit)
-				return True
+				return newunit
 
 			except:
 				shared.DPrint(0, "netUnitManager", "Unitscript for unit :"+str(name)+" has errors!")

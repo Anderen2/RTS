@@ -53,7 +53,9 @@ class Unit(BaseUnit):
 		self.Launcher2.SetRelativeDamage(False)
 
 	def OnCreation(self, pos):
-		pass
+		th = shared.Map.Terrain.getHeightAtPos(pos[0], pos[2])
+		ty = th+100
+		self.SetPosition(pos[0], ty, pos[2])
 
 	def OnDie(self):
 		pass

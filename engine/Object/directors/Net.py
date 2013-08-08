@@ -10,6 +10,7 @@ class Director():
 
 	def Init(self):
 		debug.ACC("dirbuild", self.UnitBuild, args=1, info="Simulate a unit build on the server")
+		debug.ACC("dbc", self.UnitBuildC, args=3, info="Simulate a unit build on the server")
 
 	def Action(self):
 		self.Cast=[]
@@ -20,6 +21,11 @@ class Director():
 	def UnitBuild(self, name):
 		shared.DPrint(0, "NetDir", "Sending building request..")
 		shared.protocol.sendMethod(4, "req_build", [name, 100, 300, 100])
+
+	def UnitBuildC(self, name, x, z):
+		shared.DPrint(0, "NetDir", "Sending building request..")
+		shared.protocol.sendMethod(4, "req_build", [name, int(x), 300, int(z)])
+		print("GHAP: "+str(shared.render3dTerrain.getHeightAtPos(int(x), int(z))))
 
 	def deselectUnit(self, unit):
 		if unit in self.CurrentSelection:

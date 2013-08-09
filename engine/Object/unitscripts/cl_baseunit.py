@@ -157,6 +157,14 @@ class BaseUnit():
 		print("Dead Referances: "+str(getrefcount(self)))
 
 	# Movement
+	def _simulateMoveStep(self, dst, speed):
+		src = (self._pos[0], self._pos[2])
+		speed = speed
+		nx, ny, dist = shared.Pathfinder.ABPath.GetNextCoord(src, dst, speed)
+		newpos = (nx, self._pos[1], ny)
+
+		return dist, newpos
+
 	def _movestep(self, dst, delta):
 		src = (self._pos[0], self._pos[2])
 		speed = (self.GetMoveSpeed()*delta)

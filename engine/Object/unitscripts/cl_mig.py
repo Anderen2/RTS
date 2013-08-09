@@ -10,18 +10,16 @@ class Unit(BaseUnit):
 		self.Name = "MIG"
 		self.SetEntity("plane")
 		self.SetSelectedText("MIG "+str(self.GetID()))
-		self.Actions={cl_act.Action}
+		self.Actions=[cl_act.Action]
 
 	def OnCreation(self, pos):
 		#self.PlayAnim("TakeOff") #Create a function/Class for simple movement animations
 		self.GetEntity().actMove(True)
 
 	def OnDie(self):
-		#self.PlayAnim("SpiralDown") #Create a function/Class for simple movement animations
 		self.GetEntity().actNone()
 		self.GetEntity().actDead(True)
 		self.StartMoveEffect("globDiveDie")
-		#shared.EffectManager.Create("explosion", self._pos[0], self._pos[1], self._pos[2], 1, 1)
 		return True #Return true here if you are handeling the destruction of the unit yourself (See OnMoveEffectDone)
 
 	def OnThink(self, delta):

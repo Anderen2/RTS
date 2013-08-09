@@ -38,10 +38,13 @@ class GroupManager():
 
 		print("\n\nOWNER = "+str(owner))
 		if owner == shared.SelfPlayer:
-			group = self.groupspending.pop()
-			group.gid=gid
-			print("Got achnowlegde, newgid: "+str(gid))
-			group.requestResend()
+			if len(self.groupspending)>0:
+				group = self.groupspending.pop()
+				group.gid=gid
+				print("Got achnowlegde, newgid: "+str(gid))
+				group.requestResend()
+			else:
+				group = UnitGroup(gid, owner, persistent, units)
 		else:
 			group = UnitGroup(gid, owner, persistent, units)
 
@@ -310,6 +313,8 @@ class UnitGroup():
 						wpdata = unit.GetPosition()
 					else:
 						continue
+				elif self.members[0]._currentaction!=None and "waypoint" in self.members[0]._currentaction.data:
+					wpdata = self.members[0]._currentaction.data["waypoint"]
 				else:
 					wpdata = None
 				#print("\tAD: "+str((action.waypointType, wpdata)))

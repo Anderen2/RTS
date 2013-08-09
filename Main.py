@@ -38,7 +38,7 @@ shared.zoneManager=zone.zoneManager()
 
 #MapLoader
 shared.MapLoader=maploader.MapLoader()
-shared.Map=shared.MapLoader.Load("nice.map")
+shared.Map=shared.MapLoader.Load("empty.map")
 
 #Pathfinding
 shared.Pathfinder = pathfinding

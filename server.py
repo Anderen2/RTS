@@ -19,7 +19,7 @@ server.PlayerManager()
 cliFactory=TwCLI.CLIFactory()
 
 shared.MapLoader = sv_map.MapLoader()
-shared.Map = shared.MapLoader.Load("nice.map")
+shared.Map = shared.MapLoader.Load("empty.map")
 shared.Map.Setup()
 
 server.Startup()

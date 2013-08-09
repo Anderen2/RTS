@@ -16,7 +16,7 @@ class UnitManager():
 		#Find and import all availible UnitScripts HERE
 		modpath = "engine.Object.unitscripts."
 		self.unitscripts["mig"] = import_module(modpath+"cl_mig").Unit
-
+		self.unitscripts["build"] = import_module(modpath+"cl_build").Unit
 
 	#SERVER UPDATES/COMMANDS
 
@@ -54,6 +54,13 @@ class UnitManager():
 		unit = self.getFromUID(unitid)
 		unit._setHealth(health)
 		print("HEALTH: "+str(unit.ID)+" = "+str(health))
+
+	def recv_updact(self, unitid, state, data, Protocol=False):
+		unit = self.getFromUID(unitid)
+		if unit._currentaction!=None:
+			unit._currentaction.netupdate(state, data)
+		else:
+			shared.DPrint(5, "netUnitManager", "Server sent actionupdate for unit without any action!")
 
 
 	#INTERNALS

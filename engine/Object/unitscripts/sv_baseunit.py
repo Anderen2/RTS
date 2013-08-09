@@ -114,6 +114,15 @@ class BaseUnit():
 	## NON-Networked (Mostly stuff handeled by the groupmanager instead)
 
 	# MOVEMENT
+	def _simulateMoveStep(self, dst, speed, src=None):
+		if not src:
+			src = (self._pos[0], self._pos[2])
+		speed = speed
+		nx, ny, dist = shared.Pathfinder.ABPath.GetNextCoord(src, dst, speed)
+		newpos = (nx, self._pos[1], ny)
+
+		return dist, newpos
+
 	def _movestep(self, dst, delta):
 		src = (self._pos[0], self._pos[2])
 		speed = (self._movespeed*delta)
@@ -170,6 +179,9 @@ class BaseUnit():
 		if self._currentaction!=None:
 			self._currentaction.abort()
 			self._currentaction=None
+
+	def _sendActionState(self, state, data):
+		shared.PlayerManager.Broadcast(4, "recv_updact", [self.ID, state, data])
 
 	# GROUP
 	def _changegroup(self, newgroup):

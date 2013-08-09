@@ -113,6 +113,14 @@ class GroupManager():
 		else:
 			print("Group is not owned by player!")
 
+	## INTERNALS
+	def createGroup(self, persistent, units, player):
+		gid = self.groupcount
+		self.groupcount+=1
+
+		group = UnitGroup(units, persistent, player, gid)
+		self.groups.append(group)
+		return group
 
 	## FUNCTIONS
 

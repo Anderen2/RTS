@@ -127,7 +127,7 @@ class Director():
 			if self.CurrentSelection == self.CurrentSelectedGroup.members:
 				#Sending an move action to the currently selected group
 				evt = {"3dMouse":pos}
-				self.CurrentSelectedGroup.requestActionAdd("move", evt)
+				self.CurrentSelectedGroup.requestActionAdd("pri", evt)
 
 			#If some members are missing, or not right, create a new group and move it
 			else:
@@ -135,14 +135,14 @@ class Director():
 				self.CurrentSelectedGroup=group
 
 				evt = {"3dMouse":pos}
-				self.CurrentSelectedGroup.requestActionAdd("move", evt)
+				self.CurrentSelectedGroup.requestActionAdd("pri", evt)
 
 		#If we do not have the AQ-Key down, it means we want immidiate action
 		elif self.CurrentSelectedGroup!=None and not actionQueueing:
 			if self.CurrentSelection == self.CurrentSelectedGroup.members:
 				#Sending an move action to the currently selected group
 				evt = {"3dMouse":pos}
-				self.CurrentSelectedGroup.requestActionDo("move", evt)
+				self.CurrentSelectedGroup.requestActionDo("pri", evt)
 
 			#If some members are missing, or not right, create a new group and move it
 			else:
@@ -150,7 +150,7 @@ class Director():
 				self.CurrentSelectedGroup=group
 
 				evt = {"3dMouse":pos}
-				self.CurrentSelectedGroup.requestActionDo("move", evt)
+				self.CurrentSelectedGroup.requestActionDo("pri", evt)
 
 
 

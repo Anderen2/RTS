@@ -24,25 +24,34 @@ class UnitManager():
 		#Find and import all availible UnitScripts HERE
 		modpath = "engine.Object.unitscripts."
 		self.unitscripts["mig"] = import_module(modpath+"sv_mig").Unit
+		self.unitscripts["build"] = import_module(modpath+"sv_build").Unit
 
 	def req_build(self, name, x, y, z, Protocol=None):
 		shared.DPrint(0, "netUnitManager", "Building "+str(name))
 
 		player = shared.PlayerManager.getFromProto(Protocol)
+		pos = (int(x), int(y), int(z))
+
+		self.build(name, player, pos)
+
+	def build(self, name, player, pos, act=None, data=None):
 		team = player.team
 		userid = player.UID
 		unitid = self.unitcount
-		pos = (int(x), int(y), int(z))
 
 		newunit = self.create(player, name, unitid, pos)
 		if newunit:
 			nx, ny, nz = newunit._pos
-			print("GHAP: "+str(y))
 			shared.PlayerManager.Broadcast(4, "build", [name, nx, ny, nz, userid, unitid])
 			self.unitcount+=1
+			if act!=None:
+				newgroup = shared.GroupManager.createGroup(False, [newunit], player)
+				action = newgroup.getActionByID(act)
+				newgroup.doAction(action, data)
 
 		else:
 			shared.DPrint(5, "netUnitManager", "Player: "+player.username+" tried to build an unit ("+str(name)+") but failed!")
+
 
 	def create(self, owner, name, uid, pos):
 		if name in self.unitscripts:
@@ -119,9 +128,10 @@ class UnitManager():
 
 	### UnitCheckers
 	def getIfActionPossible(self, unit, targetunit, damaging, view):
+		FRIENDLYFIRE = True
 		if unit._health>0:
 			if damaging:
-				if unit._owner.team==targetunit._owner.team:
+				if unit._owner.team!=targetunit._owner.team or FRIENDLYFIRE:
 					if not view or posalgo.in_circle(unit._pos[0], unit._pos[2], unit._viewrange, targetunit._pos[0], targetunit._pos[2]):
 						return True
 			else:

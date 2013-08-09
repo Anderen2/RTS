@@ -63,6 +63,8 @@ class Vector( object ):
 		return tuple( (a*b for a,b in zip(self.data, other.data) ) )
 	def __div__(self, other):
 		return tuple( (a/b for a,b in zip(self.data, other.data) ) )
+	def sum(self):
+		return self.data[0]+self.data[1]
 
 def logInit(name):
 	global LogFile

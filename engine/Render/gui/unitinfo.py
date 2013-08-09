@@ -62,6 +62,8 @@ class UnitInfo():
 
 			#print action
 			queueImage = action.queueImage
+			if queueImage==None:
+				continue
 			name = action.name
 			desc = action.description
 

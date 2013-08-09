@@ -29,6 +29,7 @@ class Action():
 		self.abortable = True
 		self.progress=0
 		self.aborted=None
+		self.currentlyMoving = False
 
 	def begin(self):
 		shared.DPrint("\tUnitAction - Move", 0, "Unit Action begun!")
@@ -47,12 +48,36 @@ class Action():
 		self.fire=False
 
 	def update(self):
-		if self.targetunit:
-			if shared.UnitManager.getIfActionPossible(self.unit, self.targetunit, True, False):
-				if self.targetunit._health<1:
-					self.unit._actionfinish()
+		if not self.aborted:
+			if not self.currentlyMoving:
+				if self.targetunit:
+					if shared.UnitManager.getIfActionPossible(self.unit, self.targetunit, True, False):
+						if self.targetunit._health<1:
+							self.unit._actionfinish()
 
-				if self.fire == True:
-					self.unit.PrimaryFire(self.targetunit)
+						if self.fire == True:
+							self.unit.PrimaryFire(self.targetunit)
+					else:
+						self.unit._actionfinish()
+				else:
+						self.unit._actionfinish()
 			else:
-				self.unit._actionfinish()
+				if self.unit._movetopoint==None:
+					print("Done!")
+					self.currentlyMoving=False
+
+	def tooFar(self, dist):
+		"""Custom event provided by projectiles.py"""
+		if not self.currentlyMoving:
+			foo = True
+			self.waypointPos = self.targetunit.GetPosition()
+			newpos = self.unit._pos
+			while foo:
+				simdist, newpos = self.unit._simulateMoveStep((self.waypointPos[0], self.waypointPos[2]), 2, src=(newpos[0], newpos[2]))
+				print(str(simdist)+"<"+str(dist))
+				if (simdist)<dist:
+					foo = False
+
+			self.currentlyMoving = True
+			self.unit._sendActionState("toofar", newpos)
+			self.unit._moveto(newpos)

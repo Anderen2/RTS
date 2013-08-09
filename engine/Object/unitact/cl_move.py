@@ -3,7 +3,7 @@
 from engine import shared, debug
 
 class Action():
-	actionid = "move"
+	actionid = "pri"
 	name = "Move unit"
 	description = "This action moves units to a different position"
 	

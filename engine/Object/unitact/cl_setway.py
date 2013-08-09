@@ -1,18 +1,19 @@
-#Serverside Global-Action
+#Building defaultaction: Set waypoint
+#Clientside Global-Action
 
 from engine import shared, debug
 
 class Action():
 	actionid = "pri"
-	name = "Move unit"
-	description = "This action moves units to a different position"
+	name = "Set Unit Waypoint"
+	description = "This action sets default waypoint for new units"
 
-	waypointType = "Move"
-	queueImage = "move"
+	waypointType = None
+	queueImage = None
 	actguiPlacement = False
 	actguiImage = "move"
 
-	abortable = True
+	abortable = False
 
 	def __init__(self, unit, evt):
 		self.data = evt
@@ -28,17 +29,13 @@ class Action():
 	def begin(self):
 		shared.DPrint("UnitAction - Move", 0, "Action begun!")
 		self.aborted=False
-		self.unit._moveto(self.data["3dMouse"])
-
+		self.unit.Destination = self.waypointPos
+		
 	def abort(self):
-		shared.DPrint("UnitAction - Move", 0, "Action aborted!")
-		self.aborted=True
-		self.unit._stopmove()
+		pass
 		
 	def finish(self):
 		pass
 
 	def update(self):
-		if self.aborted==False:
-			if self.unit._movetopoint==None:
-				self.unit._actionfinish()
+		pass

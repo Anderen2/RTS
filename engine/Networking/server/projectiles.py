@@ -37,6 +37,7 @@ class UnitLauncher():
 		self.reloadspeed=2
 		self.magcap=10
 		self.rellive=True
+		self.moverot=True
 
 		self.dmgradius=10
 		self.dmgdrain = 50
@@ -100,6 +101,10 @@ class UnitLauncher():
 	def SetRelativeDamage(self, reldam):
 		"""Set if damage is relative to how close it is to the center of the radius"""
 		self.dmgrelative=reldam
+
+	def SetAutomaticMoveRotate(self, moverot):
+		"""Set if the unit should automaticly move and rotate towards the target if not close enough"""
+		self.moverot = moverot
 
 	#Actions
 	def Reload(self):
@@ -166,6 +171,12 @@ class UnitLauncher():
 					return True
 				else:
 					return self.Reload()
+		else:
+			if self.moverot:
+				# a = shared.Vector(self.pos[0], self.pos[2])
+				# b = shared.Vector(pos[0], pos[2])
+				# Dist = abs(shared.Vector(a-b).sum()) - self.firerange
+				self.unit._currentaction.tooFar(4)
 
 		return False
 
@@ -226,7 +237,7 @@ class Rocket():
 
 		self._setState(self.S_ARMED)
 
-		self.speed = 250
+		self.speed = 300
 
 	def ignite(self, target):
 		if self.state == self.S_ARMED:

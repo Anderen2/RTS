@@ -47,3 +47,7 @@ class Action():
 	def update(self):
 		if self.aborted==False:
 			pass
+
+	def netupdate(self, state, data):
+		if state=="toofar":
+			self.unit._moveto(data)

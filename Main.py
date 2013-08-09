@@ -10,7 +10,7 @@ shared.logInit("engine")
 shared.DPrint("Main",1,"Initializing Modules...")
 
 from engine.Render import render
-from engine.Object import unitmanager, prop, decorator, zone, directormanager, unitgroup
+from engine.Object import prop, decorator, zone, directormanager
 from engine.Networking.client import client
 from engine.World import maploader, pathfinding
 
@@ -29,8 +29,6 @@ shared.render=render.RenderApplication()
 
 #Managers
 shared.DPrint("Main",1,"Initializing Managers...")
-shared.unitManager=unitmanager.UnitManager()
-shared.unitHandeler=shared.unitManager
 #shared.unitGroup=unitgroup.GroupManager() This is now initialized under networking.client
 shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
@@ -53,8 +51,8 @@ shared.DirectorManager=directormanager.DirectorManager()
 
 #Power it up!
 shared.DPrint("Main",1,"Startin' Powerin' up!..")
-shared.DPrint("Main",1,"PWR: UnitManager")
-shared.unitManager.PowerUp()
+#shared.DPrint("Main",1,"PWR: UnitManager")
+#shared.unitManager.PowerUp()
 shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
 shared.DPrint("Main",1,"PWR: MapSetup")

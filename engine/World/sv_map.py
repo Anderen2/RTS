@@ -84,8 +84,8 @@ class Terrain():
 	def getHeightAtPos(self, x, y):
 		lx = (((float(x)/float(1500))*self.imgfact)*100)-1
 		ly = (((float(y)/float(1500))*self.imgfact)*100)-1
-		print("Requested: ",(x,y))
-		print("Locals: ",(lx, ly))
+		#print("Requested: ",(x,y))
+		#print("Locals: ",(lx, ly))
 		return (float(self.TerrainImage[lx,ly])/self.grayres[1]*self.altfact)
 
 class Water():

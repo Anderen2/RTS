@@ -6,6 +6,8 @@ from engine.Object.unitscripts import cl_baseunit
 class UnitManager():
 	def __init__(self):
 		shared.netUnitManager=self
+		shared.unitManager=self
+		shared.unitHandeler=self
 		shared.objectManager.addEntry(0,4, self)
 
 		#self.unitregister={}
@@ -15,27 +17,36 @@ class UnitManager():
 	def Load(self):
 		#Find and import all availible UnitScripts HERE
 		modpath = "engine.Object.unitscripts."
-		self.unitscripts["mig"] = import_module(modpath+"cl_mig").Unit
-		self.unitscripts["build"] = import_module(modpath+"cl_build").Unit
+		self.unitscripts["mig"] = import_module(modpath+"mig.cl_mig").Unit
+		self.unitscripts["build"] = import_module(modpath+"build.cl_build").Unit
+		self.unitscripts["tank"] = import_module(modpath+"tank.cl_tank").Unit
 
 	#SERVER UPDATES/COMMANDS
 
-	def build(self, name, x, y, z, userid, unitid, Protocol=None):
-		pos = (int(x), int(y), int(z))
+	def build(self, name, userid, unitid, attributes, Protocol=None):
+		pos = attributes["pos"]
 		userid = int(userid)
 		unitid = int(unitid)
 		shared.DPrint(0, "netUnitManager", "Erecting "+str(name)+" at "+str(pos))
 
 		if name in self.unitscripts:
+			#Creating unit
 			owner = shared.PlayerManager.getFromUID(userid)
 			newunit = self.unitscripts[name](unitid, owner, pos)
 			owner.Units.append(newunit)
 
+			#Setting up attributes
+			for attribute, data in attributes.iteritems():
+				setattr(newunit, "_"+attribute, data)
+				print(attribute+" = "+str(data))
+
+			#Giving the unit to its representative player
 			if owner == shared.SelfPlayer:
 				shared.DPrint(0, "netUnitManager", "The unit is ours "+str(userid)+" = "+str(shared.SelfPlayer.UID))
 			else:
 				shared.DPrint(0, "netUnitManager", "The unit is player "+str(owner.username)+" at team "+str(owner.team))
 
+			#Updating the Fog Of War
 			if int(owner.team) == int(shared.SelfPlayer.team):
 				shared.DPrint("netUnitManager", 0, "Adding unit as ally")
 				newunit._fowview = shared.FowManager.addAlly(newunit._entity.node, 256)
@@ -61,6 +72,16 @@ class UnitManager():
 			unit._currentaction.netupdate(state, data)
 		else:
 			shared.DPrint(5, "netUnitManager", "Server sent actionupdate for unit without any action!")
+
+	def recv_attrib(self, unitid, attributes, Protocol=None):
+		unit = self.getFromUID(unitid)
+		if unit:
+			for attribute, data in attributes.iteritems():
+				setattr(unit, "_"+attribute, data)
+				print(attribute+" = "+str(data))
+				unit._attribUpdate(attributes)
+		else:
+			shared.DPrint(5, "netUnitManager", "Server sent attributeupdate for non-exsistant unit!")
 
 
 	#INTERNALS

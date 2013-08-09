@@ -19,6 +19,9 @@ class ProjectileManager():
 		self.Projectiles[uid] = projectile
 		projectile.ignite(target)
 
+	def recv_shell(self, unitid, target, Protocol=None):
+		pass
+
 	def recv_explode(self, uid, pos, Protocol=None):
 		for ID, projectile in self.Projectiles.iteritems():
 			if uid == ID:

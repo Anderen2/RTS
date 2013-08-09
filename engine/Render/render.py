@@ -104,7 +104,6 @@ class RenderApplication(object):
 		#self.pframeListener.showDebugOverlay(True)
 
 		self.renderqueue.append(self.renderlistener)
-		self.renderqueue.append(shared.unitHandeler)
 		self.renderqueue.append(shared.DirectorManager)
 
 	def renderHook(self):
@@ -134,7 +133,6 @@ class RenderApplication(object):
 	def startRenderLoop(self):
 		shared.DPrint("Render",1,"Starting renderloop")
 		#self.root.startRendering()
-		shared.unitHandeler.PowerUp()
 		self.weu = ogre.WindowEventUtilities()
 		reactor.callLater(0,self.renderHook)
 

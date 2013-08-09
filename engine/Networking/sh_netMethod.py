@@ -7,8 +7,8 @@ from twisted.internet import reactor
 from string import split
 from engine import shared, debug
 
-VERBOSE=False
-PVERBOSE=False
+VERBOSE=True
+PVERBOSE=True
 RAWVERBOSE=False
 QUEUEVERBOSE=False
 HUMANOSE=False #Warning, this means that the server will read in Humanose form. It will break everything!

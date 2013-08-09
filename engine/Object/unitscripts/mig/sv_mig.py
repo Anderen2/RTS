@@ -1,9 +1,9 @@
-#MIG - Plane Unit
+#MIG - Air Unit
 #Serverside Unit Script File
 
 from engine import shared, debug
 from engine.Object.unitscripts.sv_baseunit import BaseUnit
-from migact import sv_act
+import sv_act
 
 #AddCSFile("cl_init.py")
 
@@ -13,15 +13,12 @@ class Unit(BaseUnit):
 		self.SetEntity("plane")
 		self.SetSolid(True)
 
-		#self.Actions={"act1":{"name":"Action 1", "func":self.Act1, "GUI":1, "unique":"UniqueName"}}
 		self.Actions=[sv_act.Action]
-		#self.
 
-		#self.SetMoveType(MOVETYPE_AIR)
-		self.SetMoveType(0)
+		self.SetMoveType(0) #MOVETYPE_AIR
 		self.SetMoveSpeed(100)
-		self.SetHealth(100)
-		self.SetViewRange(256)
+		self.SetMaxHealth(100)
+		self.SetViewRange(1000)
 
 		self.SetupProjectileLaunchers()
 
@@ -66,9 +63,7 @@ class Unit(BaseUnit):
 		pass
 
 	def OnPrimaryAction(self, unit):
-		# if unit.GetTeam()!=self.GetTeam():
-		# 	if self.IsFreeSightTo(unit): 
-		# 		if self.GetFireRange>self.GetDistanceTo(unit):
+		self.SetMoveType(-1)
 		pass
 
 	def OnPrimaryActionAbort(self):

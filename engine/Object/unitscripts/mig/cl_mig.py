@@ -1,9 +1,9 @@
-#MIG - Plane Unit
+#MIG - Air Unit
 #Clientside Unit Script File
 
 from engine import shared, debug
 from engine.Object.unitscripts.cl_baseunit import BaseUnit
-from migact import cl_act
+import cl_act
 
 class Unit(BaseUnit):
 	def Initialize(self):

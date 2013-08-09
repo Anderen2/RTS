@@ -7,6 +7,7 @@ from engine import shared, debug
 from engine.shared import Vector
 from engine.Object.unitact import cl_move, cl_fau
 from engine.Object import moveeff
+from engine.World import movetypes
 
 class BaseUnit():
 	#Setup Constants
@@ -30,7 +31,7 @@ class BaseUnit():
 		self._currentmoveeff = None
 
 		#State
-		self._health=100
+		self._health=100 #Bogus value, Getting this from attributes instead See: UnitManager
 
 		self.Initialize()
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
@@ -78,19 +79,19 @@ class BaseUnit():
 		self._text=text
 
 	def GetSolid(self):
-		return True
+		return self._solidentity
 
 	def GetMoveType(self):
 		return MOVETYPE_AIR
 
 	def GetMoveSpeed(self):
-		return 100
+		return self._movespeed
 
 	def GetHealth(self):
 		return self._health
 
 	def GetViewRange(self):
-		return 100
+		return self._viewrange
 
 	def StartMoveEffect(self, mveff):
 		self._currentmoveeff = self._getMoveEffect(mveff)
@@ -120,8 +121,8 @@ class BaseUnit():
 			self._currentaction.update()
 
 		if self._movetopoint!=None:
-			dst = (self._movetopoint[0], self._movetopoint[2])
-			dist = self._movestep(dst, delta)
+			dist, newpos = movetypes.Move(self._pos, self._movetopoint, self._movespeed*delta, self._movetype)
+			self._setPosition(newpos)
 			if dist<1:
 				self._movetopoint=None
 
@@ -243,3 +244,11 @@ class BaseUnit():
 		if self._group!=None:
 			self._group.rmUnit(self)
 		self._group=newgroup
+
+	#Attributes
+	def _attribUpdate(self, updated):
+		if "pos" in updated:
+			self._setPosition(self._pos)
+
+		if "entityname" in updated:
+			pass #out

@@ -2,8 +2,10 @@
 #This is the class which all units derive from and bases itself on
 from traceback import print_exc
 from importlib import import_module
+from twisted.internet import reactor
 from engine import shared, debug
 from engine.Object.unitact import sv_move, sv_fau
+from engine.World import movetypes
 
 class BaseUnit():
 	#Setup Constants
@@ -24,6 +26,7 @@ class BaseUnit():
 
 		#State
 		self._health = 100
+		self.pendingattrib={}
 
 		self._setPosition(pos)
 		self.Initialize()
@@ -33,6 +36,7 @@ class BaseUnit():
 	### UnitScript Functions
 	def SetPosition(self, x, y, z):
 		self._setPosition((x,y,z))
+		self._updateAttrib("pos", (x,y,z))
 
 	def GetPosition(self):
 		return self._pos
@@ -41,17 +45,25 @@ class BaseUnit():
 		#Setup Pathfinding variables here (sizes, etc)
 		self._entityname = ent
 		shared.DPrint(0, "BaseUnit", "UnitID: "+str(self.ID)+" = "+str(ent))
+		self._updateAttrib("entityname", ent)
 
 	def SetSolid(self, yn):
 		self._solidentity=yn
+		self._updateAttrib("solidentity", yn)
 
 	def SetMoveType(self, movetype):
 		#Setup Pathfinding algorthim based on the movetype here
 		self._movetype = movetype
+		self._updateAttrib("movetype", movetype)
 
 	def SetMoveSpeed(self, speed):
 		#Setup Pathfinding movespeed here
 		self._movespeed = speed
+		self._updateAttrib("movespeed", speed)
+
+	def SetMaxHealth(self, health):
+		self._health = health
+		self._updateAttrib("health", health)
 
 	def SetHealth(self, health):
 		self._sethealth(health)
@@ -61,6 +73,7 @@ class BaseUnit():
 
 	def SetViewRange(self, viewrange):
 		self._viewrange = viewrange
+		self._updateAttrib("viewrange", viewrange)
 
 	def CreateProjectileLauncher(self, type):
 		launcher = shared.LauncherManager.create(type, self)
@@ -83,8 +96,8 @@ class BaseUnit():
 			self._currentaction.update()
 
 		if self._movetopoint!=None:
-			dst = (self._movetopoint[0], self._movetopoint[2])
-			dist = self._movestep(dst, delta)
+			dist, self._pos = movetypes.Move(self._pos, self._movetopoint, self._movespeed*delta, self._movetype)
+
 			if dist<1:
 				self._movetopoint=None
 
@@ -95,6 +108,20 @@ class BaseUnit():
 	### Internal Functions
 
 	## Networked
+
+	#Unit Attributes
+	def _updateAttrib(self, attribname, data):
+		if len(self.pendingattrib)==0:
+			#The reason for why we do this is to collect all attribute changes in one frame and send them all in one package.
+			#As the client seemly only could recieve 60 pkgs each secound [With the current transferring method], we keep the packagequeue from getting too big
+			reactor.callLater(0.5, self._broadcastAttrib)
+		self.pendingattrib[attribname]=data
+
+	def _broadcastAttrib(self):
+		if len(self.pendingattrib)!=0:
+			shared.PlayerManager.Broadcast(4, "recv_attrib", [self.ID, self.pendingattrib.copy()])
+			self.pendingattrib={}
+
 	#Health
 	def _sethealth(self, health):
 		if health != self._health:

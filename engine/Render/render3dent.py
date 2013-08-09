@@ -341,6 +341,11 @@ class Entity():
 		if not self.params["meshturret"]==None:
 			self.nodeturret.rotate((0,1,0),ogre.Degree(ang))
 
+	def rotTurretTowardPos(self, x, y, z):
+		if not self.params["meshturret"]==None:
+			self.nodeturret.setFixedYawAxis(True, ogre.Vector3().UNIT_Y)
+			self.nodeturret.lookAt((int(x), self.nodeturret.getPosition().y, int(z)), self.nodeturret.TS_PARENT, ogre.Vector3().UNIT_Z)
+
 	def SetPosition(self, x, y, z):
 		self.lastMovementDirection = Vector(x,y,z) - Vector(self.GetPosition())
 		#print(self.lastMovementDirection)

@@ -12,7 +12,7 @@ class LauncherManager():
 		shared.LauncherManager = self
 		shared.objectManager.addEntry(0, 6, self)
 		self.projectilecount = 0
-		self.ProjectilesAvailible={"rocket":Rocket}
+		self.ProjectilesAvailible={"rocket":Rocket, "shell":Shell}
 
 	def create(self, type, unit):
 		if type == self.UNITLAUNCHER:
@@ -254,6 +254,73 @@ class Rocket():
 			#shared.DPrint("Projectile", 0, "Projectile: "+str(self.uid)+" at state: "+str(state))
 			if state == self.S_IGNITED:
 				shared.PlayerManager.Broadcast(6, "recv_rocket", [self.uid, self.pos, self.target, self.speed])
+			elif state == self.S_EXPLODED:
+				shared.PlayerManager.Broadcast(6, "recv_explode", [self.uid, self.pos])
+			self.oldstate = self.state
+			self.state = state
+
+	def _think(self, delta):
+		if self.state == self.S_IGNITED:
+			if self.target!=None:
+				dist = self._movestep(self.target, delta)
+				if dist<1:
+					self._setState(self.S_TARGETHIT)
+
+		if self.state == self.S_TARGETHIT:
+			self._explode()
+
+	def _movestep(self, dst, delta):
+		src = self.pos
+		speed = (self.speed*delta)
+		nx, ny, nz, dist = shared.Pathfinder.ABPath.GetNextCoord3D(src, dst, speed)
+		newpos = (nx, ny, nz)
+		
+		self.pos = newpos
+		return dist
+
+	def _explode(self):
+		self._setState(self.S_EXPLODED)
+		self.launcher.projectileExploded(self)
+		reactor.callLater(5, self._blown)
+
+	def _blown(self):
+		self._setState(self.S_GC)
+		self.launcher.removeProjectile(self)
+
+class Shell():
+	S_ARMED = 3
+	S_IGNITED = 2
+	S_TARGETHIT = 1
+	S_EXPLODED = 0
+	S_GC = -1
+
+	def __init__(self, position, uid, launcher):
+		self.pos = position
+		self.uid = uid
+		self.launcher = launcher
+		self.target = None
+		self.oldstate = None
+		self.state = None
+
+		self._setState(self.S_ARMED)
+
+		self.speed = 800
+
+	def ignite(self, target):
+		if self.state == self.S_ARMED:
+			if type(target) == tuple:
+				self.target = target
+				self._setState(self.S_IGNITED)
+
+			else:
+				self.target = target._pos
+				self._setState(self.S_IGNITED)
+
+	def _setState(self, state):
+		if self.oldstate!=state:
+			#shared.DPrint("Projectile", 0, "Projectile: "+str(self.uid)+" at state: "+str(state))
+			if state == self.S_IGNITED:
+				shared.PlayerManager.Broadcast(6, "recv_shell", [self.launcher.unit.ID, self.target])
 			elif state == self.S_EXPLODED:
 				shared.PlayerManager.Broadcast(6, "recv_explode", [self.uid, self.pos])
 			self.oldstate = self.state

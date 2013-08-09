@@ -23,8 +23,9 @@ class UnitManager():
 	def Load(self):
 		#Find and import all availible UnitScripts HERE
 		modpath = "engine.Object.unitscripts."
-		self.unitscripts["mig"] = import_module(modpath+"sv_mig").Unit
-		self.unitscripts["build"] = import_module(modpath+"sv_build").Unit
+		self.unitscripts["mig"] = import_module(modpath+"mig.sv_mig").Unit
+		self.unitscripts["build"] = import_module(modpath+"build.sv_build").Unit
+		self.unitscripts["tank"] = import_module(modpath+"tank.sv_tank").Unit
 
 	def req_build(self, name, x, y, z, Protocol=None):
 		shared.DPrint(0, "netUnitManager", "Building "+str(name))
@@ -41,9 +42,12 @@ class UnitManager():
 
 		newunit = self.create(player, name, unitid, pos)
 		if newunit:
-			nx, ny, nz = newunit._pos
-			shared.PlayerManager.Broadcast(4, "build", [name, nx, ny, nz, userid, unitid])
+			attribs = newunit.pendingattrib.copy()
+			newunit.pendingattrib = {}
+			#nx, ny, nz = newunit._pos
+			shared.PlayerManager.Broadcast(4, "build", [name, userid, unitid, attribs])
 			self.unitcount+=1
+
 			if act!=None:
 				newgroup = shared.GroupManager.createGroup(False, [newunit], player)
 				action = newgroup.getActionByID(act)

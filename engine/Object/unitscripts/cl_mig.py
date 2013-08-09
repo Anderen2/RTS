@@ -42,3 +42,7 @@ class Unit(BaseUnit):
 
 	def OnMove(self, pos):
 		self.GetEntity().actMove(True)
+
+	def AimAtUnit(self, unit):
+		x, y, z = unit.GetEntity().GetPosition()
+		self.GetEntity().LookAtZ(x, y, z)

@@ -176,7 +176,7 @@ class UnitLauncher():
 				# a = shared.Vector(self.pos[0], self.pos[2])
 				# b = shared.Vector(pos[0], pos[2])
 				# Dist = abs(shared.Vector(a-b).sum()) - self.firerange
-				self.unit._currentaction.tooFar(4)
+				self.unit._currentaction.tooFar(20)
 
 		return False
 
@@ -237,7 +237,7 @@ class Rocket():
 
 		self._setState(self.S_ARMED)
 
-		self.speed = 300
+		self.speed = 450
 
 	def ignite(self, target):
 		if self.state == self.S_ARMED:

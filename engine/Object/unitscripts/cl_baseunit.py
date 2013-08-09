@@ -144,7 +144,8 @@ class BaseUnit():
 	def _predie(self):
 		#Removing from interaction with game
 		shared.DirectorManager.CurrentDirector.deselectUnit(self)
-		self._group.rmUnit(self)
+		if self._group:
+			self._group.rmUnit(self)
 		self._movetopoint=None
 
 		if shared.FowManager!=None and shared.FowManager!=True:

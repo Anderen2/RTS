@@ -34,6 +34,7 @@ class Action():
 	def begin(self):
 		shared.DPrint("UnitAction - Move", 0, "Action begun!")
 		self.aborted=False
+		self.unit.AimAtUnit(self.targetunit)
 		self.unit.OnPrimaryAction(self.targetunit)
 
 	def abort(self):

@@ -27,10 +27,10 @@ class Unit(BaseUnit):
 
 	def SetupProjectileLaunchers(self):
 		self.Launcher1 = self.CreateProjectileLauncher(shared.LauncherManager.UNITLAUNCHER)
-		self.Launcher1.SetPosition(0, 0, 0)
+		self.Launcher1.SetPosition(0, 0, -20)
 		self.Launcher1.SetRotation(10, 10, 10)
 		self.Launcher1.SetProjectile("rocket")
-		self.Launcher1.SetFireRange(256)
+		self.Launcher1.SetFireRange(300)
 		self.Launcher1.SetFiringSpeed(2)
 		self.Launcher1.SetReloadingSpeed(5)
 		self.Launcher1.SetMagasineCapasity(5)
@@ -41,10 +41,10 @@ class Unit(BaseUnit):
 		self.Launcher1.SetAutomaticMoveRotate(True)
 
 		self.Launcher2 = self.CreateProjectileLauncher(shared.LauncherManager.UNITLAUNCHER)
-		self.Launcher2.SetPosition(10, 10, 10)
+		self.Launcher2.SetPosition(0, 0, 20)
 		self.Launcher2.SetRotation(30, 30, 30)
 		self.Launcher2.SetProjectile("rocket")
-		self.Launcher2.SetFireRange(256)
+		self.Launcher2.SetFireRange(300)
 		self.Launcher2.SetFiringSpeed(2)
 		self.Launcher2.SetReloadingSpeed(5)
 		self.Launcher2.SetMagasineCapasity(5)

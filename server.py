@@ -1,4 +1,5 @@
 #Dedicated Server - Main
+import algotest
 from engine import shared, debug
 from engine.Networking import sh_netObject, TwCLI
 from engine.Networking.server import server
@@ -21,6 +22,8 @@ cliFactory=TwCLI.CLIFactory()
 shared.MapLoader = sv_map.MapLoader()
 shared.Map = shared.MapLoader.Load("empty.map")
 shared.Map.Setup()
+
+#algotest.run()
 
 server.Startup()
 

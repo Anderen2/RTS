@@ -6,6 +6,7 @@ from twisted.internet import reactor
 from engine import shared, debug
 from engine.Object.unitact import sv_move, sv_fau
 from engine.World import movetypes
+from engine.Lib.hook import Hook
 
 class BaseUnit():
 	#Setup Constants
@@ -16,6 +17,9 @@ class BaseUnit():
 		self.ID=int(ID)
 		self._owner=owner
 		self._group=None
+
+		#Initialize all hooks
+		self._inithooks()
 
 		#Actions
 		self._currentaction=None
@@ -28,10 +32,30 @@ class BaseUnit():
 		self._health = 100
 		self.pendingattrib={}
 
-		self._setPosition(pos)
-		self.Initialize()
+		self.Initialize(self.ID)
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
-		self.OnCreation(pos)
+		self._setPosition(pos)
+		self.Hook.call("OnCreation", self._pos)
+
+	def _inithooks(self):
+		self.Hook = Hook(self)
+		self.Hook.new("Initialize", 1)
+		self.Hook.new("OnCreation", 1)
+		self.Hook.new("OnThink", 1)
+		self.Hook.new("OnHealthChange", 1)
+		self.Hook.new("OnDamage", 2)
+		self.Hook.new("OnDeath", 1)
+		self.Hook.new("OnActionStart", 1)
+		self.Hook.new("OnActionAbort", 1)
+		self.Hook.new("OnActionFinished", 1)
+		self.Hook.new("OnActionState", 3)
+		self.Hook.new("OnServerUpdate", 1)
+		self.Hook.new("OnGroupChange", 1)
+		self.Hook.new("OnMove", 1)
+		self.Hook.new("OnMoveStop", 1)
+		self.Hook.new("OnConvertStart", 1)
+		self.Hook.new("OnConverted", 1)
+
 
 	### UnitScript Functions
 	def SetPosition(self, x, y, z):
@@ -66,9 +90,11 @@ class BaseUnit():
 		self._updateAttrib("health", health)
 
 	def SetHealth(self, health):
+		self.Hook.call("OnHealthChange", health)
 		self._sethealth(health)
 
 	def TakeDamage(self, damage):
+		self.Hook.call("OnDamage", damage, "DamageType Here!")
 		self._sethealth(self._health-damage)
 
 	def SetViewRange(self, viewrange):
@@ -92,6 +118,7 @@ class BaseUnit():
 	### Trigger Hooks
 
 	def _think(self, delta):
+		self.Hook.call("OnThink", delta)
 		if self._currentaction!=None:
 			self._currentaction.update()
 
@@ -114,11 +141,12 @@ class BaseUnit():
 		if len(self.pendingattrib)==0:
 			#The reason for why we do this is to collect all attribute changes in one frame and send them all in one package.
 			#As the client seemly only could recieve 60 pkgs each secound [With the current transferring method], we keep the packagequeue from getting too big
-			reactor.callLater(0.5, self._broadcastAttrib)
+			reactor.callLater(0.1, self._broadcastAttrib)
 		self.pendingattrib[attribname]=data
 
 	def _broadcastAttrib(self):
 		if len(self.pendingattrib)!=0:
+			self.Hook.call("OnServerUpdate", self.pendingattrib.copy())
 			shared.PlayerManager.Broadcast(4, "recv_attrib", [self.ID, self.pendingattrib.copy()])
 			self.pendingattrib={}
 
@@ -129,10 +157,10 @@ class BaseUnit():
 			shared.PlayerManager.Broadcast(4, "recv_unithealth", [self.ID, self._health])
 
 		if health<1:
-			self.OnDie()
 			self._die()
 
 	def _die(self):
+		self.Hook.call("OnDeath", "LastDamageType Here!")
 		if self._group!=None:
 			self._group.unitDown(self)
 		self._owner.Units.remove(self)
@@ -141,30 +169,14 @@ class BaseUnit():
 	## NON-Networked (Mostly stuff handeled by the groupmanager instead)
 
 	# MOVEMENT
-	def _simulateMoveStep(self, dst, speed, src=None):
-		if not src:
-			src = (self._pos[0], self._pos[2])
-		speed = speed
-		nx, ny, dist = shared.Pathfinder.ABPath.GetNextCoord(src, dst, speed)
-		newpos = (nx, self._pos[1], ny)
-
-		return dist, newpos
-
-	def _movestep(self, dst, delta):
-		src = (self._pos[0], self._pos[2])
-		speed = (self._movespeed*delta)
-		nx, ny, dist = shared.Pathfinder.ABPath.GetNextCoord(src, dst, speed)
-		newpos = (nx, self._pos[1], ny)
-		
-		self._setPosition(newpos)
-		return dist
 
 	def _moveto(self, pos):
+		self.Hook.call("OnMove", pos)
 		print("Moving unit: "+str(self.ID)+"to "+str(pos))
 		self._movetopoint=pos
-		self.OnMove(pos)
 
 	def _stopmove(self):
+		self.Hook.call("OnMoveStop", self._movetopoint)
 		self._movetopoint=None
 
 
@@ -196,22 +208,27 @@ class BaseUnit():
 			self._currentaction.finish()
 		self._currentaction=act(self, evt)
 		self._currentaction.begin()
+		self.Hook.call("OnActionStart", self._currentaction)
 
 	def _finishAction(self):
 		if self._currentaction!=None:
+			self.Hook.call("OnActionFinished", self._currentaction)
 			self._currentaction.finish()
 			self._currentaction=None
 
 	def _abortAction(self):
 		if self._currentaction!=None:
+			self.Hook.call("OnActionAbort", self._currentaction)
 			self._currentaction.abort()
 			self._currentaction=None
 
 	def _sendActionState(self, state, data):
+		self.Hook.call("OnActionState", self._currentaction, state, data)
 		shared.PlayerManager.Broadcast(4, "recv_updact", [self.ID, state, data])
 
 	# GROUP
 	def _changegroup(self, newgroup):
+		self.Hook.call("OnGroupChange", newgroup)
 		print("CHANGING GROUP from "+str(self._group)+ " to "+str(newgroup))
 		if self._group!=None:
 			self._group.unitSwitchGroup(self)

@@ -302,6 +302,7 @@ class Entity():
 		if yn==True:
 			if not self.params["deadanim"]==None:
 				self.deadanim.setEnabled(True)
+				self.deadanim.setLoop(False)
 				self.curranim=self.deadanim
 			if not self.params["dieeff"]==None:
 				self.dieeff.getEmitter(0).setEnabled(True)
@@ -319,10 +320,11 @@ class Entity():
 
 	def actAnim(self, anim, yn):
 		if yn==True:
-			self.actanim[anim].setEnabled(True)
-			self.curranim=self.actanim[anim]
-		else:
-			self.actanim[anim].setEnabled(False)
+			if anim in self.actanim:
+				self.actanim[anim].setEnabled(True)
+				self.curranim=self.actanim[anim]
+			else:
+				self.actanim[anim].setEnabled(False)
 
 	def actLight(self, light, yn):
 		if yn==True:
@@ -417,6 +419,12 @@ class Entity():
 		if self.error!=True:
 			if self.curranim!=None and self.animtime!=None:
 				self.curranim.addTime(self.animtime)
+
+	def getIfAnimIsFinish(self):
+		if self.curranim!=None:
+			return self.curranim.hasEnded()
+		else:
+			return True
 
 	def __del__(self):
 		if shared!=None:

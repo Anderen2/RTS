@@ -20,6 +20,7 @@ class UnitManager():
 		self.unitscripts["mig"] = import_module(modpath+"mig.cl_mig").Unit
 		self.unitscripts["build"] = import_module(modpath+"build.cl_build").Unit
 		self.unitscripts["tank"] = import_module(modpath+"tank.cl_tank").Unit
+		self.unitscripts["robot"] = import_module(modpath+"robot.cl_robot").Unit
 
 	#SERVER UPDATES/COMMANDS
 
@@ -49,7 +50,7 @@ class UnitManager():
 			#Updating the Fog Of War
 			if int(owner.team) == int(shared.SelfPlayer.team):
 				shared.DPrint("netUnitManager", 0, "Adding unit as ally")
-				newunit._fowview = shared.FowManager.addAlly(newunit._entity.node, 256)
+				newunit._fowview = shared.FowManager.addAlly(newunit._entity.node, attributes["viewrange"])
 			else:
 				shared.DPrint("netUnitManager", 0, "Adding unit as enemy")
 				newunit._fowview = shared.FowManager.addEnemy(newunit._entity.node)

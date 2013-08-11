@@ -6,32 +6,29 @@ from engine.Object.unitscripts.cl_baseunit import BaseUnit
 import cl_act
 
 class Unit(BaseUnit):
-	def Initialize(self):
+
+	def Initialize(self, ID):
 		self.Name = "MIG"
 		self.SetEntity("plane")
 		self.SetSelectedText("MIG "+str(self.GetID()))
 		self.Actions=[cl_act.Action]
 
+		self.Hook.Add("OnCreation", self.OnCreation)
+		self.Hook.Add("OnDeath", self.OnDie)
+		self.Hook.Add("OnMoveEffectDone", self.OnMoveEffectDone)
+		self.Hook.Add("OnMove", self.OnMove)
+
 	def OnCreation(self, pos):
 		#self.PlayAnim("TakeOff") #Create a function/Class for simple movement animations
 		self.GetEntity().actMove(True)
 
-	def OnDie(self):
+	def OnDie(self, cause):
 		self.GetEntity().actNone()
 		self.GetEntity().actDead(True)
 		self.StartMoveEffect("globDiveDie")
-		return True #Return true here if you are handeling the destruction of the unit yourself (See OnMoveEffectDone)
-
-	def OnThink(self, delta):
-		pass
-
-	def OnPrimaryAction(self, unit):
-		pass
-
-	def OnPrimaryActionAbort(self):
-		pass
-
-	def OnPrimaryActionFinish(self):
+	
+	def _die(self):
+		#We overwrite this as we take care of the death ourselves (See OnMoveEffectDone)
 		pass
 
 	def OnMoveEffectDone(self, moveeffect):
@@ -42,6 +39,16 @@ class Unit(BaseUnit):
 
 	def OnMove(self, pos):
 		self.GetEntity().actMove(True)
+
+	#Action Triggers
+	def OnPrimaryAction(self, unit):
+		pass
+
+	def OnPrimaryActionAbort(self):
+		pass
+
+	def OnPrimaryActionFinish(self):
+		pass
 
 	def AimAtUnit(self, unit):
 		x, y, z = unit.GetEntity().GetPosition()

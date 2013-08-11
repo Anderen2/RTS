@@ -12,7 +12,7 @@ class LauncherManager():
 		shared.LauncherManager = self
 		shared.objectManager.addEntry(0, 6, self)
 		self.projectilecount = 0
-		self.ProjectilesAvailible={"rocket":Rocket, "shell":Shell}
+		self.ProjectilesAvailible={"rocket":Rocket, "shell":Shell, "bullet":Bullet}
 
 	def create(self, type, unit):
 		if type == self.UNITLAUNCHER:
@@ -173,10 +173,14 @@ class UnitLauncher():
 					return self.Reload()
 		else:
 			if self.moverot:
-				# a = shared.Vector(self.pos[0], self.pos[2])
-				# b = shared.Vector(pos[0], pos[2])
-				# Dist = abs(shared.Vector(a-b).sum()) - self.firerange
-				self.unit._currentaction.tooFar(20)
+				print("\n\n Too Far Away!")
+				print(self.firerange)
+				a = shared.Vector(self.pos[0], self.pos[2])
+				b = shared.Vector(pos[0], pos[2])
+				Dist = abs(shared.Vector(a-b).sum()) - self.firerange
+				print(Dist)
+				print("Too Far Away END \n\n")
+				self.unit._currentaction.tooFar(self.firerange - (self.firerange/3.14))
 
 		return False
 
@@ -216,7 +220,9 @@ class UnitLauncher():
 				else:
 					self.calculateRelativeDamage(dmgsquare, unit._pos)
 		else:
-			unit = shared.UnitManager.getUnitAtPos(projectile.pos)
+			#unit = shared.UnitManager.getUnitAtPos(projectile.pos) Not working ATM
+			unit = projectile.target
+			print(unit)
 			if unit:
 				unit.TakeDamage(self.dmgdrain)
 
@@ -352,4 +358,30 @@ class Shell():
 
 	def _blown(self):
 		self._setState(self.S_GC)
+		self.launcher.removeProjectile(self)
+
+class Bullet():
+	S_ARMED = 3
+	S_IGNITED = 2
+	S_TARGETHIT = 1
+	S_EXPLODED = 0
+	S_GC = -1
+
+	def __init__(self, position, uid, launcher):
+		self.pos = position
+		self.uid = uid
+		self.launcher = launcher
+		self.target = None
+
+		self.speed = "inf"
+
+	def ignite(self, target):
+		self.target = target
+		self.launcher.projectileExploded(self)
+		self._blown()
+
+	def _think(self, delta):
+		pass
+
+	def _blown(self):
 		self.launcher.removeProjectile(self)

@@ -1,7 +1,7 @@
 #Serverside Global-Action
 
 from engine import shared, debug
-from engine.World import posalgo
+from engine.World import posalgo, movetypes
 
 class Action():
 	actionid = "fau"
@@ -58,26 +58,33 @@ class Action():
 						if self.fire == True:
 							self.unit.PrimaryFire(self.targetunit)
 					else:
+						print("Action is not possible!")
 						self.unit._actionfinish()
 				else:
-						self.unit._actionfinish()
+					print("Target Unit does not exsist!")
+					self.unit._actionfinish()
 			else:
 				if self.unit._movetopoint==None:
 					print("Done!")
 					self.currentlyMoving=False
 
-	def tooFar(self, dist):
+	def tooFar(self, maxdist):
 		"""Custom event provided by projectiles.py"""
 		if not self.currentlyMoving:
-			foo = True
 			self.waypointPos = self.targetunit.GetPosition()
-			newpos = self.unit._pos
-			while foo:
-				simdist, newpos = self.unit._simulateMoveStep((self.waypointPos[0], self.waypointPos[2]), 2, src=(newpos[0], newpos[2]))
-				print(str(simdist)+"<"+str(dist))
-				if (simdist)<dist:
-					foo = False
+			newpos = self.unit.GetPosition()
+
+			while True:
+				#print("\ttarget: "+str(self.waypointPos))
+				#print(newpos)
+				dist, newpos = movetypes.Move(newpos, self.waypointPos, 5, 0)
+				#simdist, newpos = self.unit._simulateMoveStep((self.waypointPos[0], self.waypointPos[2]), 2, src=(newpos[0], newpos[2]))
+				print(str(dist)+"<"+str(maxdist))
+
+				if dist<maxdist:
+					break
 
 			self.currentlyMoving = True
+			newpos = shared.Vector(newpos).net() #Optimalize the position for Networked usage
 			self.unit._sendActionState("toofar", newpos)
 			self.unit._moveto(newpos)

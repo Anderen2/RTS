@@ -26,6 +26,7 @@ class UnitManager():
 		self.unitscripts["mig"] = import_module(modpath+"mig.sv_mig").Unit
 		self.unitscripts["build"] = import_module(modpath+"build.sv_build").Unit
 		self.unitscripts["tank"] = import_module(modpath+"tank.sv_tank").Unit
+		self.unitscripts["robot"] = import_module(modpath+"robot.sv_robot").Unit
 
 	def req_build(self, name, x, y, z, Protocol=None):
 		shared.DPrint(0, "netUnitManager", "Building "+str(name))

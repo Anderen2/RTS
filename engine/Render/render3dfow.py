@@ -109,8 +109,8 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		size = float(size)/float(256)
 		circleEnt = self.fogManager.createEntity( "Circle"+str(len(self.CircleEnts)), "FOW_Circle" ) 
 		circleNode = self.fogManager.getRootSceneNode().createChildSceneNode() 
-		circleNode.attachObject(circleEnt) 
-		circleNode.setPosition(0, 1+(len(self.CircleEnts)), 0)
+		circleNode.attachObject(circleEnt)
+		circleNode.setPosition(0, 1+(len(self.CircleEnts)/10), 0)
 		circleNode.setScale(1*size, 1*size, 1*size)
 
 		self.CircleEnts.append(circleEnt)
@@ -123,6 +123,10 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		shared.render3dScene.sceneManager.destroyEntity(Index["ent"].getName())
 		#shared.render3dScene.sceneManager.destroySceneNode(Index["node"].getName())
 		self.update()
+
+	def changeNodeSize(self, node, size):
+		size = float(size)/float(256)
+		node.setScale(1*size, 1*size, 1*size)
 
 	def nodeUpdate(self, node):
 		if node.getName() in self.EnemyNodes:
@@ -160,7 +164,8 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 			#Set new view placement
 			UnitPos=node.getPosition()
-			Anode.setPosition(UnitPos.x, AnodePos[1], UnitPos.z)
+			Offset = Anode._getWorldAABB().getHalfSize()
+			Anode.setPosition(UnitPos.x-(Offset.x/2), AnodePos[1], UnitPos.z-(Offset.z/2))
 
 			#Update the fowplane with the new viewplacements
 			self.update()
@@ -216,6 +221,16 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 			del self.AllyNodes[node.getName()]
 		elif node.getName() in self.EnemyNodes:
 			del self.EnemyNodes[node.getName()]
+
+	def chViewSize(self, node, viewsize):
+		nodename = node.getName()
+		print("Changing View Size")
+		if nodename in self.AllyNodes:
+			NodeIndex = self.AllyNodes[nodename]
+			NodeIndex["size"] = viewsize
+			self.changeNodeSize(NodeIndex["node"])
+		else:
+			print("Node not in our ally Index!")
 
 	def ChangeShit(self, x, y, z):
 		#self.circleNode.setPosition(float(x),float(y),float(z))

@@ -249,8 +249,11 @@ class UnitGroup():
 			self.actionQueue.pop(queuedactionid)
 
 	def unitActionDone(self, unit):
-		self.waitingfor.remove(unit)
 		unit._finishAction() #We make the unit destroy its action and wait
+		if unit in self.waitingfor:
+			self.waitingfor.remove(unit)
+			print("Unit not in waitingfor!")
+
 		if len(self.waitingfor)==0:
 			self.currentActionFinished()
 

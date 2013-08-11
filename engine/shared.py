@@ -65,6 +65,13 @@ class Vector( object ):
 		return tuple( (a/b for a,b in zip(self.data, other.data) ) )
 	def sum(self):
 		return self.data[0]+self.data[1]
+	def net(self):
+		if len(self.data)==2:
+			self.data = tuple([int(self.data[0]), int(self.data[1])])
+			return self.data
+		elif len(self.data)==3:
+			self.data = tuple([int(self.data[0]), int(self.data[1]), int(self.data[2])])
+			return self.data
 
 def logInit(name):
 	global LogFile

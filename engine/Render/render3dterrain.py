@@ -3,27 +3,46 @@
 
 from engine import shared, debug
 import ogre.renderer.OGRE as ogre
+import ogre.renderer.ogreterrain as ogreterrain
+from traceback import print_exc
+from platform import system as platform
+
+def Clamp(minimum, x, maximum):
+    return max(minimum, min(x, maximum))
+
+# Terrain Queryflag:
+MASK_TERRAIN = 1 << 0
 
 class Terrain():
 	def __init__(self, sceneManager):
 		self.Material=None
 		self.sceneManager = sceneManager
 
-		#Setup temporary terrain (Is this really nessecary?)
-		if self.Material==None:
-			self.createTerrainMaterial("2048.png", {"terr_rock-dirt.jpg":"alphamap.png", "grass_1024.jpg":"alphamap2.png"})
-		self.sceneManager.setWorldGeometry("terrain.cfg")
+		self.terrainGlobals = ogreterrain.TerrainGlobalOptions()
 
-		debug.ACC("r.t_reload", self.RldTerrain, info="Reload the terrain", args=0)
+	def configureTerrainDefaults(self, light, base, splatting):
+		self.terrainGlobals.setMaxPixelError(32) # Level Of Detail at distance ## FUTURE GFX OPTION! 
+		self.terrainGlobals.setCompositeMapDistance(100) #Distance before texture gets fucked up (Irrelevant now with the custom material)
+
+		defaultimp = self.terrainGroup.getDefaultImportSettings()
+
+		defaultimp.inputScale = self.MaxHeight #Height of terrain
+		defaultimp.minBatchSize = 3 #Minimum polycount @ each batch
+		defaultimp.maxBatchSize = 33 #Maximum polycount @ each batch (Not really polycount, but close enough)
+		  
+	def defineTerrain(self, x, y):
+		img = ogre.Image()
+		img.load(self.HeightmapImage, ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME)
+		self.terrainGroup.defineTerrain(x, y, img)
+		self.terrainsImported = True
 
 	def createTerrainMaterial(self, base, splatting):
 		shared.DPrint("R3DTerrain", 0, "Creating Terrain Material")
+		self.Material = self.TerrainMaterial
 		if self.Material!=None:
 			self.Material.removeAllTechniques()
 			Technique=self.Material.createTechnique()
 			basePass=Technique.createPass()
-		else:
-			self.Material = ogre.MaterialManager.getSingleton().create("Template/Terrain",ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME) 
 
 		Technique=self.Material.getTechnique(0)
 		basePass=Technique.getPass(0)
@@ -31,62 +50,61 @@ class Terrain():
 		baseTexture.setTextureName(base)
 		baseTexture.setTextureScale(1, 1)
 
-		for texture, alphamap in splatting.iteritems():
-			splattingPass = Technique.createPass()
-			splattingPass.setLightingEnabled(False)
-			splattingPass.setSceneBlending(ogre.SBT_TRANSPARENT_ALPHA)
-			splattingPass.setDepthFunction(ogre.CMPF_EQUAL)
+		if platform() != "Linux": #FGLRX/Catalyst on Linux is so shitty that they broke blendmaps in their latest driver (So if we are running linux, only use basetexture) ## FUTURE GFX OPTION!
+			for texture, alphamap in splatting.iteritems():
+				splattingPass = Technique.createPass()
+				splattingPass.setLightingEnabled(False)
+				splattingPass.setSceneBlending(ogre.SBT_TRANSPARENT_ALPHA)
+				splattingPass.setDepthFunction(ogre.CMPF_EQUAL)
+	
+				alphamapTexture = splattingPass.createTextureUnitState()
+				alphamapTexture.setTextureName(alphamap)
+				alphamapTexture.setAlphaOperation(ogre.LBX_SOURCE1, ogre.LBS_TEXTURE, ogre.LBS_TEXTURE)
+				alphamapTexture.setColourOperationEx(ogre.LBX_SOURCE2, ogre.LBS_TEXTURE, ogre.LBS_TEXTURE)
 
-			alphamapTexture = splattingPass.createTextureUnitState()
-			alphamapTexture.setTextureName(alphamap)
-			alphamapTexture.setAlphaOperation(ogre.LBX_SOURCE1, ogre.LBS_TEXTURE, ogre.LBS_TEXTURE)
-			alphamapTexture.setColourOperationEx(ogre.LBX_SOURCE2, ogre.LBS_TEXTURE, ogre.LBS_TEXTURE)
-
-			detailTexture = splattingPass.createTextureUnitState()
-			detailTexture.setTextureName(texture)
-			detailTexture.setTextureScale(0.07, 0.07)
-			detailTexture.setColourOperationEx(ogre.LBX_BLEND_DIFFUSE_ALPHA, ogre.LBS_TEXTURE, ogre.LBS_CURRENT)
-
-		# lightingPass = Technique.createPass()
-		# lightingPass.setAmbient(1,1,1)
-		# lightingPass.setDiffuse(1,1,1,1)
-		# lightingPass.setDepthFunction(ogre.CMPF_EQUAL)
-		# lightingPass.setSceneBlending(ogre.SBF_ZERO, ogre.SBF_ONE_MINUS_SOURCE_COLOUR )
+				detailTexture = splattingPass.createTextureUnitState()
+				detailTexture.setTextureName(texture)
+				detailTexture.setTextureScale(0.07, 0.07)
+				detailTexture.setColourOperationEx(ogre.LBX_BLEND_DIFFUSE_ALPHA, ogre.LBS_TEXTURE, ogre.LBS_CURRENT)
 
 	def createTerrainCFG(self, terraincfg):
 		shared.DPrint("R3DTerrain", 0, "Creating Terrain Config")
-		Comment="# Automaticly generated from current map. Do NOT mod this file manually, your changes will only be overwritten!"
-		PageSource="Heightmap"
-		HeightmapImage=terraincfg["Heightmap"]["Heightmap File"]
-		PageSize=str(terraincfg["Heightmap"]["PageSize"])
-		TileSize=str(terraincfg["Heightmap"]["TileSize"])
-		MaxPixelError="30000"
-		PageWorldX=str(terraincfg["Heightmap"]["Scale"][0])
-		PageWorldZ=str(terraincfg["Heightmap"]["Scale"][1])
-		MaxHeight=str(terraincfg["Heightmap"]["Height"])
-		MaxMipMapLevel="5"
-		LODMorphStart="0.05"
-		CustomMaterialName="Template/Terrain"
+		self.HeightmapImage = terraincfg["Heightmap"]["Heightmap File"]
+		self.MaxHeight = terraincfg["Heightmap"]["Height"]
+		self.PageWorldX = terraincfg["Heightmap"]["Scale"][0]
+		self.PageWorldZ = terraincfg["Heightmap"]["Scale"][1]
+		#self.PageSize = terraincfg["Heightmap"]["PageSize"]
+		self.PageSize = 1500
+		self.TileSize = terraincfg["Heightmap"]["TileSize"]
 
-		cfgBuffer=Comment+"\nPageSource="+PageSource+"\nHeightmap.image="+HeightmapImage+"\nPageSize="+PageSize+"\nTileSize="+TileSize+"\nMaxPixelError="+MaxPixelError+"\nPageWorldX="+PageWorldX+"\nPageWorldZ="+PageWorldZ+"\nMaxHeight="+MaxHeight+"\nMaxMipMapLevel="+MaxMipMapLevel+"\nLODMorphStart="+LODMorphStart+"\n# YARTS Autoconfig End\n"
+		self.terrainGroup = ogreterrain.TerrainGroup(self.sceneManager, ogreterrain.Terrain.ALIGN_X_Z, 257, self.PageSize) #Scene, Orientation, Batchsize, Terrain Size ## FUTURE GFX OPTION! (Batchsize)
+		self.terrainGroup.setFilenameConvention("BasicTutorial3Terrain", "dat")
+		self.terrainGroup.setOrigin(ogre.Vector3(0, 0, 0))
 
-		cfgFile=open("./media/terrain2.cfg", "w")
-		cfgFile.write(cfgBuffer)
-		cfgFile.flush()
-		cfgFile.close()
+		self.configureTerrainDefaults("light", None, None)
 
-	def RldTerrain(self):
-		shared.DPrint("R3DTerrain", 0, "Reloading Terrain Geometry")
+		self.defineTerrain(0, 0)
+		self.terrainGroup.loadAllTerrains(True)
+
+	def LoadTerrain(self):
+		shared.DPrint("R3DTerrain", 0, "Loading Terrain Geometry")
 		try:
-			self.sceneManager.setWorldGeometry("terrain2.cfg")
+			pass
 		except:
 			print_exc()
 
+		self.terrainGroup.getTerrain(0,0).setPosition(ogre.Vector3(self.PageSize/2, 0, self.PageSize/2))
+		self.TerrainMaterial = self.terrainGroup.getTerrain(0,0).getMaterial()
+		self.TerrainEnt = self.terrainGroup.getTerrain(0,0)
+		self.TerrainEnt.setQueryFlags(MASK_TERRAIN)
+
+		#self.terrainGroup.getTerrain(0,0).setHeightAtPoint(50,50,1000)
+		#self.terrainGroup.getTerrain(0,0).dirty()
+		#self.terrainGroup.getTerrain(0,0).updateGeometry()
+
+		self.terrainGroup.freeTemporaryResources()
+		
+
 	def getHeightAtPos(self, x, z):
-		Raytrace=ogre.Ray()
-		Raytrace.setOrigin((x,1000,z))
-		Raytrace.setDirection(ogre.Vector3().NEGATIVE_UNIT_Y)
-		self.raySceneQuery=shared.render3dScene.sceneManager.createRayQuery(Raytrace)
-		for queryResult in self.raySceneQuery.execute():
-			if queryResult.worldFragment is not None:  
-				return 1000-queryResult.distance
+		return self.TerrainEnt.getHeightAtWorldPosition(int(x), 1000, int(z))
+		

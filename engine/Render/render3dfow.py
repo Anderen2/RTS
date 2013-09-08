@@ -10,7 +10,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 	def __init__(self, terrain):
 		ogre.RenderTargetListener.__init__(self)
 		ogre.Node.Listener.__init__(self)
-		self.terrain = terrain # this is a string corresponding to the name of the terrain material. Ex: "OceanCg"
+		#self.terrain = terrain # this is a string corresponding to the name of the terrain material. Ex: "OceanCg" DEPREACIATED
 
 		self.created=False
 
@@ -23,7 +23,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.CircleNodes=[]
 
 		
-	def Create(self, tsizex, tsizey):
+	def Create(self, tsizex, tsizey, terrainMat):
 		shared.DPrint("FOWManager", 1, "Creating Fog Of War")
 
 		self.created=True
@@ -82,7 +82,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		#self.texture = ogre.TextureManager.getSingleton().createManual( "terrainTex", "General", ogre.TEX_TYPE_2D, 512, 512, 0, ogre.PF_R8G8B8, ogre.TU_RENDERTARGET) 
 		self.RT = self.texture.getBuffer().getRenderTarget()
 
-		terrainMat = ogre.MaterialManager.getSingleton().getByName(self.terrain)
+		#terrainMat = terrainmat
 		self.terrainPass = terrainMat.getTechnique(0).createPass()
 		self.terrainPass.setSceneBlending(ogre.SBT_MODULATE) # mutliply the color value contents of the scene with the values in this texture pass
 	

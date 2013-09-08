@@ -8,6 +8,7 @@ import sv_act
 #AddCSFile("cl_init.py")
 
 class Unit(BaseUnit):
+	COST = 1500
 	def Initialize(self, ID):
 		self.Name = "MIG"
 		self.SetEntity("plane")

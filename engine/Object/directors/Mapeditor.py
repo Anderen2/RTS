@@ -30,9 +30,11 @@ class Director():
 			self.CurrentSelection.append(Deco)
 
 	def evt_moveclick(self, pos, shiftkeydown):
+		print("RCLICK")
 		shared.mapBackend.SelectionRightClick()
 
 	def evt_actionclick(self, data, shiftkeydown):
+		print("RCLICK - ACTION!")
 		shared.mapBackend.SelectionRightClick()
 
 	def Frame(self):

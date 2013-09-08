@@ -5,6 +5,7 @@ import ogre.renderer.OGRE as ogre
 from ogre.gui.CEGUI import MouseCursor
 
 from engine import debug, shared
+from engine.Render.render3dent import MASK_UNIT, MASK_DECO, MASK_OTHER
 
 class RotateTool():
 	def __init__(self):
@@ -24,29 +25,29 @@ class RotateTool():
 													  mousePos.d_y / float(self.dimv))
 		self.raySceneQuery.setRay(mouseRay)
 		self.raySceneQuery.setSortByDistance(True)
+		self.raySceneQuery.setQueryMask(MASK_UNIT | MASK_DECO | MASK_OTHER)
 		result = self.raySceneQuery.execute()
 		if len(result)>0:
 			for item in result:
-				if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and item.movable.getName()!="Camera" and item.movable.getName()[0:5] != "tile[" and item.movable.getName()[0:5] != "Water":
-					print "____________________________________"
-					print item.movable.getName()
-					print item.movable.getParentSceneNode().getName()
+				print "____________________________________"
+				print item.movable.getName()
+				print item.movable.getParentSceneNode().getName()
 
-					if "-" in item.movable.getName():
-						#If there is a dash in the scenenode name, it means that the currently selected entity is a subentity to something else
-						#Ex. the turret on top of the tank
-						print(item.movable.getName())
-						print(item.movable.getParentSceneNode().getName())
-						print(item.movable.getParentSceneNode().getParentSceneNode().getName())
-						shared.DPrint("movetool", 3, "This is not supported!")
-						#self.CurrentHold=shared.decHandeler.Get(int(item.movable.getParentSceneNode().getParentSceneNode().getName()[4:]))
-					else:
-						self.CurrentHold=shared.decHandeler.Get(int(item.movable.getName()[4:]))
-						
-					if self.CurrentHold!=None:
-						self.CurrentHold.entity.node.showBoundingBox(True)
+				if "-" in item.movable.getName():
+					#If there is a dash in the scenenode name, it means that the currently selected entity is a subentity to something else
+					#Ex. the turret on top of the tank
+					print(item.movable.getName())
+					print(item.movable.getParentSceneNode().getName())
+					print(item.movable.getParentSceneNode().getParentSceneNode().getName())
+					shared.DPrint("movetool", 3, "This is not supported!")
+					#self.CurrentHold=shared.decHandeler.Get(int(item.movable.getParentSceneNode().getParentSceneNode().getName()[4:]))
+				else:
+					self.CurrentHold=shared.decHandeler.Get(int(item.movable.getName()[4:]))
 
-					break
+				if self.CurrentHold!=None:
+					self.CurrentHold.entity.node.showBoundingBox(True)
+
+				break
 
 	def MouseReleased(self, id):
 		print("Raybeens II")
@@ -69,7 +70,7 @@ class RotateTool():
 			result = self.raySceneQuery.execute()
 			if len(result)>0:
 				for item in result:
-					if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and item.movable.getName()[0:5] == "tile[":
+					if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and "Unnamed" in item.movable.getParentSceneNode().getName():
 						hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
 						posMoved=mouseRay.getPoint(hitpoint.second)
 						#MovePosition=(posMoved[0],posMoved[1],posMoved[2])

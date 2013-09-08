@@ -18,7 +18,7 @@ class contextGround():
 
 	def sDec(self):
 		print("Pavin' ground")
-		self.Position=self.getClickedPos()
+		self.Position=shared.render3dSelectStuff.mousePosToWorldTerrainPos()
 		shared.globalGUI.SSearch.ask("decorators", self.rDec)
 
 	def rDec(self, result):
@@ -42,21 +42,6 @@ class contextGround():
 
 		config=shared.Mapfile.MapConfig
 		shared.globalGUI.OptionsGUI.ask("Map Settings", self.callbackMap, layout, config)
-
-	def getClickedPos(self):
-		mousePos = MouseCursor.getSingleton().getPosition()
-		mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
-													  mousePos.d_y / float(self.dimv))
-		self.raySceneQuery.setRay(mouseRay)
-		result = self.raySceneQuery.execute()
-		if len(result)>0:
-			for item in result:
-				if item.movable and item.movable.getName()[0:5] == "tile[":
-					hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
-					posMoved=mouseRay.getPoint(hitpoint.second)
-					Position=(posMoved[0],posMoved[1],posMoved[2])
-					return Position
-					break
 
 	def callbackTerrain(self, config):
 		shared.Mapfile.TerrainConfig=textvalidator.convertConfig(config)

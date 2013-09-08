@@ -18,6 +18,8 @@ class Scene():
 		self.root=shared.renderRoot
 
 	def Setup(self):
+		#mTerrainGlobals = ogre.Terrain()
+		#print mTerrainGlobals
 		shared.DPrint("Render3d",1,"Scenemanager..")
 		self.sceneManager = self.root.createSceneManager(ogre.ST_EXTERIOR_CLOSE, "Default sceneManager")
 		shared.DPrint("Render3dScene",1,"Current scenemanager: %s" % str(self.sceneManager.getTypeName()))

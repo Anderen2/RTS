@@ -11,6 +11,12 @@ from random import randrange
 from traceback import format_exc
 import ogre.renderer.OGRE as ogre
 
+#Entity QueryFlags
+MASK_UNIT = 1 << 1 #All units
+MASK_DECO = 1 << 2 #All map decorators
+MASK_OTHER = 1 << 3 #All other entitys
+MASK_GADGET = 1 << 4 #All entity additonal entitys/meshes (ex. the tank turret)
+
 class EntityHandeler():
 	def ReadEntitys(self):
 		self.parser=YModConfig.Parser("Data/Ent/","ent")
@@ -57,10 +63,19 @@ class Entity():
 			self.node.scale(self.params["meshscale"][0],self.params["meshscale"][1],self.params["meshscale"][2])
 			self.meshturret=None
 			self.nodeturret=None
+
+			if Interactive == "unit":
+				self.mesh.setQueryFlags(MASK_UNIT)
+			elif Interactive == "deco":
+				self.mesh.setQueryFlags(MASK_DECO)
+			else:
+				self.mesh.setQueryFlags(MASK_OTHER)
+
 			if not self.params["meshturret"]==None:
 				DPrint("Entity",0,"	MeshTurret")
 				self.meshturret=shared.render3dScene.sceneManager.createEntity(Interactive+str(Identifyer)+"-turret", self.params["meshturret"])
 				self.meshturret.setCastShadows(self.shadows)
+				self.meshturret.setQueryFlags(MASK_GADGET)
 				self.nodeturret=self.node.createChildSceneNode(Interactive+"Node-Turret_"+str(Identifyer))
 				self.nodeturret.attachObject(self.meshturret)
 				

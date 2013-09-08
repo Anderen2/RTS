@@ -6,6 +6,8 @@ from ogre.gui.CEGUI import MouseCursor
 from random import randrange
 from string import split
 from math import floor
+from render3dent import MASK_UNIT, MASK_DECO, MASK_OTHER, MASK_GADGET
+from render3dterrain import MASK_TERRAIN
 
 class SelectStuff():
 	def __init__(self, root, scene):
@@ -14,7 +16,7 @@ class SelectStuff():
 		self.root=root
 		self.camera=self.scene.camera
 
-		self.Trigger="unitNode"
+		self.Trigger = MASK_UNIT
 
 		#Plane Selection
 		self.LMBSel=False
@@ -26,6 +28,7 @@ class SelectStuff():
 		self.mRect = SelectionRectangle("Selection SelectionRectangle")
 		scene.sceneManager.getRootSceneNode().createChildSceneNode().attachObject(self.mRect) #Adding a rectangle to the scene
 		self.mVolQuery = scene.sceneManager.createPlaneBoundedVolumeQuery(ogre.PlaneBoundedVolumeList()) #Doing shit to the rectangle in the scene
+		self.mVolQuery.setQueryMask(self.Trigger)
 		self.querylistener = PlaneQueryListener(self)
 
 		#Raytrace
@@ -143,28 +146,27 @@ class SelectStuff():
 													  mousePos.d_y / float(self.hackvz))
 		self.raySceneQuery.setRay(mouseRay)
 		self.raySceneQuery.setSortByDistance(True)
+		self.raySceneQuery.setQueryMask(self.Trigger)
 		result = self.raySceneQuery.execute()
 		if len(result) > 0:
 			for item in result:
-				if item.movable and item.movable.getName()[0:5] != "tile[" and item.movable.getName()!= "Camera" and item.movable.getParentSceneNode().getName()[:len(self.Trigger)]==self.Trigger:
-					foosel=[]
-					for x in self.CurrentSelection:
-						if x.getName() == item.movable.getParentSceneNode().getName():
-							foosel.append(x)
-							shared.DPrint("SelectStuff",0,"Selected: "+x.getName())
-					if len(foosel)==0:
-						#Selected
-						self.CurrentSelection.append(item.movable.getParentSceneNode())
-					for x in foosel:
-						#Deselected
-						del self.CurrentSelection[self.CurrentSelection.index(x)]
-					foosel=[]
+				foosel=[]
+				for x in self.CurrentSelection:
+					if x.getName() == item.movable.getParentSceneNode().getName():
+						foosel.append(x)
+						shared.DPrint("SelectStuff",0,"Selected: "+x.getName())
+				if len(foosel)==0:
+					#Selected
+					self.CurrentSelection.append(item.movable.getParentSceneNode())
+				for x in foosel:
+					#Deselected
+					del self.CurrentSelection[self.CurrentSelection.index(x)]
+				foosel=[]
 
-					shared.DirectorManager.SelectedEvent(self.CurrentSelection)
+				print item.movable.getName()
+				print item.movable.getMovableType()
 
-					break #We found what we were looking for, lets set the breaks and stop here
-				elif item.worldFragment:
-					shared.DPrint("SelectStuff",0,"Selection: World Selected")
+				shared.DirectorManager.SelectedEvent(self.CurrentSelection)
 
 		if len(self.CurrentSelection):
 			for x in self.CurrentSelection:
@@ -175,19 +177,40 @@ class SelectStuff():
 		mouseRay=self.camera.camera.getCameraToViewportRay(mX, mY)
 		self.raySceneQuery.setRay(mouseRay)
 		self.raySceneQuery.setSortByDistance(True)
+		self.raySceneQuery.setQueryMask(MASK_TERRAIN | self.Trigger)
 		result=self.raySceneQuery.execute()
 		if len(result)>0:
+			depth = 4
 			for item in result:
-				if item.movable and item.movable.getParentSceneNode().getName()[:len(self.Trigger)]==self.Trigger:
+				print item.movable.getName()
+				print item.movable.getParentSceneNode().getName()
+				print item.movable.getMovableType()
+				if item.movable and not "Unnamed" in item.movable.getParentSceneNode().getName() and not item.movable.getName() == "WaypointPath":
 					shared.DirectorManager.ActionEvent(item.movable.getParentSceneNode().getName())
 					break
 
-				elif item.movable and item.movable.getName()[0:5] == "tile[":
-					res2=mouseRay.intersects(item.movable.getWorldBoundingBox())
-					posRclicked=mouseRay.getPoint(res2.second)
-					ClickPosition=(posRclicked[0],posRclicked[1],posRclicked[2])
-					shared.DirectorManager.MovementEvent(ClickPosition)
-					break
+				else:
+					if depth<2:
+						depth+=1
+					else:
+						print(item.movable.getName())
+						res2=shared.render3dTerrain.TerrainEnt.rayIntersects(mouseRay)
+						print res2
+						print(dir(res2))
+						print(res2.first)
+						print(res2.second)
+						if res2.first:
+							posRclicked=res2.second
+							ClickPosition=(posRclicked.x, posRclicked.y, posRclicked.z)
+							shared.DirectorManager.MovementEvent(ClickPosition)
+						break
+
+	def mousePosToWorldTerrainPos(self):
+		mousePos = MouseCursor.getSingleton().getPosition()
+		mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.hackhz),
+													  mousePos.d_y / float(self.hackvz))	
+		result = shared.render3dTerrain.TerrainEnt.rayIntersects(mouseRay)
+		return (result.second.x, result.second.y, result.second.z)
 					
 
 class SelectionRectangle(ogre.ManualObject):
@@ -240,22 +263,19 @@ class PlaneQueryListener(ogre.SceneQueryListener):
 		ogre.SceneQueryListener.__init__( self )
 		self.SelStf=SelStf
  
-	def queryResult (  self, firstMovable):
-		Trigger=shared.render3dSelectStuff.Trigger
-		if firstMovable and firstMovable.getName()[0:5] != "tile[" and firstMovable.getName()!= "Camera" and firstMovable.getParentSceneNode().getName()[:len(Trigger)]==Trigger:
-			foosel=[]
-			for x in self.SelStf.CurrentSelection:
-				if x.getName() == firstMovable.getParentSceneNode().getName():
-					foosel.append(x)
-					
-			if len(foosel)==0:
-				#Selecting new
-				self.SelStf.CurrentSelection.append(firstMovable.getParentSceneNode())
-			for x in foosel:
-				#Deselecting old 
-				del self.SelStf.CurrentSelection[self.SelStf.CurrentSelection.index(x)]
-			foosel=[]
+	def queryResult (self, firstMovable):
+		#Trigger=shared.render3dSelectStuff.Trigger
+		foosel=[]
+		for x in self.SelStf.CurrentSelection:
+			if x.getName() == firstMovable.getParentSceneNode().getName():
+				foosel.append(x)
+				
+		if len(foosel)==0:
+			#Selecting new
+			self.SelStf.CurrentSelection.append(firstMovable.getParentSceneNode())
+		for x in foosel:
+			#Deselecting old 
+			del self.SelStf.CurrentSelection[self.SelStf.CurrentSelection.index(x)]
+		foosel=[]
 
-			shared.DirectorManager.SelectedEvent(self.SelStf.CurrentSelection)
-		return True
-	
+		shared.DirectorManager.SelectedEvent(self.SelStf.CurrentSelection)

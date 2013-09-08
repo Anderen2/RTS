@@ -6,6 +6,8 @@ from engine import shared, debug
 from engine.shared import DPrint
 import ogre.renderer.OGRE as ogre
 
+MASK_WATER = 1 << 6
+
 class WaterManager():
 	def __init__(self):
 		self.wcount=0
@@ -45,6 +47,7 @@ class Water():
 		self.Entity.setMaterialName("OceanHLSL_GLSL")
 		self.Entity.setCastShadows(False)
 		#self.Entity.setRenderQueueGroup(ogre.RENDER_QUEUE_SKIES_LATE)
+		self.Entity.setQueryFlags(MASK_WATER)
 		self.node=shared.render3dScene.sceneManager.getRootSceneNode().createChildSceneNode()
 		self.node.attachObject(self.Entity)
 		self.node.setPosition(Pos)

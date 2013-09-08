@@ -8,6 +8,10 @@ import ogre.gui.CEGUI as CEGUI
 
 from engine.Tool.Mapeditor.context import dec, ground, tools
 from engine import debug, shared
+from engine.Render.render3dcamera import MASK_CAMERA
+from engine.Render.render3dwater import MASK_WATER
+from engine.Render.render3dent import MASK_UNIT, MASK_DECO, MASK_OTHER, MASK_GADGET
+from engine.Render.render3dterrain import MASK_TERRAIN
 
 class Menu():
 	def __init__(self):
@@ -118,7 +122,7 @@ class Menu():
 			elif self.CurrentContext!=None:
 				self.contexts[self.CurrentContext].optfunc[self.contexts[self.CurrentContext].options.index(selected)]()
 			else:
-				shared.D#print("contextmenu", 4, "Item "+str(selected)+" is not in context or default list!")
+				shared.DPrint("contextmenu", 4, "Item "+str(selected)+" is not in context or default list!")
 		self.hide() #This has to be here!
 
 	def sHideGui(self):
@@ -136,21 +140,32 @@ class Menu():
 													  mousePos.d_y / float(self.dimv))
 		self.raySceneQuery.setRay(mouseRay)
 		self.raySceneQuery.setSortByDistance(True)
+		self.raySceneQuery.setQueryMask(MASK_WATER | MASK_TERRAIN | MASK_DECO | MASK_OTHER | MASK_UNIT)
 		result = self.raySceneQuery.execute()
+		found = False
 		if len(result)>0:
 			for item in result:
-				if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and item.movable.getName()!="Camera" :
-					print "____________________________________"
-					print item.movable.getName()
-					print item.movable.getParentSceneNode().getName()
+				print "____________________________________"
+				print item.movable.getName()
+				print item.movable.getMovableType()
 
-					if item.movable.getName()[0:5] == "tile[" or item.movable.getName()[0:5] == "Water":
-						self.CurrentContext=2
+				if "dec" in item.movable.getName():
+					self.CurrentContext=1
+					found = True
+					print("Decorator")
+					break
 
-					elif "dec" in item.movable.getName():
-						self.CurrentContext=1
+				elif item.movable.getName()[0:5] == "Water":
+					self.CurrentContext=2
+					found = True
+					break
 
-					else:
-						self.CurrentContext=None
+				else:
+					self.CurrentContext=None
 
+		if len(result)>0 and found == False:
+			for item in result:
+				if str(item.movable.getMovableType)=="OgreTerrainNodeMovable":
+					self.CurrentContext=2
+					print("Terrain")
 					break

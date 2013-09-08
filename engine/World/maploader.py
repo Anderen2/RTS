@@ -33,8 +33,8 @@ class MapLoader():
 			splattingDict[terraincfg["Texture"]["Alpha SplatTextures"][i].replace("[", "").replace("]", "").replace(" ", "")]=Fun
 			i+=1
 
+		shared.render3dTerrain.LoadTerrain()
 		shared.render3dTerrain.createTerrainMaterial(terraincfg["Texture"]["Base Texture"], splattingDict)
-		shared.render3dTerrain.RldTerrain()
 
 		if terraincfg["Water"]["Type"]!="None":
 			terrainX=int(terraincfg["Heightmap"]["Scale"][0])
@@ -53,7 +53,7 @@ class MapLoader():
 
 		if shared.FowManager!=None:
 			if shared.FowManager.created==False:
-				shared.FowManager.Create(int(terraincfg["Heightmap"]["Scale"][0]), int(terraincfg["Heightmap"]["Scale"][1]))
+				shared.FowManager.Create(int(terraincfg["Heightmap"]["Scale"][0]), int(terraincfg["Heightmap"]["Scale"][1]), shared.render3dTerrain.TerrainMaterial)
 
 class Map():
 	def __init__(self, mapfile):

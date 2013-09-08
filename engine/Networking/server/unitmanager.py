@@ -40,12 +40,10 @@ class UnitManager():
 		team = player.team
 		userid = player.UID
 		unitid = self.unitcount
-
 		newunit = self.create(player, name, unitid, pos)
 		if newunit:
 			attribs = newunit.pendingattrib.copy()
 			newunit.pendingattrib = {}
-			#nx, ny, nz = newunit._pos
 			shared.PlayerManager.Broadcast(4, "build", [name, userid, unitid, attribs])
 			self.unitcount+=1
 
@@ -61,6 +59,7 @@ class UnitManager():
 	def create(self, owner, name, uid, pos):
 		if name in self.unitscripts:
 			try:
+				#shared.Gamemode._playerReqUnit(owner, self.unitscripts[name])
 				newunit=self.unitscripts[name](uid, owner, pos)
 				owner.addUnit(newunit)
 				return newunit

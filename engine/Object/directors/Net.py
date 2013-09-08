@@ -62,7 +62,11 @@ class Director():
 		self.CurrentSelectedGroup=None
 
 		for x in self.selections:
-			unitID=int(split(x.getName(),"_")[1])
+			try:
+				unitID=int(split(x.getName(),"_")[1])
+			except:
+				shared.DPrint("NetDir", 5, "Name: "+str(x.getName())+" is not an valid unit name/ID!")
+				break
 			unit=shared.netUnitManager.getFromUID(unitID)
 			if unit:
 				if unit.GetOwner() == shared.SelfPlayer:
@@ -156,7 +160,12 @@ class Director():
 
 	def evt_actionclick(self, data, actionQueueing):
 		print("Data: "+str(data))
-		unitID=int(split(data,"_")[1])
+		try:
+			unitID=int(split(data,"_")[1])
+		except:
+			shared.DPrint("NetDir", 5, "Name: "+str(data)+" is not an valid unit name/ID!")
+			return None
+
 		print("UnitID: "+str(unitID))
 		unitRclicked=shared.netUnitManager.getFromUID(unitID)
 		if unitRclicked:

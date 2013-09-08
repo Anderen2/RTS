@@ -6,6 +6,9 @@ from ogre.renderer.OGRE import Degree, Vector3, Vector2
 
 from engine import debug, shared
 
+#Camera QueryFlag
+MASK_CAMERA = 1 << 5
+
 class Camera():
 	def __init__(self, root, scene):
 		self.root=root
@@ -13,6 +16,7 @@ class Camera():
 		self.camera = scene.sceneManager.createCamera("Camera")
 		self.camera.nearClipDistance = 10
 		self.camera.setFarClipDistance(10000)
+		self.camera.setQueryFlags(MASK_CAMERA)
 
 		print("LOD: !!!!!!!")
 		print(self.camera.getLodBias())

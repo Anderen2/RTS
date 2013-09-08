@@ -5,7 +5,7 @@ shared.logInit("mapeditor")
 shared.DPrint("Main",1,"Initializing Modules...")
 
 from engine.Render import render
-from engine.Object import unitmanager, prop, decorator, zone, directormanager
+from engine.Object import prop, decorator, zone, directormanager
 from engine.Networking.client import client
 from engine.World import maploader, pathfinding
 from engine.Tool.Mapeditor import globalgui, toolmanager, backend, mapfile
@@ -24,7 +24,7 @@ shared.render=render.RenderApplication(True) #Render should only Initialize, not
 
 #Managers
 shared.DPrint("Main",1,"Initializing Managers...")
-shared.unitManager=unitmanager.UnitManager()
+#shared.unitManager=unitmanager.UnitManager()
 shared.unitHandeler=shared.unitManager
 shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
@@ -56,7 +56,7 @@ shared.Pathfinder = pathfinding
 #Power it up!
 shared.DPrint("Main",1,"Startin' Powerin' up!..")
 shared.DPrint("Main",1,"PWR: UnitManager")
-shared.unitManager.PowerUp()
+#shared.unitManager.PowerUp()
 shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
 
@@ -70,7 +70,11 @@ shared.renderGUI.createDebugOnly()
 
 shared.renderioInput.SetupBare()
 
-shared.render3dSelectStuff.Trigger="decoNode"
+from engine.Render.render3dcamera import MASK_CAMERA
+from engine.Render.render3dwater import MASK_WATER
+from engine.Render.render3dent import MASK_UNIT, MASK_DECO, MASK_OTHER, MASK_GADGET
+from engine.Render.render3dterrain import MASK_TERRAIN
+shared.render3dSelectStuff.Trigger = MASK_UNIT | MASK_DECO | MASK_OTHER
 
 shared.DPrint("Main",1,"PWR: MapSetup")
 shared.Map.Setup()

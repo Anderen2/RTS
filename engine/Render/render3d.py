@@ -82,9 +82,7 @@ class Scene():
 
 	def FowSetup(self):
 		shared.DPrint("Render3d",1,"New FOWManager..")
-		#self, terrain, tsizex, tsizey, tsize)
-		shared.FowManager=render3dfow.FogOfWarListener("Template/Terrain")
-		#shared.FowManager.Create()
+		shared.FowManager=render3dfow.FogOfWarListener()
 
 	def PostFilterEnable(self,PF):
 		ogre.CompositorManager.getSingleton().addCompositor(shared.render3dCamera.viewPort, PF)

@@ -7,7 +7,7 @@ from engine.World import posalgo
 from traceback import print_exc
 
 class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
-	def __init__(self, terrain):
+	def __init__(self):
 		ogre.RenderTargetListener.__init__(self)
 		ogre.Node.Listener.__init__(self)
 		#self.terrain = terrain # this is a string corresponding to the name of the terrain material. Ex: "OceanCg" DEPREACIATED

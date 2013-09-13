@@ -422,18 +422,20 @@ class Entity():
 
 	def getAltitude(self):
 		Pos = self.GetPosition()
-		Raytrace=ogre.Ray()
-		Raytrace.setOrigin(Pos)
-		Raytrace.setDirection(ogre.Vector3().NEGATIVE_UNIT_Y)
-		self.raySceneQuery=shared.render3dScene.sceneManager.createRayQuery(Raytrace)
-		for queryResult in self.raySceneQuery.execute():
-			if queryResult.worldFragment is not None:  
-				return queryResult.distance
+		# Raytrace=ogre.Ray()
+		# Raytrace.setOrigin(Pos)
+		# Raytrace.setDirection(ogre.Vector3().NEGATIVE_UNIT_Y)
+		# self.raySceneQuery=shared.render3dScene.sceneManager.createRayQuery(Raytrace)
+		# for queryResult in self.raySceneQuery.execute():
+		# 	if queryResult.worldFragment is not None:  
+		# 		return queryResult.distance
+		talt = shared.render3dTerrain.getHeightAtPos(Pos[0], Pos[2])
+		return Pos[1] - talt
 
-	def Think(self):
+	def Think(self, delta):
 		if self.error!=True:
 			if self.curranim!=None and self.animtime!=None:
-				self.curranim.addTime(self.animtime)
+				self.curranim.addTime(self.animtime*delta)
 
 	def getIfAnimIsFinish(self):
 		if self.curranim!=None:

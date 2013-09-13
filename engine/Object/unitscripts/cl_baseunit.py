@@ -70,7 +70,6 @@ class BaseUnit():
 		self.Hook.new("OnDeselected", 0)
 
 	### UnitScript Functions
-
 	def GetID(self):
 		return int(self.ID)
 
@@ -117,6 +116,12 @@ class BaseUnit():
 	def GetViewRange(self):
 		return self._viewrange
 
+	def GetState(self):
+		if self._movetopoint!=None:
+			return "Moving"
+		else:
+			return "Idle"
+
 	def StartMoveEffect(self, mveff):
 		self._currentmoveeff = self._getMoveEffect(mveff)
 		self.Hook.call("OnMoveEffectStart", mveff)
@@ -144,7 +149,7 @@ class BaseUnit():
 		self.Hook.call("OnThink", delta)
 		self._entity.text.setText(self._text+": HP "+str(self.GetHealth()))
 		self._entity.text.update()
-		self._entity.Think()
+		self._entity.Think(delta)
 		if self._currentaction!=None:
 			self._currentaction.update()
 

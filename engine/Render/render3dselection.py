@@ -167,6 +167,7 @@ class SelectStuff():
 				print item.movable.getMovableType()
 
 				shared.DirectorManager.SelectedEvent(self.CurrentSelection)
+				break
 
 		if len(self.CurrentSelection):
 			for x in self.CurrentSelection:
@@ -177,19 +178,22 @@ class SelectStuff():
 		mouseRay=self.camera.camera.getCameraToViewportRay(mX, mY)
 		self.raySceneQuery.setRay(mouseRay)
 		self.raySceneQuery.setSortByDistance(True)
-		self.raySceneQuery.setQueryMask(MASK_TERRAIN | self.Trigger)
+		self.raySceneQuery.setQueryMask(self.Trigger | MASK_TERRAIN)
 		result=self.raySceneQuery.execute()
 		if len(result)>0:
 			depth = 4
+			unit = False
 			for item in result:
 				print item.movable.getName()
 				print item.movable.getParentSceneNode().getName()
 				print item.movable.getMovableType()
 				if item.movable and not "Unnamed" in item.movable.getParentSceneNode().getName() and not item.movable.getName() == "WaypointPath":
 					shared.DirectorManager.ActionEvent(item.movable.getParentSceneNode().getName())
+					unit = True
 					break
-
-				else:
+					
+			if not unit:
+				for item in result:
 					if depth<2:
 						depth+=1
 					else:

@@ -42,7 +42,8 @@ class Unit(BaseUnit):
 		self.GetEntity().actNone()
 
 	def RandomIdleAnim(self): #Custom callback defined in OnIdle
-		self.GetEntity().actIdle(True)
+		if self.GetState()=="Idle":
+			self.GetEntity().actIdle(True)
 
 	#Action Triggers
 	def OnPrimaryAction(self, unit):

@@ -75,6 +75,12 @@ class UnitManager():
 
 	### UnitGetters
 
+	def getUnit(self, UnitID):
+		if UnitID in self.unitscripts:
+			return self.unitscripts[UnitID]
+		else:
+			return None
+
 	def generateAllUnits(self, Player=None):
 		if not Player:
 			for player in shared.PlayerManager.PDict:

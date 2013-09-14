@@ -82,8 +82,14 @@ class UnitOpt():
 		if evt.button==CEGUI.LeftButton:
 			if self.currentgroup!=None:
 				#print(self.buttonindex)
-				for buttonid, (actionid, button) in self.buttonindex.iteritems():
-					if evt.window.getID() == button.getID():
+				for buttonid, buttondata in self.buttonindex.iteritems():
+					actionid, button = buttondata
+					print "Buttans"
+					print buttondata
+					if evt.window.getText() == button.getText():
+						print(buttonid)
+						print(button.getID())
+						print(evt.window.getID())
 						self.currentgroup.guiAddAction(actionid)
 					print(evt.window.getID(), button.getID())
 
@@ -109,10 +115,11 @@ class UnitOpt():
 						#print("\n\n\n\n\n\n")
 						print(self.actionbuttons[position])
 						self.buttonindex[position]=(actionid, self.actionbuttons[position])
+						self.buttonstaken.append(position)
 						
 					else:
 						shared.DPrint("UnitOpt", 2, "Button Position: "+str(position)+" requested by actionid: "+str(actionid)+" is already taken!")
-						self.buttonstaken.append((title, tooltip, position, actionid))
+						self.placelater.append((title, tooltip, position, actionid))
 
 			for title, tooltip, position, actionid in self.placelater:
 				for x in xrange(0, 15):
@@ -121,6 +128,8 @@ class UnitOpt():
 						self.actionbuttons[x].setTooltipText(tooltip)
 						self.actionbuttons[x].show()
 						self.buttonindex[x]=(actionid, self.actionbuttons[x])
+						self.buttonstaken.append(x)
+						break
 		else:
 			for button in self.actionbuttons:
 				button.hide()

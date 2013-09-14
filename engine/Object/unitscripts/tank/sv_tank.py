@@ -7,9 +7,13 @@ from engine.Object.unitscripts.sv_baseunit import BaseUnit
 #AddCSFile("cl_init.py")
 
 class Unit(BaseUnit):
+	Name = "Tank"
+	Description = "Type: Ground Armored Vehicle\nEffective against Infantry, Armored Units"
+	Image = "unit_tank"
+	Buildtime = 6
+	Cost = 500
 
 	def Initialize(self, ID):
-		self.Name = "tank"
 		self.SetEntity("tank")
 		self.SetSolid(True)
 

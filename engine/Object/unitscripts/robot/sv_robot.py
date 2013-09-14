@@ -7,8 +7,13 @@ from engine.Object.unitscripts.sv_baseunit import BaseUnit
 #AddCSFile("cl_init.py")
 
 class Unit(BaseUnit):
+	Name = "Robot"
+	Description = "Type: Ground Infantry / Worker\nEffective against Infantry, Airunits\nCan build structures"
+	Image = "unit_robot"
+	Buildtime = 3
+	Cost = 150
+
 	def Initialize(self, ID):
-		self.Name = "robot"
 		self.SetEntity("robot")
 		self.SetSolid(True)
 

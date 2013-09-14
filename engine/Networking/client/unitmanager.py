@@ -110,3 +110,10 @@ class UnitManager():
 
 		return False
 
+	def getUnit(self, UnitID):
+		if UnitID in self.unitscripts:
+			print("UnitID: "+UnitID)
+			return self.unitscripts[UnitID]
+		else:
+			print("UnitID: "+UnitID+" not here!")
+			return None

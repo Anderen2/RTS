@@ -6,9 +6,13 @@ from engine.Object.unitscripts.cl_baseunit import BaseUnit
 import cl_act
 
 class Unit(BaseUnit):
+	Name = "MIG"
+	Description = "Type: Air Fighter\nEffective against Airunits, Armored Units"
+	Image = "unit_mig"
+	Buildtime = 5
+	Cost = 750
 
 	def Initialize(self, ID):
-		self.Name = "MIG"
 		self.SetEntity("plane")
 		self.SetSelectedText("MIG "+str(self.GetID()))
 		self.Actions=[cl_act.Action]

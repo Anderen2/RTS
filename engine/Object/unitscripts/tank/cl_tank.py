@@ -5,9 +5,13 @@ from engine import shared, debug
 from engine.Object.unitscripts.cl_baseunit import BaseUnit
 
 class Unit(BaseUnit):
+	Name = "Tank"
+	Description = "Type: Ground Armored Vehicle\nEffective against Infantry, Armored Units"
+	Image = "unit_tank"
+	Buildtime = 6
+	Cost = 500
 
 	def Initialize(self, ID):
-		self.Name = "tank"
 		self.SetEntity("tank")
 		self.SetSelectedText("Tank "+str(self.GetID()))
 		self.Actions=[]

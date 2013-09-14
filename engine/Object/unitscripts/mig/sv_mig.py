@@ -8,9 +8,13 @@ import sv_act
 #AddCSFile("cl_init.py")
 
 class Unit(BaseUnit):
-	COST = 1500
+	Name = "MIG"
+	Description = "Type: Air Fighter\nEffective against Airunits, Armored Units"
+	Image = "unit_mig"
+	Buildtime = 5
+	Cost = 750
+
 	def Initialize(self, ID):
-		self.Name = "MIG"
 		self.SetEntity("plane")
 		self.SetSolid(True)
 

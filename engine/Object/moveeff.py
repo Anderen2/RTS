@@ -9,11 +9,12 @@ import ogre.renderer.OGRE as ogre
 def globDiveDie(Entity, delta):
 	#CurrentPos = Entity.GetPosition()
 	Altitude = Entity.getAltitude()
+	print(Altitude)
 	#print Altitude
 	if Altitude!=None:
 		if Altitude>5:
 			speedinc = 1*delta
-			altspeed = 10*delta
+			altspeed = 5*delta
 			rotspeed = (3000/Altitude)*delta
 			MovementDirection = Entity.lastMovementDirection
 			#print(MovementDirection)

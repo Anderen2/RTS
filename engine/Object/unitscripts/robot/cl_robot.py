@@ -3,6 +3,7 @@
 
 from engine import shared, debug
 from engine.Object.unitscripts.cl_baseunit import BaseUnit
+from engine.Object.unitact import cl_construct
 from ogre.renderer.OGRE import Degree
 
 class Unit(BaseUnit):
@@ -15,7 +16,7 @@ class Unit(BaseUnit):
 	def Initialize(self, ID):
 		self.SetEntity("robot")
 		self.SetSelectedText("Infantry "+str(self.GetID()))
-		self.Actions=[]
+		self.Actions=[cl_construct.generate("build")]
 
 		self.dead=False
 

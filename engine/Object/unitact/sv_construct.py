@@ -1,4 +1,4 @@
-#Build Unit Action
+#Construct Structure Action
 #Serverside Opt Action
 
 from engine import shared, debug
@@ -12,7 +12,7 @@ def generate(uid, desc=None, abortable=True, placement=None):
 		name = Unitmanager.getUnit(uid).Name
 		description = Unitmanager.getUnit(uid).Description
 		
-		waypointType = "Move"
+		waypointType = None
 		queueImage = Unitmanager.getUnit(uid).Image
 		actguiPlacement = placement
 		actguiImage = Unitmanager.getUnit(uid).Image
@@ -26,27 +26,17 @@ def generate(uid, desc=None, abortable=True, placement=None):
 			self.evt = evt
 			self.unit = unit
 
-			print(self.unit.Destination)
-			if self.unit.Destination!=None:
-				if type(self.unit.Destination)==tuple:
-					self.waypointPos = self.unit.Destination
-					print(self.waypointPos)
-				else:
-					self.waypointPos = self.unit.Destination._pos
-			else:
-				self.waypointPos = self.unit._pos
-
-			self.data = {"3dMouse":self.waypointPos}
-
 			self.progress=0
 
 			self.timeleft = self.buildtime
+			print(self.evt["placement"])
 
 		def begin(self):
+			self.constructionunit, self.constructiongroup = shared.UnitManager.build(self.actionid, self.unit._owner, self.evt["placement"], "const", {})
 			self.time = time()
 
 		def abort(self):
-			pass
+			self.constructiongroup.abortCurrentAction()
 
 		def finish(self):
 			pass
@@ -56,7 +46,10 @@ def generate(uid, desc=None, abortable=True, placement=None):
 			self.progress = (self.timeleft / self.buildtime)*100
 			#print(self.progress)
 			if self.timeleft>self.buildtime:
-				shared.UnitManager.build(self.actionid, self.unit._owner, self.unit._pos, "pri", {"3dMouse":self.waypointPos})
-				self.unit._actionfinish()
+				self.constructionDone()
+
+		def constructionDone(self):
+			self.unit._actionfinish()
+			self.constructionunit._actionfinish()
 	
 	return BaseAction

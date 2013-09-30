@@ -29,3 +29,13 @@ class Hook():
 				shared.DPrint("Hook", 2, "Function: '"+function.name+"' is already hooked to '"+hookname+"'!")
 		else:
 			shared.DPrint("Hook", 3, "Hook '"+hookname+"' does not exsist! Failed to add.")
+
+	def RM(self, hookname, function):
+		if hookname in self.grapplinghooks:
+			if function in self.grapplinghooks[hookname]["listeners"]:
+				self.grapplinghooks[hookname]["listeners"].remove(function)
+			else:
+				shared.DPrint("Hook", 2, "Cannot remove hook: Function: '"+function.name+"' not hooked to '"+hookname+"'!")
+
+		else:
+			shared.DPrint("Hook", 3, "Hook '"+hookname+"' does not exsist! Failed to remove.")

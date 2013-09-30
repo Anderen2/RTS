@@ -148,27 +148,62 @@ class UnitGroup():
 
 	#addAction puts the action at the end of their action queue, finishing all other actions before doing the new one
 	def requestActionAdd(self, actionid, data):
-		if self.gid<0:
-			self.actiondelay.append((actionid, data))
+		if "presend" in dir(self.getActionByID(actionid)):
+			presend = self.getActionByID(actionid).presend(self, data, "Add")
+			if presend == None or type(presend)!=type(True):
+				if presend!=None:
+					data.append(presend)
+				if self.gid<0:
+					self.actiondelay.append((actionid, data))
+				else:
+					shared.protocol.sendMethod(5, "req_groupactionadd", [self.gid, actionid, data])
+					self.requestActionQueue()
 		else:
-			shared.protocol.sendMethod(5, "req_groupactionadd", [self.gid, actionid, data])
-			self.requestActionQueue()
+			if self.gid<0:
+					self.actiondelay.append((actionid, data))
+			else:
+				shared.protocol.sendMethod(5, "req_groupactionadd", [self.gid, actionid, data])
+				self.requestActionQueue()
+
 
 	#ActionNow allows the unit to "pause" the current action to do something else, for then to continue after it is done with the new action
 	def requestActionNow(self, actionid, data):
-		if self.gid<0:
-			self.actiondelay.append((actionid, data))
+		if "presend" in dir(self.getActionByID(actionid)):
+			presend = self.getActionByID(actionid).presend(self, data, "Now")
+			if presend == None or type(presend)!=type(True):
+				if presend!=None:
+					data.append(presend)
+				if self.gid<0:
+					self.actiondelay.append((actionid, data))
+				else:
+					shared.protocol.sendMethod(5, "req_groupactionnow", [self.gid, actionid, data])
+					self.requestActionQueue()
+
 		else:
-			shared.protocol.sendMethod(5, "req_groupactionnow", [self.gid, actionid, data])
-			self.requestActionQueue()
+			if self.gid<0:
+					self.actiondelay.append((actionid, data))
+			else:
+				shared.protocol.sendMethod(5, "req_groupactionnow", [self.gid, actionid, data])
+				self.requestActionQueue()
 
 	#doAction simply makes all the units screw what ever they are doing, forget it and do the action
 	def requestActionDo(self, actionid, data):
-		if self.gid<0:
-			self.actiondelay.append((actionid, data))
+		if "presend" in dir(self.getActionByID(actionid)):
+			presend = self.getActionByID(actionid).presend(self, data, "Do")
+			if presend == None or type(presend)!=type(True):
+				if presend!=None:
+					data.append(presend)
+				if self.gid<0:
+					self.actiondelay.append((actionid, data))
+				else:
+					shared.protocol.sendMethod(5, "req_groupactiondo", [self.gid, actionid, data])
+					self.requestActionQueue()
 		else:
-			shared.protocol.sendMethod(5, "req_groupactiondo", [self.gid, actionid, data])
-			self.requestActionQueue()
+			if self.gid<0:
+					self.actiondelay.append((actionid, data))
+			else:
+				shared.protocol.sendMethod(5, "req_groupactiondo", [self.gid, actionid, data])
+				self.requestActionQueue()
 
 	def requestResend(self):
 		for request in self.actiondelay:

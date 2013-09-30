@@ -3,6 +3,7 @@
 
 from engine import shared, debug
 from engine.Object.unitscripts.sv_baseunit import BaseUnit
+from engine.Object.unitact import sv_construct
 
 #AddCSFile("cl_init.py")
 
@@ -17,7 +18,7 @@ class Unit(BaseUnit):
 		self.SetEntity("robot")
 		self.SetSolid(True)
 
-		self.Actions=[]
+		self.Actions=[sv_construct.generate("build")]
 
 		self.SetMoveType(1) #MOVETYPE_GROUND
 		self.SetMoveSpeed(50)

@@ -165,6 +165,18 @@ class BaseUnit():
 			self._group.unitDown(self)
 		self._owner.Units.remove(self)
 
+	def _hackishDie(self):
+		#DO NOT CALL THIS THING
+		#This is only to be used when the action-abort requires unit death!
+		self._abortAction = self._____donotcallme
+		self.Hook.call("OnDeath", "LastDamageType Here!")
+		if self._group!=None:
+			self._group.unitDown(self)
+		self._owner.Units.remove(self)
+
+	def _____donotcallme(self):
+		self._currentaction=None
+
 
 	## NON-Networked (Mostly stuff handeled by the groupmanager instead)
 

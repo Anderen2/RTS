@@ -51,6 +51,9 @@ class UnitManager():
 				newgroup = shared.GroupManager.createGroup(False, [newunit], player)
 				action = newgroup.getActionByID(act)
 				newgroup.doAction(action, data)
+				return newunit, newgroup
+
+			return newunit
 
 		else:
 			shared.DPrint(5, "netUnitManager", "Player: "+player.username+" tried to build an unit ("+str(name)+") but failed!")

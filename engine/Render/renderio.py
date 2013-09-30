@@ -2,7 +2,8 @@
 #Handles Input/Output devices
 
 from time import time
-from engine import shared
+from engine import shared, debug
+from engine.Lib.hook import Hook
 from ogre.renderer.OGRE import FrameListener, Degree, Vector3, Vector2
 from ogre.gui.CEGUI import System, MouseCursor, LeftButton, RightButton, MiddleButton
 import ogre.io.OIS as OIS
@@ -26,6 +27,15 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		OIS.MouseListener.__init__(self)
 		OIS.KeyListener.__init__(self)
 		self.oldinf=0
+
+		self.Hook = Hook(self)
+		self.Hook.new("OnMousePressed", 2) #Key, Pos
+		self.Hook.new("OnMouseReleased", 2) #Key, Pos
+		self.Hook.new("OnMouseMove", 1) #Pos
+		self.Hook.new("OnKeyPressed", 1) #Key
+		self.Hook.new("OnKeyReleased", 1) #Key
+		self.Hook.new("OnMouseStateChanged", 1) #State
+		self.Hook.new("OnKeyStateChanged", 1) #State
 
 	def SetupBare(self):
 		shared.DPrint("RenderIO",1,"Setting up OIS")
@@ -141,6 +151,8 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		return not (self.Keyboard.isKeyDown(OIS.KC_ESCAPE) and self.Keyboard.isKeyDown(OIS.KC_LSHIFT))
 
 	def mouseMoved(self, evt):
+		self.Hook.call("OnMouseMove", (evt.get_state().X, evt.get_state().Y))
+
 		if self.CurrentMiceInterface!=self.oldinf:
 			#print self.CurrentMiceInterface
 			self.oldinf=self.CurrentMiceInterface
@@ -165,6 +177,8 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 
 	def mousePressed(self, evt, id):
 		mousePos = MouseCursor.getSingleton().getPosition()
+		self.Hook.call("OnMousePressed", id, mousePos)
+
 		if self.CurrentMiceInterface==1:
 			#This toggles automaticly in rendergui when you hover over a gui element
 			System.getSingleton().injectMouseButtonDown(convertButton(id)) #GUI Events
@@ -214,6 +228,8 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			shared.mapBackend.MousePressed(id)
 
 	def mouseReleased(self, evt, id):
+		mousePos = MouseCursor.getSingleton().getPosition()
+		self.Hook.call("OnMouseReleased", id, mousePos)
 		if self.CurrentMiceInterface==1:
 			System.getSingleton().injectMouseButtonUp(convertButton(id)) #GUI Events
 
@@ -229,6 +245,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			shared.mapBackend.MouseReleased(id)
 
 	def keyPressed(self, evt):
+		self.Hook.call("OnKeyPressed", evt.key)
 		if self.CurrentKeyInterface==1:
 			#GUI Events
 			ceguiSystem = System.getSingleton()
@@ -257,6 +274,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 
 
 	def keyReleased(self, evt):
+		self.Hook.call("OnKeyReleased", evt.key)
 		#GUI Events
 		if self.CurrentKeyInterface==1:
 			System.getSingleton().injectKeyUp(evt.key)

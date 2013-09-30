@@ -222,11 +222,12 @@ class UnitGroup():
 
 	#doAction simply makes all the units screw what ever they are doing, forget it and do the action
 	def doAction(self, action, data):
-		if len(self.actionQueue)!=0:
-			self.abortCurrentAction(wait=True)
-		self.actionQueue=[]
-		self.actionQueue.insert(0, (action, data))
-		self.beginNextAction(doNotPop=True)
+		if len(self.actionQueue)==0 or self.actionQueue[0][0].abortable:
+			if len(self.actionQueue)!=0:
+				self.abortCurrentAction(wait=True)
+			self.actionQueue=[]
+			self.actionQueue.insert(0, (action, data))
+			self.beginNextAction(doNotPop=True)
 
 	#addActionNow allows the unit to "pause" the current action to do something else, for then to continue after it is done with the new action
 	def addActionNow(self, action, data):

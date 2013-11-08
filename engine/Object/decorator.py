@@ -2,6 +2,7 @@
 #This module keeps track of the different decorators on the map, aswell as creating, destroying and managing them
 
 from engine import shared, debug
+from engine.Lib import suf
 from ogre.renderer.OGRE import FrameListener
 import traceback
 
@@ -22,6 +23,9 @@ class DecoratorHandeler(FrameListener):
 		pointer=Decoration(ID, name, pos, rot)
 
 		self.decorators[ID]=pointer
+
+		if shared.Pathfinder.aStarPath != None:
+			suf.WaitOneTick(shared.Pathfinder.aStarPath.calculateSceneNodeCost, pointer.entity.node) #We have to wait one Tick/Frame for Ogre to properly update the scenenodes AABB
 
 		return pointer
 

@@ -53,7 +53,7 @@ class Terrain():
 		baseTexture.setTextureName(base)
 		baseTexture.setTextureScale(1, 1)
 
-		if platform() != "FGLRX BETA": #FGLRX/Catalyst on Linux is so shitty that they broke blendmaps in their latest driver (So if we are running linux, only use basetexture (FIXED)) ## FUTURE GFX OPTION!
+		if platform() != "L1inux": #FGLRX/Catalyst on Linux is so shitty that they broke blendmaps in their latest driver (So if we are running linux, only use basetexture (FIXED)) ## FUTURE GFX OPTION!
 			for texture, alphamap in splatting.iteritems():
 				splattingPass = Technique.createPass()
 				splattingPass.setLightingEnabled(False)

@@ -23,7 +23,7 @@ def Move(source, destination, speed, movetype):
 def MoveAIR(source, destination, speed):
 	src2d = (source[0], source[2])
 	x, z, dist = shared.Pathfinder.ABPath.GetNextCoord(src2d, destination, speed)
-	if shared.side == "Client":
+	if shared.side == "Client" or shared.side=="Tool":
 		y = shared.render3dTerrain.getHeightAtPos(x, z) + 100
 	else:
 		y = shared.Map.Terrain.getHeightAtPos(x, z) + 100
@@ -32,7 +32,7 @@ def MoveAIR(source, destination, speed):
 def MoveGND(source, destination, speed):
 	src2d = (source[0], source[2])
 	x, z, dist = shared.Pathfinder.ABPath.GetNextCoord(src2d, destination, speed)
-	if shared.side == "Client":
+	if shared.side == "Client" or shared.side=="Tool":
 		y = shared.render3dTerrain.getHeightAtPos(x, z)+1
 	else:
 		y = shared.Map.Terrain.getHeightAtPos(x, z)+1

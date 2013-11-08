@@ -17,7 +17,7 @@ class Hook():
 	def call(self, hookname, *args):
 		if hookname in self.grapplinghooks:
 			for function in self.grapplinghooks[hookname]["listeners"]:
-				function(*args)
+				return function(*args)
 		else:
 			shared.DPrint("Hook", 2, "Hook '"+hookname+"' does not exsist! Failed to call.")
 

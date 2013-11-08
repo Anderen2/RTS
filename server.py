@@ -1,5 +1,5 @@
 #Dedicated Server - Main
-import algotest
+#import algotest
 from engine import shared, debug
 from engine.Networking import sh_netObject, TwCLI
 from engine.Networking.server import server

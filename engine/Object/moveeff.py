@@ -14,7 +14,7 @@ def globDiveDie(Entity, delta):
 	if Altitude!=None:
 		if Altitude>5:
 			speedinc = 1*delta
-			altspeed = 5*delta
+			altspeed = 3*delta
 			rotspeed = (3000/Altitude)*delta
 			MovementDirection = Entity.lastMovementDirection
 			#print(MovementDirection)

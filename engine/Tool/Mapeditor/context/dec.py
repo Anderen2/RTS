@@ -19,7 +19,10 @@ class contextDec():
 		shared.decHandeler.Create(Units[len(Units)-1].entity.Type, pos=PosTup)
 
 	def sProp(self):
-		pass
+		Units=self.getUnits()
+		Position=Units[len(Units)-1].entity.node.getPosition()
+		PosTup=(Position.x, Position.y, Position.z)
+		print("Position: (%d, %d, %d)" % (PosTup[0], PosTup[1], PosTup[2]))
 
 	def sScript(self):
 		pass

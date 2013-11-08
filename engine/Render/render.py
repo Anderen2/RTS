@@ -3,6 +3,7 @@
 import render3d, rendergui, renderio, renderphys, renderconsole
 from twisted.internet import reactor
 from engine import shared, debug
+from engine.Lib.hook import Hook
 from time import gmtime, sleep, time
 from traceback import print_exc
 import ogre.renderer.OGRE as ogre
@@ -115,7 +116,12 @@ class RenderApplication(object):
 			for x in self.renderqueue:
 				if not x.frameRenderingQueued(self.deltatime):
 					reactor.stop()
+					print_exc()
 		except:
+			reactor.stop()
+			print_exc()
+
+		if self.Hook.call("OnRenderFrame", self.deltatime) == False:
 			reactor.stop()
 			print_exc()
 
@@ -134,6 +140,10 @@ class RenderApplication(object):
 		shared.DPrint("Render",1,"Starting renderloop")
 		#self.root.startRendering()
 		self.weu = ogre.WindowEventUtilities()
+
+		self.Hook = Hook(self)
+		self.Hook.new("OnRenderFrame", 1) #Deltatime
+
 		reactor.callLater(0,self.renderHook)
 
 		self.alphatime=time()

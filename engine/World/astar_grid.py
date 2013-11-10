@@ -30,10 +30,35 @@ class AStarGraph():
 	def generateGraph(self, mapscale, scale):
 		"""Generates an complete Graph with the specified dimensions"""
 		print("Generating A* Graph..")
+		self.localscale = (mapscale / scale)+1
 		self.mapscale = mapscale
 		self.scale = scale
-		self.localscale = mapscale / scale
+		self.realscale = float(float(self.mapscale) / float(self.localscale))
+		print("A* Mapscale=%d | Scale=%d | Localscale=%d | Realscale=%f" % (self.mapscale, self.scale, self.localscale, self.realscale))
+
 		self.nodes = [[AStarGridNode(x, y) for y in range(self.localscale)] for x in range(self.localscale)]
+		self.totnodes = []
+		self.graph = {}
+		for x, y in product(range(self.localscale), range(self.localscale)):
+			node = self.nodes[x][y]
+			self.totnodes.append(node)
+			self.graph[node] = []
+			for i, j in product([-1, 0, 1], [-1, 0, 1]):
+				if not (0 <= x + i < self.localscale): continue
+				if not (0 <= y + j < self.localscale): continue
+				self.graph[self.nodes[x][y]].append(self.nodes[x+i][y+j])
+		return self.graph, self.nodes
+
+	def regenerateGraph(self, mapscale, scale, nodes):
+		"""Regenerates an complete Graph with the specified dimensions and with the specified exsisting set of nodes"""
+		print("Regenerating A* Graph..")
+		self.localscale = (mapscale / scale)+1
+		self.mapscale = mapscale
+		self.scale = scale
+		self.realscale = float(float(self.mapscale) / float(self.localscale))
+		print("A* Mapscale=%d | Scale=%d | Localscale=%d | Realscale=%f" % (self.mapscale, self.scale, self.localscale, self.realscale))
+
+		self.nodes = nodes
 		self.totnodes = []
 		self.graph = {}
 		for x, y in product(range(self.localscale), range(self.localscale)):
@@ -52,14 +77,30 @@ class AStarGraph():
 
 	def getNode(self, x, y):
 		"""Returns the node at that grid position"""
+		if x>self.localscale-1:
+			x = self.localscale-1
+			shared.DPrint("AStar", 2, "getNode: Position out of bounds! Clamping to localscale")
+		if y>self.localscale-1:
+			y = self.localscale-1
+			shared.DPrint("AStar", 2, "getNode: Position out of bounds! Clamping to localscale")
+
 		return self.nodes[x][y]
 
 	def getNodeAtWPos(self, x, y):
 		"""Returns the node at that world position"""
-		nx = int( (float(float(x) / float(self.mapscale)) * float(float(self.localscale) / float(100)))*float(100) )
-		ny = int( (float(float(y) / float(self.mapscale)) * float(float(self.localscale) / float(100)))*float(100) )
-		print "(%d, %d)" % (nx, ny)
+		#nx = int( (float(float(x) / float(self.mapscale)) * float(float(self.localscale) / float(100)))*float(100) )
+		#ny = int( (float(float(y) / float(self.mapscale)) * float(float(self.localscale) / float(100)))*float(100) )
+		nx = int(round(float(x) / float(self.realscale)))
+		ny = int(round(float(y) / float(self.realscale)))
+		#print "(%d, %d)" % (nx, ny)
 		return self.getNode(nx, ny)
+
+	def convertLPosToWPos(self, x, y):
+		"""Returns the worldpos for that localpos"""
+		nx = int( (float(float(x) * float(self.realscale))))
+		ny = int( (float(float(y) * float(self.realscale))))
+		#print "(%d, %d)" % (nx, ny)
+		return (nx, ny)
 
 	def setNodeCost(self, node, cost):
 		"""Sets the nodes current and default cost"""
@@ -67,14 +108,14 @@ class AStarGraph():
 		node.dc = cost
 
 	def setNodeCost2(self, x, y, cost):
-		self.setNodeCost(self.getNode(int(x), int(y)), int(cost))
+		self.setNodeCost(self.getNodeAtWPos(int(x), int(y)), int(cost))
 
 	def setNodeWalkable(self, node, walkable):
 		"""Sets if the node is walkable or not"""
 		if walkable:
 			node.c = node.dc
 		else:
-			node.c = 99999
+			node.c = 1000
 
 	def calculateSceneNodeCost(self, ogrescenenode):
 		AABB = ogrescenenode._getWorldAABB()
@@ -86,8 +127,8 @@ class AStarGraph():
 
 		CoordinateRange = []
 
-		for x in range(int(xy1[0]), int(xy2[0]+1)):
-			for y in range(int(xy1[1]), int(xy2[1]+1)):
+		for x in xrange(int(xy1[0]), int(xy2[0]+1)):
+			for y in xrange(int(xy1[1]), int(xy2[1]+1)):
 				CoordinateRange.append((x, y))
 
 		#print("%s xy1" % (str(xy1)))
@@ -96,8 +137,9 @@ class AStarGraph():
 
 		print("Setting coord..")
 		for coord in CoordinateRange:
-			self.setNodeWalkable(self.getNodeAtWPos(coord[0], coord[1]), False)
-			pass
+			if coord[0]<self.mapscale and coord[1]<self.mapscale:
+				self.setNodeWalkable(self.getNodeAtWPos(coord[0], coord[1]), False)
+			
 
 	def Search(self, start, end):
 		"""Takes an endnode and an startnode, returns all the nodes required to traverse to get to the goal"""
@@ -115,6 +157,6 @@ class AStarGraph():
 		coordpath = []
 
 		for node in path:
-			coordpath.append((node.x*self.scale, node.y*self.scale))
+			coordpath.append((node.x*self.realscale, node.y*self.realscale))
 
 		return coordpath

@@ -67,7 +67,7 @@ def Quad(Name, material, SizeX, SizeZ, Mesh=None):
 	return decal
 
 def Tetra(Name, material, scale, Mesh=None):
-	DPrint("Render3dShapes",0,"Defining Tetrahedron: "+Name+" with material "+material+" and scale: "+str(scale))
+	DPrint("Render3dShapes",0,"Defining Tetrahedron: "+Name+" with material "+str(material)+" and scale: "+str(scale))
 	shape=ogre.ManualObject("Tetra")
 
 	Vec=[0,0,0,0]

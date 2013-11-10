@@ -24,8 +24,8 @@ class DecoratorHandeler(FrameListener):
 
 		self.decorators[ID]=pointer
 
-		if shared.Pathfinder.aStarPath != None:
-			suf.WaitOneTick(shared.Pathfinder.aStarPath.calculateSceneNodeCost, pointer.entity.node) #We have to wait one Tick/Frame for Ogre to properly update the scenenodes AABB
+		#if shared.Pathfinder.aStarPath != None:
+		#	suf.WaitOneTick(shared.Pathfinder.aStarPath.calculateSceneNodeCost, pointer.entity.node) #We have to wait one Tick/Frame for Ogre to properly update the scenenodes AABB
 
 		return pointer
 

@@ -2,7 +2,7 @@
 #Classes for rendering 3d enviroment
 #By Anderen2 (Dec. 2012)
 
-import render3dent, render3deffects, render3ddecal, render3dterrain, render3dwaypoint, render3dwater, render3dcamera, render3dfow, render3dselection
+import render3dent, render3deffects, render3ddecal, render3dterrain, render3dwaypoint, render3dwater, render3dcamera, render3dfow, render3dselection, render3ddebug
 from engine.Object import projectiles
 from engine import shared, debug
 import ogre.renderer.OGRE as ogre
@@ -68,6 +68,9 @@ class Scene():
 
 		shared.DPrint("Render3d",1,"WaterManager..")
 		shared.WaterManager=render3dwater.WaterManager()
+
+		shared.DPrint("Render3d",1,"Debugtools..")
+		shared.RenderDebug=render3ddebug.aStarView()		
 
 		debug.ACC("r_pfenable", self.PostFilterEnable, info="Enable a postfilter", args=1)
 		debug.ACC("r_pfdisable", self.PostFilterDisable, info="Disable a postfilter", args=1)

@@ -115,7 +115,7 @@ class aStar():
 
 ABPath=AB()
 aStarPath=astar_grid.AStarGraph()
-aStarPath.generateGraph(1500, 32)
+aStarPath.generateGraph(1500, 30)
 aStarPath.generateSearchGrid()
 
 def testDecoMove(decid, startx, starty, endx, endy):

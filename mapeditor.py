@@ -8,6 +8,7 @@ from engine.Render import render
 from engine.Object import prop, decorator, zone, directormanager
 from engine.Networking.client import client
 from engine.World import maploader, pathfinding
+from engine.Tool import astarGen
 from engine.Tool.Mapeditor import globalgui, toolmanager, backend, mapfile
 
 shared.wd="./Data/Map/"
@@ -30,6 +31,7 @@ shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
 shared.zoneManager=zone.zoneManager()
 
+#Mapeditor spesific
 shared.toolManager=toolmanager.ToolManager()
 shared.mapBackend=backend.MapeditorBackend()
 
@@ -52,6 +54,7 @@ shared.DirectorManager.Action("Mapeditor")
 
 #Pathfinding
 shared.Pathfinder = pathfinding
+shared.astarGen=astarGen.aStarGenerators()
 
 #Power it up!
 shared.DPrint("Main",1,"Startin' Powerin' up!..")

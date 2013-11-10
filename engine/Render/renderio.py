@@ -37,6 +37,9 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		self.Hook.new("OnMouseStateChanged", 1) #State
 		self.Hook.new("OnKeyStateChanged", 1) #State
 
+		#Keys registred for outside functions
+		self.regkeys = {}
+
 	def SetupBare(self):
 		shared.DPrint("RenderIO",1,"Setting up OIS")
 		renderWindow = shared.renderRoot.getAutoCreatedWindow()
@@ -244,6 +247,24 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			#MapBuilder Tool Hooks
 			shared.mapBackend.MouseReleased(id)
 
+	def registerKeyEvent(self, key, pressfunc, releasefunc, force=False):
+		if not key in self.regkeys:
+			shared.DPrint("renderio", 0, "Key: "+str(key)+" registred to functions: "+str((pressfunc, releasefunc)))
+			self.regkeys[key]=(pressfunc, releasefunc)
+		else:
+			if force:
+				shared.DPrint("renderio", 1, "Key: "+str(key)+" forcibly registred to functions: "+str((pressfunc, releasefunc)))
+				self.regkeys[key]=(pressfunc, releasefunc)
+			else:
+				shared.DPrint("renderio", 2, "Key: "+str(key)+" tried to be bound to: "+str((pressfunc, releasefunc))+" but the key is already bound to: "+str(self.regkeys[key])+" !")
+
+	def removeKeyEvent(self, key):
+		if key in self.regkeys:
+			del self.regkeys[key]
+		else:
+			shared.DPrint("renderio", 2, "Tried to remove unbounded key: "+str(key)+" !")
+
+
 	def keyPressed(self, evt):
 		self.Hook.call("OnKeyPressed", evt.key)
 		if self.CurrentKeyInterface==1:
@@ -252,11 +273,17 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			ceguiSystem.injectKeyDown(evt.key)
 			ceguiSystem.injectChar(evt.text)
 
-		if self.CurrentKeyInterface==2:
+		elif self.CurrentKeyInterface==2:
 			#Console Events
 			if shared.console.visible:
 				if evt.key!=self.keys["console"]:
 					shared.console.keyPressed(evt)
+
+		else:
+			#Registered keys
+			if evt.key in self.regkeys:
+				if self.regkeys[evt.key][0]!=None:
+					self.regkeys[evt.key][0]() #Call the pressedfunction for the key
 
 		#Global Keys:
 		if evt.key==self.keys["console"]:
@@ -278,6 +305,12 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		#GUI Events
 		if self.CurrentKeyInterface==1:
 			System.getSingleton().injectKeyUp(evt.key)
+
+		else:
+			#Registered keys
+			if evt.key in self.regkeys:
+				if self.regkeys[evt.key][1]!=None:
+					self.regkeys[evt.key][1]() #Call the releasedfunction for the key
 
 		if evt.key==self.keys["camstear"]:
 			self.CurrentMiceInterface=self.OldMiceInterface

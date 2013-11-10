@@ -48,7 +48,7 @@ class AStar(object):
 
 
 			for node in self.graph[current]:
-				if node in closedset or node.c>9999:
+				if node in closedset or node.c>999:
 					continue
 
 				if node in openset:
@@ -69,6 +69,7 @@ class AStarNode(object):
 		self.g = 0
 		self.h = 0
 		self.c = 0
+		self.dc = 0
 		self.parent = None
 		
 	def move_cost(self, other):

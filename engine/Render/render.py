@@ -31,6 +31,7 @@ class RenderApplication(object):
 		self.setupRenderSystem()
 		self.createRenderWindow()
 		self.initializeResourceGroups()
+		self.initializeInputSystem()
 		self.setupScene()
 		self.setupInputSystem()
 		self.setupCEGUI()
@@ -71,6 +72,10 @@ class RenderApplication(object):
 		shared.DPrint("Render",1,"Initializing Resource Groups")
 		ogre.TextureManager.getSingleton().setDefaultNumMipmaps(5)
 		ogre.ResourceGroupManager.getSingleton().initialiseAllResourceGroups()
+
+	def initializeInputSystem(self):
+		shared.DPrint("Render",1,"Initializing InputSystem")
+		shared.renderioInput=renderio.Input()
  
 	def setupScene(self):
 		shared.DPrint("Render",1,"Setting up scene")
@@ -82,9 +87,8 @@ class RenderApplication(object):
 			shared.render3dScene.FowSetup()
 		 
 	def setupInputSystem(self):
-		shared.DPrint("Render",1,"Setting up I/O")
-		shared.renderioInput=renderio.Input()
 		if not self.BARE:
+			shared.DPrint("Render",1,"Setting up InputSystem")
 			shared.renderioInput.Setup()
  
 	def setupCEGUI(self):

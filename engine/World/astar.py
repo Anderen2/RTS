@@ -5,7 +5,8 @@ class AStar(object):
 	def heuristic(self, node, start, end):
 		raise NotImplementedError
 		
-	def search(self, start, end):
+	def search(self, start, end, allowedtypes=[]):
+		print (("allowedtypes = %r") % allowedtypes)
 		openset = set()
 		closedset = set()
 		current = start
@@ -48,7 +49,7 @@ class AStar(object):
 
 
 			for node in self.graph[current]:
-				if node in closedset or node.c>999:
+				if node in closedset or node.c>999 or not node.type in allowedtypes:
 					continue
 
 				if node in openset:
@@ -66,10 +67,11 @@ class AStar(object):
 
 class AStarNode(object):
 	def __init__(self):
-		self.g = 0
-		self.h = 0
-		self.c = 0
-		self.dc = 0
+		self.g = 0 #Node g score
+		self.h = 0 #Node heuristic
+		self.c = 0 #Node cost
+		self.type = 0 #Node type
+		self.dc = 0 #Node default cost (Aka. map loadtime cost)
 		self.parent = None
 		
 	def move_cost(self, other):

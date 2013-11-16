@@ -3,8 +3,8 @@ from astar import AStar, AStarNode
 from math import sqrt
 from itertools import product
 
-if shared.side!="Server":
-	import ogre.renderer.OGRE as ogre
+#if shared.side!="Server":
+#	import ogre.renderer.OGRE as ogre
 
 class AStarGrid(AStar):
 	def heuristic(self, node, start, end):
@@ -117,42 +117,22 @@ class AStarGraph():
 		else:
 			node.c = 1000
 
-	def calculateSceneNodeCost(self, ogrescenenode):
-		AABB = ogrescenenode._getWorldAABB()
-		xyz1 = AABB.getCorner(ogre.AxisAlignedBox.FAR_LEFT_BOTTOM)
-		xyz2 = AABB.getCorner(ogre.AxisAlignedBox.NEAR_RIGHT_BOTTOM)
-
-		xy1 = (xyz1.x, xyz1.z)
-		xy2 = (xyz2.x, xyz2.z)
-
-		CoordinateRange = []
-
-		for x in xrange(int(xy1[0]), int(xy2[0]+1)):
-			for y in xrange(int(xy1[1]), int(xy2[1]+1)):
-				CoordinateRange.append((x, y))
-
-		#print("%s xy1" % (str(xy1)))
-		#print("%s xy2" % (str(xy2)))
-		#print("%d px2" % (len(CoordinateRange)))
-
-		print("Setting coord..")
-		for coord in CoordinateRange:
-			if coord[0]<self.mapscale and coord[1]<self.mapscale:
-				self.setNodeWalkable(self.getNodeAtWPos(coord[0], coord[1]), False)
+	def setNodeType(self, node, nodetype):
+		node.type = nodetype
 			
-
-	def Search(self, start, end):
+	def Search(self, start, end, allowedtypes=[0]):
 		"""Takes an endnode and an startnode, returns all the nodes required to traverse to get to the goal"""
 		print("Searching grid...")
 		for node in self.totnodes:
 			node.g = 0
 			node.h = 0
-		return self.grid.search(start, end)
+			node.parent = None
+		return self.grid.search(start, end, allowedtypes=allowedtypes)
 
-	def Search2(self, start, end):
+	def Search2(self, start, end, allowedtypes=[0]):
 		"""Takes an startpos WORLD(x,y) and an endpos, returns a list of WORLD positions required to traverse to get to the goal"""
 		print("Getting path between node at: %r (%d, %d) and node: %r (%d, %d)" % (self.getNodeAtWPos(start[0], start[1]), start[0], start[1], self.getNodeAtWPos(end[0], end[1]), end[0], end[1]))
-		path = self.Search(self.getNodeAtWPos(start[0], start[1]), self.getNodeAtWPos(end[0], end[1]))
+		path = self.Search(self.getNodeAtWPos(start[0], start[1]), self.getNodeAtWPos(end[0], end[1]), allowedtypes=allowedtypes)
 		print("Found path, converting to coordpath...")
 		coordpath = []
 

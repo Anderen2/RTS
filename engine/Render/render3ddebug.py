@@ -21,25 +21,36 @@ class aStarView():
 		shared.renderioInput.registerKeyEvent(KC_F2, self.toggle, None)
 
 	def toggle(self):
-		if self.status:
-			self.offline()
-		else:
+		print("KC_F2")
+		if self.status == False:
+			print("toggle false")
+			self.status = 1
 			self.online()
+			
+		elif self.status == 1:
+			print("toggle 1")
+			self.status = 2
+			self.offline()
+			self.online()
+			
+		elif self.status == 2:
+			print("toggle 2")
+			self.status = False
+			self.offline()
 
 	def online(self):
 		i = 0
 		for node in shared.Pathfinder.aStarPath.totnodes:
 			newent = shared.render3dScene.sceneManager.createEntity("astarent"+str(i), "astar")
 			newmat = self.basemat.clone("astarnodemat"+str(i))
-			if node.c<500:
-				nodecost = float(float(node.c)/float(500))
-				newmat.getTechnique(0).getPass(0).setAmbient(nodecost, float(float(1)-(nodecost*float(2))),0)
-			elif node.c<1000:
-				nodecost = float(float(node.c)/float(1000))
-				newmat.getTechnique(0).getPass(0).setAmbient(float(float(1)-(nodecost)), 0, nodecost)
-			else:
-				nodecost = 0
-				newmat.getTechnique(0).getPass(0).setAmbient(0, 0, 0)
+			
+			if self.status == 1:
+				#print("typeView")
+				self.typeView(node, newmat)
+
+			elif self.status == 2:
+				#print("costView")
+				self.costView(node, newmat)
 			
 			newmat.getTechnique(0).getPass(0).setDiffuse(0.5, 0.5, 0.5, 1)
 			newent.setMaterial(newmat)
@@ -53,7 +64,25 @@ class aStarView():
 			self.entnodes.append(newnode)
 			self.entmats.append(newmat)
 			i+=1
-		self.status = True
+
+	def costView(self, node, newmat):
+		if node.c<500:
+			nodecost = float(float(node.c)/float(500))
+			newmat.getTechnique(0).getPass(0).setAmbient(nodecost, float(float(1)-(nodecost*float(2))),0)
+		elif node.c<1000:
+			nodecost = float(float(node.c)/float(1000))
+			newmat.getTechnique(0).getPass(0).setAmbient(float(float(1)-(nodecost)), 0, nodecost)
+		else:
+			nodecost = 0
+			newmat.getTechnique(0).getPass(0).setAmbient(0, 0, 0)
+
+	def typeView(self, node, newmat):
+		if node.type==0:
+			newmat.getTechnique(0).getPass(0).setAmbient(1,1,0)
+		elif node.type==1:
+			newmat.getTechnique(0).getPass(0).setAmbient(0, 0, 1)
+		elif node.type==2:
+			newmat.getTechnique(0).getPass(0).setAmbient(1, 0, 0)
 
 	def offline(self):
 		for ent in self.ents:
@@ -68,5 +97,3 @@ class aStarView():
 			ogre.MaterialManager.getSingleton().unload(entmat.getName())
 			ogre.MaterialManager.getSingleton().remove(entmat.getName())
 		self.entmats = []
-
-		self.status = False

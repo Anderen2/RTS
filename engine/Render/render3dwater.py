@@ -33,6 +33,14 @@ class WaterManager():
 		self.waters[ID].destroy()
 		del self.waters[ID]
 
+	def waterAtPos(self, x, y):
+		terrainheight = shared.render3dTerrain.getHeightAtPos(x, y)
+		for water in self.waters:
+			if water.Pos[1] > terrainheight:
+				return True
+
+		return False
+
 def ConsoleFriendly(X, Y, Z, L, H):
 	shared.WaterManager.Create((float(X),float(Y),float(Z)),float(L),float(H))
 
@@ -40,6 +48,10 @@ debug.ACC("water", ConsoleFriendly, args=5, info="Create a waterplane. \nUsage: 
 
 class Water():
 	def __init__(self, ID, Pos, Length, Width):
+		self.Pos = Pos
+		self.Length = Length
+		self.Width = Width
+
 		plane=ogre.Plane((0,1,0),0)
 		MeshManager=ogre.MeshManager.getSingleton()
 		MeshManager.createPlane("Water"+str(ID), "General", plane, Width, Length, 100, 100, True, 1, 100, 100, (0,0,1))

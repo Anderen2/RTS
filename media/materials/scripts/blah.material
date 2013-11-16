@@ -9,7 +9,7 @@ material blah
       depth_write off
       texture_unit
       {
-        texture Chrome.jpg
+        texture scr-back.png
         scale 1 1
       }
     }

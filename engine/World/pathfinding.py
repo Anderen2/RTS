@@ -145,8 +145,23 @@ def testDecoMove2(decid, endx, endy):
 	print("Found Path.. Starting A>B Movement")
 	shared.render.Hook.Add("OnRenderFrame", testDecoMove_Step)
 
+def testDecoMove3(decid, endx, endy, nodetype):
+	global deco
+	global path
+
+	deco = shared.decHandeler.Get(int(decid))
+	decostart = deco.entity.GetPosition()
+	start = (decostart[0], decostart[2])
+	end = (int(endx), int(endy))
+
+	print("Searching")
+	path = aStarPath.Search2(start, end, allowedtypes=[int(nodetype)])
+	print("Found Path.. Starting A>B Movement")
+	shared.render.Hook.Add("OnRenderFrame", testDecoMove_Step)
+
 debug.ACC("a*_test", testDecoMove, args=5, info="Move decorator w/ a*\nUsage: decid startx starty endx endy")
 debug.ACC("a*_test2", testDecoMove2, args=3, info="Move decorator relative to current pos w/ a*\nUsage: decid endx endy")
+debug.ACC("a*_test3", testDecoMove3, args=4, info="Move decorator relative to current pos w/ a*\nUsage: decid endx endy only")
 
 mtmove = False
 dist = 0

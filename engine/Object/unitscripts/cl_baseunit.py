@@ -30,6 +30,7 @@ class BaseUnit():
 		self._globalactions = [cl_move.Action, cl_fau.Action]
 
 		#Movement
+		self._vehicle = shared.VehicleManager.create(pos)
 		self._movetopoint=None
 
 		#MoveEffects
@@ -153,11 +154,32 @@ class BaseUnit():
 		if self._currentaction!=None:
 			self._currentaction.update()
 
+		if self._vehicle!=None:
+			# newpos = self._vehicle.step()
+			# newdir = self._vehicle.velocity.asTuple()
+
+			# self._entity.RotateTowardsDirection(newdir[0], newdir[1], newdir[2])
+
+			# y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[1])+1
+			# self._setPosition((newpos[0], y, newpos[1]))
+			pass
+
 		if self._movetopoint!=None:
-			dist, newpos = movetypes.Move(self._pos, self._movetopoint, self._movespeed*delta, self._movetype)
-			self._setPosition(newpos)
-			if dist<1:
-				self._stopmove()
+			if type(self._movetopoint)!=list:
+				dist, pos = movetypes.Move(self._pos, self._movetopoint, self._movespeed*delta, self._movetype)
+				self._setPosition(pos)
+				print self._pos
+
+				if dist<1:
+					self._movetopoint=None
+			else:
+				dist, self._pos = movetypes.Move(self._pos, self._movetopoint[0], self._movespeed*delta, self._movetype)
+
+				if dist<1:
+					self._movetopoint.pop(0)
+					
+					if len(self._movetopoint) == 0:
+						self._movetopoint = None
 
 		if self._currentmoveeff!=None:
 			if self._currentmoveeff(self._entity, delta):
@@ -195,7 +217,18 @@ class BaseUnit():
 		print("Dead Referances: "+str(getrefcount(self)))
 
 	# Movement
+	def _steerto(self, pos):
+		self._movetopoint=pos
+		self._look(self._movetopoint)
+		#self._vehicle.seekPos((pos[0], self._pos[1], pos[1]))
+		self.Hook.call("OnMove", pos)
+
 	def _moveto(self, pos):
+		#Calculates an correct path, and moves according to this
+		self._movetopoint = movetypes.Path(self._pos, pos, self._movetype)
+
+	def _movetowards(self, pos):
+		#Moves straight towards position, ignores obstacles
 		self._movetopoint=pos
 		self._look(self._movetopoint)
 		self.Hook.call("OnMove", pos)
@@ -223,7 +256,10 @@ class BaseUnit():
 		self._entity.Rotate(rot[0], rot[1], rot[2])
 
 	def _look(self, pos):
-		self._entity.LookAtZ(pos[0], pos[1], pos[2])
+		if len(pos) == 3:
+			self._entity.LookAtZ(pos[0], pos[1], pos[2])
+		else:
+			self._entity.LookAtZ(pos[0], self._getPosition()[1], pos[1])
 
 	# ACTIONS
 	def _loadActions(self):

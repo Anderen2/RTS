@@ -12,9 +12,10 @@ class Action():
 	actguiPlacement = False
 	actguiImage = "move"
 
-	def __init__(self, unit, evt):
-		self.data = evt
-		self.waypointPos = evt["3dMouse"]
+	def __init__(self, unit, data):
+		self.data = data
+		self.waypointPos = data["3dMouse"]
+		self.path = data["path"]
 
 		self.abortable = True
 
@@ -26,7 +27,8 @@ class Action():
 	def begin(self):
 		shared.DPrint("UnitAction - Move", 0, "Action begun!")
 		self.aborted=False
-		self.unit._moveto(self.data["3dMouse"])
+		firstpoint = self.path.pop(0)
+		self.unit._steerto(firstpoint)
 	
 	def abort(self):
 		shared.DPrint("UnitAction - Act1", 0, "Action aborted!")
@@ -34,8 +36,13 @@ class Action():
 		self.unit._stopmove()
 
 	def finish(self):
-		self.unit._setPosition((self.data["3dMouse"][0], self.unit.GetPosition()[1], self.data["3dMouse"][2]))
+		print("I should have stopped here!")
+		#self.unit._stopmove()
+		#self.unit._setPosition((self.data["3dMouse"][0], self.unit.GetPosition()[1], self.data["3dMouse"][2]))
 
 	def update(self):
 		if self.aborted==False:
-			pass
+			if self.unit._movetopoint==None:
+				if len(self.path)!=0:
+					nextpoint = self.path.pop(0)
+					self.unit._steerto(nextpoint)

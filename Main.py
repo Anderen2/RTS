@@ -12,7 +12,7 @@ shared.DPrint("Main",1,"Initializing Modules...")
 from engine.Render import render
 from engine.Object import prop, decorator, zone, directormanager
 from engine.Networking.client import client
-from engine.World import maploader, pathfinding
+from engine.World import maploader, pathfinding, steering
 
 shared.wd="./"
 shared.side = "Client"
@@ -33,10 +33,11 @@ shared.DPrint("Main",1,"Initializing Managers...")
 shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
 shared.zoneManager=zone.zoneManager()
+shared.VehicleManager = steering.VehicleManager()
 
 #MapLoader
 shared.MapLoader=maploader.MapLoader()
-shared.Map=shared.MapLoader.Load("empty.map")
+shared.Map=shared.MapLoader.Load("astar2.map")
 
 #Pathfinding
 shared.Pathfinder = pathfinding

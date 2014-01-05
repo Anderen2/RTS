@@ -1,9 +1,13 @@
 #Worldmodule - Pathfinding
 #Module for finding the best path through the world towards a world point.
 
+import steering
+
 from engine import shared, debug
-from math import floor, sqrt
+from math import floor, sqrt, atan2
 import astar_grid, movetypes
+
+import pickle #REMOVE AFTERWARDS!
 
 class AB():
 	def __init__(self):
@@ -115,7 +119,10 @@ class aStar():
 
 ABPath=AB()
 aStarPath=astar_grid.AStarGraph()
-aStarPath.generateGraph(1500, 30)
+#aStarPath.generateGraph(1500, 30)
+with open("Data/Map/astar2.mst", "r") as f:
+	nodes = pickle.load(f)
+	aStarPath.regenerateGraph(1500, 30, nodes)
 aStarPath.generateSearchGrid()
 
 def testDecoMove(decid, startx, starty, endx, endy):
@@ -159,12 +166,48 @@ def testDecoMove3(decid, endx, endy, nodetype):
 	print("Found Path.. Starting A>B Movement")
 	shared.render.Hook.Add("OnRenderFrame", testDecoMove_Step)
 
+def testSteering(decid, endx, endy):
+	global deco
+	global end
+	global Vehicle
+
+	deco = shared.decHandeler.Get(int(decid))
+	decostart = deco.entity.GetPosition()
+	start = (decostart[0], decostart[1], decostart[2])
+	end = (int(endx), decostart[1], int(endy))
+
+	Vehicle = steering.Vehicle(start)
+	Vehicle.arrivePos(end)
+
+	shared.render.Hook.Add("OnRenderFrame", testSteerMove_Step)
+
+def stopSteering():
+	shared.render.Hook.RM("OnRenderFrame", testSteerMove_Step)
+
+
 debug.ACC("a*_test", testDecoMove, args=5, info="Move decorator w/ a*\nUsage: decid startx starty endx endy")
 debug.ACC("a*_test2", testDecoMove2, args=3, info="Move decorator relative to current pos w/ a*\nUsage: decid endx endy")
 debug.ACC("a*_test3", testDecoMove3, args=4, info="Move decorator relative to current pos w/ a*\nUsage: decid endx endy only")
+debug.ACC("steer_test", testSteering, args=3, info="Move decorator with steering towards position\nUsage: decid endx endy")
+debug.ACC("steer_stop", stopSteering, args=0, info="Stop current steering test")
 
 mtmove = False
 dist = 0
+
+def testSteerMove_Step(delta):
+	global end
+	global Vehicle
+	Vehicle.arrivePos(end)
+	newpos = Vehicle.step()
+	newdir = Vehicle.velocity.asTuple()
+
+	#deco.entity.LookAtZ(newpos[0], newpos[1], newpos[2])
+	deco.entity.RotateTowardsDirection(newdir[0], newdir[1], newdir[2])
+	deco._setPos(newpos[0], newpos[1], newpos[2])
+	
+	#Forward = shared.Vector3D(Vehicle.velocity.asTuple()).normalize()
+
+
 
 def testDecoMove_Step(delta):
 	global mtmove

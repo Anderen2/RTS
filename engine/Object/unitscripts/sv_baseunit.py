@@ -26,6 +26,7 @@ class BaseUnit():
 		self._globalactions = [sv_move.Action, sv_fau.Action]
 
 		#Movement
+		self._vehicle = shared.VehicleManager.create(pos)
 		self._movetopoint=None
 
 		#State
@@ -122,11 +123,28 @@ class BaseUnit():
 		if self._currentaction!=None:
 			self._currentaction.update()
 
-		if self._movetopoint!=None:
-			dist, self._pos = movetypes.Move(self._pos, self._movetopoint, self._movespeed*delta, self._movetype)
+		if self._vehicle!=None:
+			#newpos = self._vehicle.step()
+			#y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[1])+1
+			#y = self._pos[1]
+			#self._setPosition((newpos[0], y, newpos[1]))
+			pass
 
-			if dist<1:
-				self._movetopoint=None
+		if self._movetopoint!=None:
+			if type(self._movetopoint)!=list:
+				dist, self._pos = movetypes.Move(self._pos, self._movetopoint, self._movespeed*delta, self._movetype)
+				print(self._pos)
+
+				if dist<1:
+					self._movetopoint=None
+			else:
+				dist, self._pos = movetypes.Move(self._pos, self._movetopoint[0], self._movespeed*delta, self._movetype)
+
+				if dist<1:
+					self._movetopoint.pop(0)
+					
+					if len(self._movetopoint) == 0:
+						self._movetopoint = None
 
 	def _actionfinish(self):
 		if self._group!=None:
@@ -181,11 +199,21 @@ class BaseUnit():
 	## NON-Networked (Mostly stuff handeled by the groupmanager instead)
 
 	# MOVEMENT
+	def _steerto(self, pos):
+		self._movetopoint=pos
+		self._look(self._movetopoint)
+		#self._vehicle.seekPos((pos[0], self._pos[1], pos[1]))
+		self.Hook.call("OnMove", pos)
 
 	def _moveto(self, pos):
-		self.Hook.call("OnMove", pos)
-		print("Moving unit: "+str(self.ID)+"to "+str(pos))
+		#Calculates an correct path, and moves according to this
+		self._movetopoint = movetypes.Path(self._pos, pos, self._movetype)
+
+	def _movetowards(self, pos):
+		#Moves straight towards position, ignores obstacles
 		self._movetopoint=pos
+		self._look(self._movetopoint)
+		self.Hook.call("OnMove", pos)
 
 	def _stopmove(self):
 		self.Hook.call("OnMoveStop", self._movetopoint)
@@ -195,6 +223,9 @@ class BaseUnit():
 	# ENTITY
 	def _setPosition(self, pos):
 		self._pos = pos
+
+	def _look(self, pos):
+		self._lookpos = pos
 
 	# ACTIONS
 	def _loadActions(self):
@@ -216,11 +247,17 @@ class BaseUnit():
 		return allactions
 
 	def _setAction(self, act, evt):
+		print("Member: Setting Action")
 		if self._currentaction:
 			self._currentaction.finish()
+
+		print("Setting Action")
 		self._currentaction=act(self, evt)
+		print("Beginning Action")
 		self._currentaction.begin()
+		print("Calling all hooks")
 		self.Hook.call("OnActionStart", self._currentaction)
+		print("Member: Action Set!")
 
 	def _finishAction(self):
 		if self._currentaction!=None:

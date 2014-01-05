@@ -1,6 +1,7 @@
 #shared.py
 #This module is shared between all modules, and contains pointers to nessesary classes
 from time import localtime
+from math import sqrt
 
 wd="./" #Workingdirectory
 side=None
@@ -72,6 +73,89 @@ class Vector( object ):
 		elif len(self.data)==3:
 			self.data = tuple([int(self.data[0]), int(self.data[1]), int(self.data[2])])
 			return self.data
+
+class Vector3D():
+	""" a stripped out class for 3D vectors"""
+	
+	__class__="Vector3D"
+
+	def __init__(self, v=(0.,0.,0.)):
+		self.V=tuple([v[i] for i in range(3)])
+
+	def __getitem__(self,i):
+		return self.V[i]
+	
+	def __mul__(self,s):
+		"""Returns a Vector3D result of multiplication by scalar s"""
+		
+		return Vector3D(tuple([x*s for x in self.V]))
+	def __div__(self,s):
+		s = float(s)
+		"""Returns a Vector3D result of multiplication by scalar s"""
+		if not s==0 :
+			return Vector3D([x/s for x in self.V])
+		#ERROR DIVISION BY ZERO
+		raise Exception("Error: Division by Zero!")
+		return Vector3D.ZERO
+	
+	def __add__(self,A):
+		return Vector3D(tuple([x1+x2 for (x1,x2) in zip(self.V,A)])) 
+	
+	def __sub__(self,A):
+		return Vector3D(tuple([x1-x2 for (x1,x2) in zip(self.V,A)])) 
+
+	def __cmp__(self,v):
+		return cmp(self.V,v.asTuple())
+
+	def __iter__(self):
+		return self.V.__iter__()
+	
+	def __eq__(self,v):
+		if (self.V==tuple(v)):
+			return True
+		return False
+		
+	def asTuple(self):
+		return self.V
+		
+	def dotProduct(self, b):
+		"""simple dot product function"""
+		return sum([x1*x2 for (x1,x2) in zip(self.V,b)])
+		#return sum([self.V[i]*b[i] for i in range(3)])
+	
+	def length(self):
+		return sqrt(sum([x*x for x in self.V]))
+	
+	def normalize(self):
+		fLength =  self.length()
+		if fLength > 1e-08 :
+			fInvLength = 1.0 / fLength
+			self.V=tuple([x*fInvLength for x in self.V])
+			return fLength
+		return 0
+	
+	def crossProduct(self,V):
+		return Vector3D(tuple([self.V[1] * V[2] - self.V[2] * V[1],\
+						self.V[2] * V[0] - self.V[0] * V[2],\
+						self.V[0] * V[1] - self.V[1] * V[0]]))
+
+	def truncate(self,A):
+		i = 0
+		NV = list(self.V)
+		for x in self.V:
+			if x>A:
+				NV[i]=A
+			elif x<-A:
+				NV[i]=-A
+			i+=1
+		self.V = tuple(NV)
+
+	def truncateActive(self, A):
+		#Nonworking atm
+		self.truncated = A
+	
+	def __str__(self):
+		return "Vector3D"+str(self.V)
 
 def logInit(name):
 	global LogFile

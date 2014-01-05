@@ -389,10 +389,22 @@ class Entity():
 		self.node.rotate((0,0,1),ogre.Degree(z))
 		return self.node.getOrientation()
 
+	def SetRotation(self, x, y, z):
+		self.node.resetOrientation()
+		self.Rotate(x, y, z)
+
 	def RPYRotate(self, roll, pitch, yaw):
 		self.node.roll(ogre.Degree(float(roll)))
 		self.node.pitch(ogre.Degree(float(pitch)))
 		self.node.yaw(ogre.Degree(float(yaw)))
+
+	def SetRPYRotation(self, roll, pitch, yaw):
+		pr=float(self.node.getOrientation().getRoll().valueDegrees())
+		pp=float(self.node.getOrientation().getPitch().valueDegrees())
+		py=float(self.node.getOrientation().getYaw().valueDegrees())
+
+		self.RPYRotate(roll - pr, pitch - pp, yaw - py)
+
 
 	def transRotate(self, x, y, z):
 		px=float(self.node.getOrientation().getRoll().valueDegrees())
@@ -419,6 +431,23 @@ class Entity():
 		# src = self.node.getOrientation() * ogre.Vector3().NEGATIVE_UNIT_Z
 		# quat = src.getRotationTo(direction)
 		# self.node.rotate(quat)
+
+	def RotateTowardsPos(self, x, y, z):
+		mDestination = ogre.Vector3(x, y, z)
+		mDirection = mDestination - self.node.getPosition()
+		src = self.node.getOrientation() * ogre.Vector3().UNIT_Z
+		mDistance = mDirection.normalise()
+		quat = src.getRotationTo(mDirection)
+
+		self.node.rotate(quat)
+
+	def RotateTowardsDirection(self, x, y, z):
+		mDirection = ogre.Vector3(x, y, z)		
+		src = self.node.getOrientation() * ogre.Vector3().UNIT_Z
+		mDistance = mDirection.normalise()
+		quat = src.getRotationTo(mDirection)
+
+		self.node.rotate(quat)
 
 	def getAltitude(self):
 		Pos = self.GetPosition()

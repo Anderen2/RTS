@@ -75,17 +75,19 @@ class GroupManager():
 		if group.owner == requestingPlayer:
 			action = group.getActionByID(actionid)
 			if action!=None:
-				group.addAction(action, data)
+
+				if "presend" in dir(action):
+					presend = action.presend(group, data, "Add")
+					if presend == None or type(presend)!=type(True):
+						if presend!=None:
+							data.update(presend)
+
+						group.doAction(action, data)					
+				else:
+					group.doAction(action, data)
+
 			else:
 				print("Cannot find action!")
-		else:
-			print("Group is not owned by player!")
-
-	def req_groupactionrm(self, groupid, queuedactionid, Protocol=None):
-		group = self.getFromGID(groupid)
-		requestingPlayer = shared.PlayerManager.getFromProto(Protocol)
-		if group.owner == requestingPlayer:
-				group.rmAction(queuedactionid)
 		else:
 			print("Group is not owned by player!")
 
@@ -95,7 +97,17 @@ class GroupManager():
 		if group.owner == requestingPlayer:
 			action = group.getActionByID(actionid)
 			if action!=None:
-				group.addActionNow(action, data)
+
+				if "presend" in dir(action):
+					presend = action.presend(group, data, "Now")
+					if presend == None or type(presend)!=type(True):
+						if presend!=None:
+							data.update(presend)
+
+						group.doAction(action, data)					
+				else:
+					group.doAction(action, data)
+
 			else:
 				print("Cannot find action!")
 		else:
@@ -107,9 +119,27 @@ class GroupManager():
 		if group.owner == requestingPlayer:
 			action = group.getActionByID(actionid)
 			if action!=None:
-				group.doAction(action, data)
+
+				if "presend" in dir(action):
+					presend = action.presend(group, data, "Do")
+					if presend == None or type(presend)!=type(True):
+						if presend!=None:
+							data.update(presend)
+
+						group.doAction(action, data)					
+				else:
+					group.doAction(action, data)
+
 			else:
 				print("Cannot find action!")
+		else:
+			print("Group is not owned by player!")
+
+	def req_groupactionrm(self, groupid, queuedactionid, Protocol=None):
+		group = self.getFromGID(groupid)
+		requestingPlayer = shared.PlayerManager.getFromProto(Protocol)
+		if group.owner == requestingPlayer:
+				group.rmAction(queuedactionid)
 		else:
 			print("Group is not owned by player!")
 
@@ -176,6 +206,10 @@ class UnitGroup():
 			uidlist.append(unit.ID)
 
 		shared.PlayerManager.Broadcast(5, "recv_newgroup", [self.gid, self.owner.UID, self.persistent, uidlist])
+
+	def getCenterPosition(self):
+		### Tempoary, does not yet get center position
+		return self.members[0].GetPosition()
 
 	def addUnit(self, unit):
 		self.members.append(unit)
@@ -285,6 +319,7 @@ class UnitGroup():
 			for unit in self.members:
 				if action in unit._getAllActions():
 					self.waitingfor.append(unit)
+					print("\t Setting action for member")
 					unit._setAction(action, data)
 
 				else:
@@ -293,6 +328,7 @@ class UnitGroup():
 					#If one of the units in this group is missing the action which were requested ..
 					# .. do not wait for him, and let him do nothing for the moment
 
+			print("\t Broadcasting action")
 			shared.PlayerManager.Broadcast(5, "recv_setaction", [self.gid, action.actionid, data])
 		else:
 			shared.PlayerManager.Broadcast(5, "recv_setaction", [self.gid, None, None])

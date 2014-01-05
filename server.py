@@ -3,7 +3,7 @@
 from engine import shared, debug
 from engine.Networking import sh_netObject, TwCLI
 from engine.Networking.server import server
-from engine.World import sv_map
+from engine.World import sv_map, steering
 
 shared.wd = "./"
 shared.side = "Server"
@@ -19,8 +19,9 @@ server.PlayerManager()
 
 cliFactory=TwCLI.CLIFactory()
 
+shared.VehicleManager = steering.VehicleManager()
 shared.MapLoader = sv_map.MapLoader()
-shared.Map = shared.MapLoader.Load("empty.map")
+shared.Map = shared.MapLoader.Load("astar2.map")
 shared.Map.Setup()
 
 #algotest.run()

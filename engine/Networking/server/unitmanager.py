@@ -4,7 +4,6 @@ from importlib import import_module
 from engine import shared, debug
 from random import randrange
 from engine.Object.unitscripts import sv_baseunit
-import engine.World.pathfinding as pathfinding
 from engine.World import posalgo
 
 class UnitManager():
@@ -16,9 +15,6 @@ class UnitManager():
 
 		self.unitscripts={}
 		self.Load()
-
-		#Pathfinding
-		shared.Pathfinder = pathfinding
 
 	def Load(self):
 		#Find and import all availible UnitScripts HERE

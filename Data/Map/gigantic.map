@@ -45,9 +45,9 @@ p23
 S'   10000'
 p24
 tp25
-sS'PageSize'
+sS'Size'
 p26
-I1025
+I10000
 sS'Height'
 p27
 I300

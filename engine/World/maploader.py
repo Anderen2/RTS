@@ -1,6 +1,7 @@
 #Mapfile loader
 import pickle
 from engine import shared, debug
+from string import split
 
 class MapLoader():
 	def __init__(self):
@@ -17,7 +18,7 @@ class MapLoader():
 		if float(mapconfig["Map"]["General"]["Version"])<MAPLOADERVERSION:
 			shared.DPrint("Maploader", 2, "Map is an older version than the importer, errors may occur!")
 
-		self.Map=Map(mapconfig)
+		self.Map=Map(mapname, mapconfig)
 		return self.Map
 
 	def terrainLoad(self, terraincfg):
@@ -56,7 +57,8 @@ class MapLoader():
 				shared.FowManager.Create(int(terraincfg["Heightmap"]["Scale"][0]), int(terraincfg["Heightmap"]["Scale"][1]), shared.render3dTerrain.TerrainMaterial)
 
 class Map():
-	def __init__(self, mapfile):
+	def __init__(self, mapname, mapfile):
+		self.mapname = mapname
 		self.config=mapfile
 		self.name=self.config["Map"]["General"]["Name"]
 		self.version=self.config["Map"]["General"]["Version"]
@@ -78,4 +80,20 @@ class Map():
 			rot=self.config["Decorator"][ID]["rot"]
 
 			shared.DPrint("Map", 0, "Placing decorator: "+name+" ("+str(ID)+")"+" @ "+str(pos))
-			shared.decHandeler.Create(name, pos).entity.setOrientation(rot[0], rot[1], rot[2], rot[3])
+			newdec = shared.decHandeler.Create(name, pos)
+			print(newdec)
+			print(newdec.entity)
+			newdec.entity.setOrientation(rot[0], rot[1], rot[2], rot[3])
+
+		#Setup A* Pathfinding
+		if shared.Pathfinder:
+			ACCURACY = 30
+			tmp = split(self.mapname, ".")
+			NavFile = "Data/Map/"+".".join(tmp[0:len(tmp)-1])+".nav"
+
+			if shared.Pathfinder.aStarPath.Load(self.config["Terrain"]["Heightmap"]["Size"], ACCURACY, NavFile):
+				shared.DPrint("Map", 0, "Astar Grid Nodes successfully loaded from .nav file: "+str(NavFile))
+			else:
+				shared.DPrint("Map", 0, "Astar Grid Nodes could not be loaded from .nav file: "+str(NavFile))
+				shared.DPrint("Map", 0, "Generating new aStar Grid.. Please Wait..")
+				##GENERATE NEW GRID AND SAVE IT HERE!

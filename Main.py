@@ -27,20 +27,22 @@ shared.client.Connect("localhost", 1337)
 shared.DPrint("Main",1,"Initializing Render...")
 shared.render=render.RenderApplication()
 
-#Managers
-shared.DPrint("Main",1,"Initializing Managers...")
+#Entity Managers
+shared.DPrint("Main",1,"Initializing Entity Managers...")
 #shared.unitGroup=unitgroup.GroupManager() This is now initialized under networking.client
 shared.decHandeler=decorator.DecoratorHandeler()
 shared.propManager=prop.propManager()
 shared.zoneManager=zone.zoneManager()
+
+#Pathfinding and Steering
+shared.DPrint("Main",1,"Initializing Steering and Pathfinding...")
 shared.VehicleManager = steering.VehicleManager()
+shared.Pathfinder = pathfinding
 
 #MapLoader
+shared.DPrint("Main",1,"Initializing Maploader...")
 shared.MapLoader=maploader.MapLoader()
 shared.Map=shared.MapLoader.Load("astar2.map")
-
-#Pathfinding
-shared.Pathfinder = pathfinding
 
 #Command Parser
 shared.DPrint("Main",1,"Initializing CommandParser...")

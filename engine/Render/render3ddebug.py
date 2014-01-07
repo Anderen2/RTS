@@ -40,7 +40,7 @@ class aStarView():
 
 	def online(self):
 		i = 0
-		for node in shared.Pathfinder.aStarPath.totnodes:
+		for node in shared.Pathfinder.aStarPath.Graph.totnodes:
 			newent = shared.render3dScene.sceneManager.createEntity("astarent"+str(i), "astar")
 			newmat = self.basemat.clone("astarnodemat"+str(i))
 			
@@ -57,7 +57,7 @@ class aStarView():
 			newent.setQueryFlags(MASK_NONE)
 			newnode = self.basenode.createChildSceneNode("astarnode"+str(i))
 			newnode.attachObject(newent)
-			nx, ny = shared.Pathfinder.aStarPath.convertLPosToWPos(node.x, node.y)
+			nx, ny = shared.Pathfinder.aStarPath.Graph.convertLPosToWPos(node.x, node.y)
 			newnode.setPosition(nx, shared.render3dTerrain.getHeightAtPos(nx, ny)+10, ny)
 
 			self.ents.append(newent)

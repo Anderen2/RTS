@@ -27,6 +27,8 @@ def convertToReal(text):
 	if "," in text:
 		try:
 			foo=split(text.replace("(", "").replace(")", "").replace("'", "").replace('"',""), ",")
+			if len(foo)==4:
+				return (foo[0],foo[1],foo[2],foo[3])
 			if len(foo)==3:
 				return (foo[0],foo[1],foo[2])
 			if len(foo)==2:

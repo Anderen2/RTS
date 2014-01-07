@@ -5,9 +5,10 @@ import steering
 
 from engine import shared, debug
 from math import floor, sqrt, atan2
+from traceback import print_exc
 import astar_grid, movetypes
 
-import pickle #REMOVE AFTERWARDS!
+import pickle
 
 class AB():
 	def __init__(self):
@@ -111,19 +112,44 @@ class AB():
 			src=(xzd[0], xzd[1])
 			dist=xzd[2]
 
-	
 
 class aStar():
 	def __init__(self):
-		pass
+		self.currentFile = None
+		self.Graph = None
+
+	def InitGraph(self):
+		self.Graph = astar_grid.AStarGraph()
+
+	def InitGrid(self):
+		self.Graph.generateSearchGrid()
+
+	def Create(self, size, accuracy):
+		self.InitGraph()
+		self.Graph.generateGraph(size, accuracy)
+		self.InitGrid()
+
+	def Load(self, size, accuracy, filename):
+		self.InitGraph()
+		try:
+			with open(filename, "r") as f:
+				nodes = pickle.load(f)
+				self.Graph.regenerateGraph(size, accuracy, nodes)
+		except:
+			print_exc()
+			return False
+
+		self.InitGrid()
+		return True
+
+	def Save(self, filename):
+		self.InitGraph()
+		with open(filename, "w") as f:
+			pickle.dump(self.Graph.nodes, f)
+		self.InitGrid()
 
 ABPath=AB()
-aStarPath=astar_grid.AStarGraph()
-#aStarPath.generateGraph(1500, 30)
-with open("Data/Map/astar2.mst", "r") as f:
-	nodes = pickle.load(f)
-	aStarPath.regenerateGraph(1500, 30, nodes)
-aStarPath.generateSearchGrid()
+aStarPath=aStar()
 
 def testDecoMove(decid, startx, starty, endx, endy):
 	global deco
@@ -134,7 +160,7 @@ def testDecoMove(decid, startx, starty, endx, endy):
 	end = (int(endx), int(endy))
 
 	print("Searching")
-	path = aStarPath.Search2(start, end)
+	path = shared.Pathfinder.aStarPath.Graph.Search2(start, end)
 	print("Found Path.. Starting A>B Movement")
 	shared.render.Hook.Add("OnRenderFrame", testDecoMove_Step)
 
@@ -148,7 +174,7 @@ def testDecoMove2(decid, endx, endy):
 	end = (int(endx), int(endy))
 
 	print("Searching")
-	path = aStarPath.Search2(start, end)
+	path = shared.Pathfinder.aStarPath.Graph.Search2(start, end)
 	print("Found Path.. Starting A>B Movement")
 	shared.render.Hook.Add("OnRenderFrame", testDecoMove_Step)
 
@@ -162,7 +188,7 @@ def testDecoMove3(decid, endx, endy, nodetype):
 	end = (int(endx), int(endy))
 
 	print("Searching")
-	path = aStarPath.Search2(start, end, allowedtypes=[int(nodetype)])
+	path = shared.Pathfinder.aStarPath.Graph.Search2(start, end, allowedtypes=[int(nodetype)])
 	print("Found Path.. Starting A>B Movement")
 	shared.render.Hook.Add("OnRenderFrame", testDecoMove_Step)
 

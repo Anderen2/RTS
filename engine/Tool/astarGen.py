@@ -7,7 +7,7 @@ import pickle
 
 class aStarGenerators():
 	def __init__(self):
-		self.AStar = shared.Pathfinder.aStarPath
+		self.AStar = shared.Pathfinder.aStarPath.Graph
 
 		debug.ACC("a*_clear", self.clearGraph, args=0, info="Clears all cost from the entire a* graph")
 		debug.ACC("a*_gendec", self.generateDecorators, args=0, info="Regenerates nonwalkable areas due to decorator placement")

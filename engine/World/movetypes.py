@@ -51,13 +51,13 @@ def Path(source, destination, movetype):
 	end = (destination[0], destination[2])
 
 	if movetype == MOVETYPE_GROUND:
-		return shared.Pathfinder.aStarPath.Search2(start, end, allowedtypes=[0])
+		return shared.Pathfinder.aStarPath.Graph.Search2(start, end, allowedtypes=[0])
 
 	elif movetype == MOVETYPE_AIR or movetype == MOVETYPE_AB:
 		return end
 
 	elif movetype == MOVETYPE_WATER:
-		return shared.Pathfinder.aStarPath.Search2(start, end, allowedtypes=[1])
+		return shared.Pathfinder.aStarPath.Graph.Search2(start, end, allowedtypes=[1])
 
 	elif movetype == MOVETYPE_NONE:
 		return None

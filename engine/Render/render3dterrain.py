@@ -76,11 +76,11 @@ class Terrain():
 		self.MaxHeight = terraincfg["Heightmap"]["Height"]
 		self.PageWorldX = terraincfg["Heightmap"]["Scale"][0]
 		self.PageWorldZ = terraincfg["Heightmap"]["Scale"][1]
-		#self.PageSize = terraincfg["Heightmap"]["PageSize"]
-		self.PageSize = 1500
+		self.TerrainSize = terraincfg["Heightmap"]["Size"]
+		#self.PageSize = 1500
 		self.TileSize = terraincfg["Heightmap"]["TileSize"]
 
-		self.terrainGroup = ogreterrain.TerrainGroup(self.sceneManager, ogreterrain.Terrain.ALIGN_X_Z, 257, self.PageSize) #Scene, Orientation, Batchsize, Terrain Size ## FUTURE GFX OPTION! (Batchsize)
+		self.terrainGroup = ogreterrain.TerrainGroup(self.sceneManager, ogreterrain.Terrain.ALIGN_X_Z, 257, self.TerrainSize) #Scene, Orientation, Batchsize, Terrain Size ## FUTURE GFX OPTION! (Batchsize)
 		self.terrainGroup.setFilenameConvention("BasicTutorial3Terrain", "dat")
 		self.terrainGroup.setOrigin(ogre.Vector3(0, 0, 0))
 
@@ -96,7 +96,7 @@ class Terrain():
 		except:
 			print_exc()
 
-		self.terrainGroup.getTerrain(0,0).setPosition(ogre.Vector3(self.PageSize/2, 0, self.PageSize/2))
+		self.terrainGroup.getTerrain(0,0).setPosition(ogre.Vector3(self.TerrainSize/2, 0, self.TerrainSize/2))
 		self.TerrainMaterial = self.terrainGroup.getTerrain(0,0).getMaterial()
 		self.TerrainEnt = self.terrainGroup.getTerrain(0,0)
 		self.TerrainEnt.setQueryFlags(MASK_TERRAIN)

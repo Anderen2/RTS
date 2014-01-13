@@ -46,7 +46,17 @@ class UnitManager():
 			if act!=None:
 				newgroup = shared.GroupManager.createGroup(False, [newunit], player)
 				action = newgroup.getActionByID(act)
-				newgroup.doAction(action, data)
+
+				if "presend" in dir(action):
+					presend = action.presend(newgroup, data, "Do")
+					if presend == None or type(presend)!=type(True):
+						if presend!=None:
+							data.update(presend)
+
+						newgroup.doAction(action, data)
+				else:
+					newgroup.doAction(action, data)
+					
 				return newunit, newgroup
 
 			return newunit

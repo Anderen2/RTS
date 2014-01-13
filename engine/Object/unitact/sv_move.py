@@ -25,6 +25,10 @@ class Action():
 			targetPos = data["3dMouse"]
 
 			path = shared.Pathfinder.aStarPath.Graph.Search2((centerPos[0], centerPos[2]), (targetPos[0], targetPos[2]))
+			if path == None:
+				print("Impossible path requested by player!")
+				return False
+				
 			#None = presend is done, but no additional data is required to be sent
 			#False = presend failed/action fails, so do not send action
 			#True = presend is under progress, but cannot be sent at this time (Waiting for data)

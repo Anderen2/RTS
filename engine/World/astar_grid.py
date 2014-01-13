@@ -136,6 +136,9 @@ class AStarGraph():
 		print("Found path, converting to coordpath...")
 		coordpath = []
 
+		if path==None:
+			return None
+			
 		for node in path:
 			coordpath.append((node.x*self.realscale, node.y*self.realscale))
 

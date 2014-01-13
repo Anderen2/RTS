@@ -68,5 +68,8 @@ class Unit(BaseUnit):
 
 	#Hackish overwrite of basefunction _look as the robot mesh is rotated wrong
 	def _look(self, pos):
-		self._entity.LookAtZ(pos[0], pos[1], pos[2])
+		if len(pos) == 3:
+			self._entity.LookAtZ(pos[0], pos[1], pos[2])
+		else:
+			self._entity.LookAtZ(pos[0], self._getPosition()[1], pos[1])
 		self._entity.node.yaw(Degree(float(270)))

@@ -75,6 +75,8 @@ class Vehicle():
 		self.max_avoid_force = 10
 		self.path_node_radius = 50
 
+		self.path = []
+
 	def Stop(self):
 		self.velocity = Vector()
 
@@ -96,13 +98,13 @@ class Vehicle():
 		self.desired_velocity = target - self.position
 		self.desired_velocity.normalize()
 		self.desired_velocity = self.desired_velocity * self.max_velocity
-		print("Desired : %s" % self.desired_velocity)
+		#print("Desired : %s" % self.desired_velocity)
 
 		self.steering = self.desired_velocity - self.velocity
 		self.steering.truncate(self.max_force)
-		print("Steer1  : %s" % self.steering)
+		#print("Steer1  : %s" % self.steering)
 		self.steering = self.steering / self.mass
-		print("Steering: %s" % self.steering)
+		#print("Steering: %s" % self.steering)
 
 		self.velocity = self.velocity + self.steering
 		
@@ -183,23 +185,42 @@ class Vehicle():
 		if type(target) != Vector:
 			target = Vector(target)
 
-		distance = (target.position - self.position).length()
+		distance = (target - self.position).length()
 		if distance < self.path_node_radius:
 			return True
 
-		self.desired_velocity = target - self.position
-		self.desired_velocity.normalize()
-		self.desired_velocity = self.desired_velocity * self.max_velocity
+		# self.desired_velocity = target - self.position
+		# self.desired_velocity.normalize()
+		# self.desired_velocity = self.desired_velocity * self.max_velocity
 
-		self.steering = self.desired_velocity - self.velocity
-		self.steering.truncate(self.max_force)
-		self.steering = self.steering / self.mass
+		# self.steering = self.desired_velocity - self.velocity
+		# self.steering.truncate(self.max_force)
+		# self.steering = self.steering / self.mass
 
-		self.velocity = self.velocity + self.steering
+		# self.velocity = self.velocity + self.steering
 
-	def step(self):
+		self.seekPos(target)
+
+	def followPath(self, path):
+		pass
+
+	def addPosToPath(self, pos):
+		print("Target added! -------------------------------")
+		print(pos)
+		self.path.append(pos)
+
+	def step(self, delta):
+		if len(self.path)!=0:
+			if self.seekToNode(self.path[0]):
+				print(self.path[0])
+				self.path.pop(0)
+				print("Next %f" % delta)
+
+		else:
+			self.Break()
+
 		self.velocity.truncate(self.max_speed)
-		self.position = self.position + self.velocity
+		self.position = self.position + (self.velocity*(delta*60))
 		#print("Velocity: %s" % self.velocity)
 		#print("Position: %s" % self.position)
 		return self.position.asTuple()

@@ -100,7 +100,10 @@ class Terrain():
 		ly = (((float(y)/float(1500))*self.imgfact)*100)-1
 		#print("Requested: ",(x,y))
 		#print("Locals: ",(lx, ly))
-		return (float(self.TerrainImage[lx,ly])/self.grayres[1]*self.altfact)
+		try:
+			return (float(self.TerrainImage[lx,ly])/self.grayres[1]*self.altfact)
+		except IndexError:
+			return 0
 
 class Water():
 	def __init__(self, Altitude, WaterType):

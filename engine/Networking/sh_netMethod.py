@@ -10,6 +10,7 @@ from engine import shared, debug
 VERBOSE=True
 PVERBOSE=True
 RAWVERBOSE=False
+RAWDECRYPT=False
 QUEUEVERBOSE=False
 HUMANOSE=False #Warning, this means that the server will read in Humanose form. It will break everything!
 PHUMANOSE=False #Warning, this means that the server will transmit in Humanose form. It will break everything!
@@ -165,7 +166,7 @@ class MethodProtocol(Protocol):
 		self.transport.write(method)
 
 	def txMeth(self, obj, func, arg):
-		global VERBOSE, PHUMANOSE, RAWVERBOSE
+		global VERBOSE, PHUMANOSE, RAWVERBOSE, RAWDECRYPT
 		if PHUMANOSE:
 			rdot="."
 			rdash="-"
@@ -189,7 +190,8 @@ class MethodProtocol(Protocol):
 			# else:
 			# 	args=""
 
-			args=base64.b64encode(pickle.dumps(arg))
+			prebaseargs = pickle.dumps(arg)
+			args=base64.b64encode(prebaseargs)
 
 			method=str(obj)+rdot+str(func)+rdash+args+rend
 			if VERBOSE:
@@ -198,6 +200,9 @@ class MethodProtocol(Protocol):
 			if RAWVERBOSE:
 				print(split(method.replace(chr(1), ".").replace(chr(2), "-").replace(chr(3), "/"), "-"))
 				print method
+			if RAWDECRYPT:
+				print prebaseargs
+
 			self.transport.write(method)
 		except:
 			print_exc()

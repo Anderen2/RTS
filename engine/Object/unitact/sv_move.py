@@ -33,6 +33,8 @@ class Action():
 			#False = presend failed/action fails, so do not send action
 			#True = presend is under progress, but cannot be sent at this time (Waiting for data)
 			#All other = presend is done, and additional data returned needs to be sent with the action
+			print "PRESEND _____________________"
+			print path
 			return {"path":path}
 		else:
 			return None
@@ -40,8 +42,9 @@ class Action():
 	def __init__(self, unit, data):
 		print("Data")
 		self.data = data
+		print("INIT ______________________________")
 		print("Path")
-		self.path = data["path"]
+		self.path = list(data["path"]) #Note to self: Try to remember that a = b creates an reference to b, not an copy. This will save you plenty of time debugging all the time
 		print data
 
 		print("abort")
@@ -74,5 +77,3 @@ class Action():
 				if len(self.path)!=0:
 					nextpoint = self.path.pop(0)
 					self.unit._steerto(nextpoint)
-				else:
-					self.unit._actionfinish()

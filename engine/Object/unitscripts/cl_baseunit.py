@@ -155,14 +155,16 @@ class BaseUnit():
 			self._currentaction.update()
 
 		if self._vehicle!=None:
-			# newpos = self._vehicle.step()
-			# newdir = self._vehicle.velocity.asTuple()
+			newpos = self._vehicle.step(delta)
+			newdir = self._vehicle.velocity.asTuple()
 
-			# self._entity.RotateTowardsDirection(newdir[0], newdir[1], newdir[2])
+			self._entity.RotateTowardsDirection(newdir[0], 0, newdir[2])
 
-			# y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[1])+1
-			# self._setPosition((newpos[0], y, newpos[1]))
-			pass
+			y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2])+1
+			self._setPosition((newpos[0], y, newpos[2]))
+			
+			if len(self._vehicle.path)==0:
+				pass
 
 		if self._movetopoint!=None:
 			if type(self._movetopoint)!=list:
@@ -218,10 +220,10 @@ class BaseUnit():
 
 	# Movement
 	def _steerto(self, pos):
-		self._movetopoint=pos
-		self._look(self._movetopoint)
-		#self._vehicle.seekPos((pos[0], self._pos[1], pos[1]))
-		self.Hook.call("OnMove", pos)
+		#self._movetopoint=pos
+		#self._look(self._movetopoint)
+		self._vehicle.addPosToPath((pos[0], self._pos[1], pos[1]))
+		#self.Hook.call("OnMove", pos)
 
 	def _moveto(self, pos):
 		#Calculates an correct path, and moves according to this

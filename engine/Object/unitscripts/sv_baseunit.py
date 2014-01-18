@@ -28,6 +28,7 @@ class BaseUnit():
 		#Movement
 		self._vehicle = shared.VehicleManager.create(pos)
 		self._movetopoint=None
+		self.__oldsteeringpos = (0,0,0)
 
 		#State
 		self._health = 100
@@ -124,11 +125,12 @@ class BaseUnit():
 			self._currentaction.update()
 
 		if self._vehicle!=None:
-			#newpos = self._vehicle.step()
-			#y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[1])+1
-			#y = self._pos[1]
-			#self._setPosition((newpos[0], y, newpos[1]))
-			pass
+			newpos = self._vehicle.step(delta)
+			if newpos!=self.__oldsteeringpos:
+				self.__oldsteeringpos = newpos
+				y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2])+1
+				#y = self._pos[1]
+				self._setPosition((newpos[0], y, newpos[2]))
 
 		if self._movetopoint!=None:
 			if type(self._movetopoint)!=list:
@@ -200,10 +202,10 @@ class BaseUnit():
 
 	# MOVEMENT
 	def _steerto(self, pos):
-		self._movetopoint=pos
-		self._look(self._movetopoint)
-		#self._vehicle.seekPos((pos[0], self._pos[1], pos[1]))
-		self.Hook.call("OnMove", pos)
+		# self._movetopoint=pos
+		# self._look(self._movetopoint)
+		self._vehicle.addPosToPath((pos[0], self._pos[1], pos[1]))
+		# self.Hook.call("OnMove", pos)
 
 	def _moveto(self, pos):
 		#Calculates an correct path, and moves according to this

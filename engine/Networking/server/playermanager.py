@@ -63,9 +63,24 @@ class PlayerManager():
 			return None
 
 	def ThinkPlayers(self):
-		reactor.callLater(0, self.ThinkPlayers)
+
+		#Ugly "vsync" below, keeps the playersimulation running at ~60FPS just as the client does
+
 		deltatime = time()-self.lastframe
 		self.lastframe=time()
 
+		syncframe = time()
+
 		for pid, player in self.PDict.iteritems():
 			player.Think(deltatime)
+		
+		synctime = time() - syncframe
+
+		waiter = 0.016666666666666666- synctime
+
+		if waiter<0:
+			waiter = 0
+
+		#print(deltatime)
+
+		reactor.callLater(waiter, self.ThinkPlayers)

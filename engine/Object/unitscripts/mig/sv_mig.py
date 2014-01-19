@@ -25,6 +25,17 @@ class Unit(BaseUnit):
 		self.SetMaxHealth(100)
 		self.SetViewRange(500)
 
+		self.SetVehicleMaxForce(2)
+		self.SetVehicleMass(200)
+		self.SetVehiclePathNodeRadius(50)
+		self.SetVehicleArriveBreakingRadius(50)
+		self.SetVehicleMaxVelocity(3)
+		self.SetVehicleMaxSpeed(2)
+		self.SetVehicleBreakingForce(0)
+		self.SetVehicleSize(10)
+		self.SetVehicleMaxSeeAhead(50)
+		self.SetVehicleMaxAvoidForce(10)
+
 		self.Hook.Add("OnCreation", self.OnCreation)
 
 	def SetupProjectileLaunchers(self):

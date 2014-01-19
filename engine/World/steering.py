@@ -1,6 +1,7 @@
 #Vehicle-Abstract / Steeringfunctions
 from math import sqrt
 from engine import shared, debug
+from engine.Lib.hook import Hook
 
 Vector = shared.Vector3D
 
@@ -77,11 +78,28 @@ class Vehicle():
 
 		self.path = []
 
+		#Hooks:
+		self.Hook = Hook(self)
+		self.Hook.new("OnPathStart", 1)
+		self.Hook.new("OnPathAdded", 1)
+		self.Hook.new("OnPathNext", 1)
+		self.Hook.new("OnPathEnd", 1)
+
+		self.Hook.new("OnStep", 1)
+		self.Hook.new("OnBreaking", 1)
+		self.Hook.new("OnStop", 1)
+
+
 	def Stop(self):
+		self.Hook.call("OnStop", self.velocity)
 		self.velocity = Vector()
 
 	def Break(self):
+		self.Hook.call("OnBreaking", self.velocity)
 		self.velocity = self.velocity * self.breaking_force
+		if self.velocity.length<0.1:
+			self.Stop()
+			return True
 
 	def towardsPos(self, target):
 		if type(target) != Vector:
@@ -201,23 +219,32 @@ class Vehicle():
 
 		self.seekPos(target)
 
-	def followPath(self, path):
-		pass
+	def followPath(self, delta):
+		if len(self.path)!=0:
+			if self.seekToNode(self.path[0]):
+				self.path.pop(0)
+				print("Next: %f" % delta)
+
+				try:
+					self.Hook.call("OnPathNext", self.path[0])
+				except:
+					pass
+
+		else:
+			self.Hook.call("OnPathEnd", None)
+			self.Break()
 
 	def addPosToPath(self, pos):
 		print("Target added! -------------------------------")
 		print(pos)
 		self.path.append(pos)
+		self.Hook.call("OnPathAdded", pos)
+
+	def clearPath(self):
+		self.path = []
 
 	def step(self, delta):
-		if len(self.path)!=0:
-			if self.seekToNode(self.path[0]):
-				print(self.path[0])
-				self.path.pop(0)
-				print("Next %f" % delta)
-
-		else:
-			self.Break()
+		self.Hook.call("OnStep", delta)
 
 		self.velocity.truncate(self.max_speed)
 		self.position = self.position + (self.velocity*(delta*60))

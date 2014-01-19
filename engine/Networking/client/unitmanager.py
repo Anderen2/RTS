@@ -2,6 +2,7 @@
 from importlib import import_module
 from engine import shared, debug
 from engine.Object.unitscripts import cl_baseunit
+from string import split
 
 class UnitManager():
 	def __init__(self):
@@ -38,7 +39,13 @@ class UnitManager():
 
 			#Setting up attributes
 			for attribute, data in attributes.iteritems():
-				setattr(newunit, "_"+attribute, data)
+				if "." in attribute:
+					foo = split(attribute, ".")
+					subattr = getattr(newunit, "_"+foo[0])
+					setattr(subattr, foo[1], data)
+				else:
+					setattr(newunit, "_"+attribute, data)
+
 				print(attribute+" = "+str(data))
 
 			#Giving the unit to its representative player
@@ -64,8 +71,11 @@ class UnitManager():
 	
 	def recv_unithealth(self, unitid, health, Protocol=False):
 		unit = self.getFromUID(unitid)
-		unit._setHealth(health)
-		print("HEALTH: "+str(unit.ID)+" = "+str(health))
+		if unit:	
+			unit._setHealth(health)
+			print("HEALTH: "+str(unit.ID)+" = "+str(health))
+		else:
+			shared.DPrint(5, "netUnitManager", "Server sent healthupdate for non-exsistant unit!")
 
 	def recv_updact(self, unitid, state, data, Protocol=False):
 		unit = self.getFromUID(unitid)
@@ -78,7 +88,13 @@ class UnitManager():
 		unit = self.getFromUID(unitid)
 		if unit:
 			for attribute, data in attributes.iteritems():
-				setattr(unit, "_"+attribute, data)
+				if "." in attribute:
+					foo = split(attribute, ".")
+					subattr = getattr(unit, "_"+foo[0])
+					setattr(subattr, foo[1], data)
+				else:
+					setattr(unit, "_"+attribute, data)
+
 				print(attribute+" = "+str(data))
 				unit._attribUpdate(attributes)
 		else:

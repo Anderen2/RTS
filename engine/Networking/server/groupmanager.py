@@ -82,9 +82,9 @@ class GroupManager():
 						if presend!=None:
 							data.update(presend)
 
-						group.doAction(action, data)					
+						group.addAction(action, data)					
 				else:
-					group.doAction(action, data)
+					group.addAction(action, data)
 
 			else:
 				print("Cannot find action!")
@@ -104,9 +104,9 @@ class GroupManager():
 						if presend!=None:
 							data.update(presend)
 
-						group.doAction(action, data)					
+						group.addActionNow(action, data)					
 				else:
-					group.doAction(action, data)
+					group.addActionNow(action, data)
 
 			else:
 				print("Cannot find action!")
@@ -274,6 +274,7 @@ class UnitGroup():
 	def addAction(self, action, data):
 		self.actionQueue.append((action, data))
 		if self.actionQueue[0]==(action, data):
+			print("I AM THE LAST ACTION!")
 			self.beginNextAction(doNotPop=True)
 
 	def rmAction(self, queuedactionid):
@@ -307,7 +308,8 @@ class UnitGroup():
 	
 	def beginNextAction(self, doNotPop=False):
 		if doNotPop==False:
-			self.actionQueue.pop(0)
+			if len(self.actionQueue)!=0:
+				self.actionQueue.pop(0)
 
 		if len(self.actionQueue)>0:
 			print("\t beginNextAction")
@@ -315,6 +317,23 @@ class UnitGroup():
 			data = self.actionQueue[0][1]
 
 			self.waitingfor = []
+
+			if "prebegin" in dir(action):
+				prebegin = action.prebegin(self, self.members, data)
+				if prebegin == None or type(prebegin)!=type(True):
+					if prebegin!=None:
+						data.update(prebegin)
+					else:
+						pass
+
+					##SUCCESS
+
+				elif prebegin == True:
+					#Action cannot process at this time.
+					return False
+				elif prebegin == False:
+					#Action cannot process because prebegin failed.
+					return False
 
 			for unit in self.members:
 				if action in unit._getAllActions():

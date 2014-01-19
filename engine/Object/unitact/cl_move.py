@@ -27,8 +27,8 @@ class Action():
 	def begin(self):
 		shared.DPrint("UnitAction - Move", 0, "Action begun!")
 		self.aborted=False
-		firstpoint = self.path.pop(0)
-		self.unit._steerto(firstpoint)
+		
+		self.unit._steerToPath(list(self.path))
 	
 	def abort(self):
 		shared.DPrint("UnitAction - Act1", 0, "Action aborted!")
@@ -41,8 +41,12 @@ class Action():
 		#self.unit._setPosition((self.data["3dMouse"][0], self.unit.GetPosition()[1], self.data["3dMouse"][2]))
 
 	def update(self):
-		if self.aborted==False:
-			if self.unit._movetopoint==None:
-				if len(self.path)!=0:
-					nextpoint = self.path.pop(0)
-					self.unit._steerto(nextpoint)
+		# if self.aborted==False:
+		# 	if self.unit._movetopoint==None:
+		# 		if self.unit._movetype == -99: #MOVETYPE_AIR
+		# 			self.unit._steerto(self.data["3dMouse"])
+		# 		else:
+		# 			if len(self.path)!=0:
+		# 				nextpoint = self.path.pop(0)
+		# 				self.unit._steerto(nextpoint)
+		pass

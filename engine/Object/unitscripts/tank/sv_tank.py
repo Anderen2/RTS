@@ -24,13 +24,16 @@ class Unit(BaseUnit):
 		self.SetHealth(200)
 		self.SetViewRange(200)
 
-		self._vehicle.max_force = 1
-		self._vehicle.mass = 10
-		self._vehicle.path_node_radius = 50
-		self._vehicle.arrive_breaking_radius = 50
-		self._vehicle.max_velocity = 3
-		self._vehicle.max_speed = 2
-		self._vehicle.breaking_force = 0.8
+		self.SetVehicleMaxForce(1)
+		self.SetVehicleMass(10)
+		self.SetVehiclePathNodeRadius(50)
+		self.SetVehicleArriveBreakingRadius(50)
+		self.SetVehicleMaxVelocity(2.5)
+		self.SetVehicleMaxSpeed(1.5)
+		self.SetVehicleBreakingForce(0.8)
+		self.SetVehicleSize(10)
+		self.SetVehicleMaxSeeAhead(50)
+		self.SetVehicleMaxAvoidForce(10)
 
 		self.Hook.Add("OnCreation", self.OnCreation)
 

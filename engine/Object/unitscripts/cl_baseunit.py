@@ -38,6 +38,7 @@ class BaseUnit():
 
 		#State
 		self._health=100 #Bogus value, Getting this from attributes instead See: UnitManager
+		self.steer_state = False
 
 		self.Initialize(self.ID)
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
@@ -155,6 +156,12 @@ class BaseUnit():
 			self._currentaction.update()
 
 		if self._vehicle!=None:
+			if self.steer_state == "path":
+				self._vehicle.followPath(delta)
+
+			elif self.steer_state == "seek":
+				self._vehicle.seekPos(self.steer_target)
+
 			newpos = self._vehicle.step(delta)
 			newdir = self._vehicle.velocity.asTuple()
 
@@ -219,11 +226,23 @@ class BaseUnit():
 		print("Dead Referances: "+str(getrefcount(self)))
 
 	# Movement
-	def _steerto(self, pos):
+	def _steerToPath(self, path):
 		#self._movetopoint=pos
 		#self._look(self._movetopoint)
-		self._vehicle.addPosToPath((pos[0], self._pos[1], pos[1]))
-		#self.Hook.call("OnMove", pos)
+		if self._movetype!=0:
+			for node in path:
+				self._vehicle.addPosToPath((node[0], self._pos[1], node[1]))
+			self.steer_state = "path"
+			self.steer_target = None
+		else: 
+			# self._vehicle.seekPos((pos[0], self._pos[1], pos[2]))
+			#self.steer_state = "seek"
+			#self.steer_target = (pos[0], self._pos[1], pos[1])
+			for node in path:
+				self._vehicle.addPosToPath((node[0], self._pos[1], node[1]))
+			self.steer_state = "path"
+			self.steer_target = None
+		self.Hook.call("OnMove", path)
 
 	def _moveto(self, pos):
 		#Calculates an correct path, and moves according to this
@@ -238,6 +257,10 @@ class BaseUnit():
 	def _stopmove(self):
 		self.Hook.call("OnMoveStop", self._movetopoint)
 		self._movetopoint=None
+		if self._vehicle:
+			self._vehicle.clearPath()
+			self.steer_state = None
+			self.steer_target = None
 
 	def _getMoveEffect(self, mveff):
 		if mveff in dir(moveeff):
@@ -320,6 +343,8 @@ class BaseUnit():
 		if "entityname" in updated:
 			pass #out
 
+		if "vehicle" in updated:
+			print(self._vehicle.mass)
 	#Other
 	def _randomCallback(self, tmin, tmax, call):
 		reactor.callLater(randrange(tmin, tmax, 1), call)

@@ -40,6 +40,8 @@ class Unit(BaseUnit):
 			if self.GetEntity().getIfAnimIsFinish():
 				self.Destroy()
 
+		self._entity.node.yaw(Degree(float(270))) #Hackish override as the model is rotated wrong
+
 	def OnMove(self, pos):
 		self.GetEntity().actMove(True)
 

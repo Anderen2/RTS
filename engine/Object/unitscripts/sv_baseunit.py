@@ -32,6 +32,7 @@ class BaseUnit():
 
 		#State
 		self._health = 100
+		self.steer_state = False
 		self.pendingattrib={}
 
 		self.Initialize(self.ID)
@@ -103,6 +104,46 @@ class BaseUnit():
 		self._viewrange = viewrange
 		self._updateAttrib("viewrange", viewrange)
 
+	def SetVehicleSize(self, size):
+		self._vehicle.size = size
+		self._updateAttrib("vehicle.size", size)
+
+	def SetVehicleMaxForce(self, maxforce):
+		self._vehicle.max_force = maxforce
+		self._updateAttrib("vehicle.max_force", maxforce)
+
+	def SetVehicleMass(self, mass):
+		self._vehicle.mass = mass
+		self._updateAttrib("vehicle.mass", mass)
+
+	def SetVehiclePathNodeRadius(self, pnr):
+		self._vehicle.path_node_radius = pnr
+		self._updateAttrib("vehicle.path_node_radius", pnr)
+
+	def SetVehicleArriveBreakingRadius(self, abr):
+		self._vehicle.arrive_breaking_radius = abr
+		self._updateAttrib("vehicle.arrive_breaking_radius", abr)
+
+	def SetVehicleMaxVelocity(self, maxvelocity):
+		self._vehicle.max_velocity = maxvelocity
+		self._updateAttrib("vehicle.max_velocity", maxvelocity)
+
+	def SetVehicleMaxSpeed(self, maxspeed):
+		self._vehicle.max_speed = maxspeed
+		self._updateAttrib("vehicle.max_speed", maxspeed)
+
+	def SetVehicleBreakingForce(self, breaks):
+		self._vehicle.breaking_force = breaks
+		self._updateAttrib("vehicle.breaking_force", breaks)
+
+	def SetVehicleMaxSeeAhead(self, msa):
+		self._vehicle.max_see_ahead = msa
+		self._updateAttrib("vehicle.max_see_ahead", msa)
+
+	def SetVehicleMaxAvoidForce(self, maf):
+		self._vehicle.max_avoid_force = maf
+		self._updateAttrib("vehicle.max_avoid_force", maf)
+
 	def CreateProjectileLauncher(self, type):
 		launcher = shared.LauncherManager.create(type, self)
 		return launcher
@@ -125,6 +166,11 @@ class BaseUnit():
 			self._currentaction.update()
 
 		if self._vehicle!=None:
+			if self.steer_state == "path":
+				self._vehicle.followPath(delta)
+			elif self.steer_state == "seek":
+				self._vehicle.seekPos(self.steer_target)
+
 			newpos = self._vehicle.step(delta)
 			if newpos!=self.__oldsteeringpos:
 				self.__oldsteeringpos = newpos
@@ -201,11 +247,23 @@ class BaseUnit():
 	## NON-Networked (Mostly stuff handeled by the groupmanager instead)
 
 	# MOVEMENT
-	def _steerto(self, pos):
+	def _steerToPath(self, path):
 		# self._movetopoint=pos
 		# self._look(self._movetopoint)
-		self._vehicle.addPosToPath((pos[0], self._pos[1], pos[1]))
-		# self.Hook.call("OnMove", pos)
+		if self._movetype!=0: #MOVETYPE_AIR
+			for node in path:
+				self._vehicle.addPosToPath((node[0], self._pos[1], node[1]))
+			self.steer_state = "path"
+			self.steer_target = None
+		else:
+			#self._vehicle.seekPos((pos[0], self._pos[1], pos[2]))
+			#self.steer_state = "seek"
+			#self.steer_target = (pos[0], self._pos[1], pos[1])
+			for node in path:
+				self._vehicle.addPosToPath((node[0], self._pos[1], node[1]))
+			self.steer_state = "path"
+			self.steer_target = None
+		self.Hook.call("OnMove", path)
 
 	def _moveto(self, pos):
 		#Calculates an correct path, and moves according to this
@@ -220,6 +278,10 @@ class BaseUnit():
 	def _stopmove(self):
 		self.Hook.call("OnMoveStop", self._movetopoint)
 		self._movetopoint=None
+		if self._vehicle:
+			self._vehicle.clearPath()
+			self.steer_state = None
+			self.steer_target = None
 
 
 	# ENTITY

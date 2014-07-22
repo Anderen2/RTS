@@ -1,0 +1,17 @@
+
+material default2
+{
+	technique
+	{
+		pass
+		{
+
+			texture_unit
+			{
+				texture shack.bmp -1
+			}
+		}
+
+	}
+
+}

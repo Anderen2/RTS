@@ -1,5 +1,5 @@
 #Vehicle-Abstract / Steeringfunctions
-from math import sqrt
+from math import sqrt, acos
 from engine import shared, debug
 from engine.Lib.hook import Hook
 
@@ -66,6 +66,7 @@ class Vehicle():
 		self.position = Vector(pos)
 		self.size = 10
 		self.velocity = Vector()
+		self.oldvelocity = Vector()
 		self.max_velocity = 5 #Maximum acceleration
 		self.max_force = 1 #Maximum steering force
 		self.max_speed = 5 #Maximum speed
@@ -196,7 +197,7 @@ class Vehicle():
 		avoidance_force.normalize()
 		avoidance_force = avoidance_force * self.max_avoid_force
 
-	def seekToNode(self, target):
+	def seekToNode(self, target, towards=False):
 		"""This is similar to seek, but its more natural looking than seek when operating with path-nodes"""
 		"""This also returns True when the nodes radius is reached, promting the seeker to seek for the next node"""
 
@@ -217,11 +218,15 @@ class Vehicle():
 
 		# self.velocity = self.velocity + self.steering
 
-		self.seekPos(target)
+		if not towards:
+			self.seekPos(target)
+		else: 
+			self.towardsPos(target)
 
-	def followPath(self, delta):
+	def followPath(self, delta, towards=False):
+		towards = False
 		if len(self.path)!=0:
-			if self.seekToNode(self.path[0]):
+			if self.seekToNode(self.path[0], towards):
 				self.path.pop(0)
 				print("Next: %f" % delta)
 
@@ -232,7 +237,8 @@ class Vehicle():
 
 		else:
 			self.Hook.call("OnPathEnd", None)
-			self.Break()
+			if not towards:
+				self.Break()
 
 	def addPosToPath(self, pos):
 		print("Target added! -------------------------------")
@@ -245,8 +251,13 @@ class Vehicle():
 
 	def step(self, delta):
 		self.Hook.call("OnStep", delta)
-
+		
 		self.velocity.truncate(self.max_speed)
+
+		# if self.oldvelocity != Vector():
+		# 	print acos( ( self.velocity.dotProduct(self.oldvelocity) ) / ( self.velocity.length()*self.oldvelocity.length() ) )
+
+		self.oldvelocity = self.velocity
 		self.position = self.position + (self.velocity*(delta*60))
 		#print("Velocity: %s" % self.velocity)
 		#print("Position: %s" % self.position)

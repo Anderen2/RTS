@@ -16,7 +16,7 @@ class Unit(BaseUnit):
 	def Initialize(self, ID):
 		self.SetEntity("robot")
 		self.SetSelectedText("Infantry "+str(self.GetID()))
-		self.Actions=[cl_construct.generate("build")]
+		self.Actions=[cl_construct.generate("build"), cl_construct.generate("turret")]
 
 		self.dead=False
 
@@ -40,10 +40,11 @@ class Unit(BaseUnit):
 			if self.GetEntity().getIfAnimIsFinish():
 				self.Destroy()
 
-		self._entity.node.yaw(Degree(float(270))) #Hackish override as the model is rotated wrong
+		#self._entity.node.yaw(Degree(float(270))) #Hackish override as the model is rotated wrong
 
 	def OnMove(self, pos):
-		self.GetEntity().actMove(True)
+		#self.GetEntity().actMove(True)
+		pass
 
 	def OnIdle(self, pos):
 		self._randomCallback(10, 50, self.RandomIdleAnim)

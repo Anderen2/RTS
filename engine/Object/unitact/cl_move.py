@@ -15,7 +15,7 @@ class Action():
 	def __init__(self, unit, data):
 		self.data = data
 		self.waypointPos = data["3dMouse"]
-		self.path = data["path"]
+		self.path = data["path"][unit.ID]
 
 		self.abortable = True
 

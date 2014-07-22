@@ -1,7 +1,7 @@
 #shared.py
 #This module is shared between all modules, and contains pointers to nessesary classes
 from time import localtime
-from math import sqrt
+from math import sqrt, cos
 
 wd="./" #Workingdirectory
 side=None
@@ -117,6 +117,9 @@ class Vector3D():
 		
 	def asTuple(self):
 		return self.V
+
+	def dotProduct2(self, b):
+		return self.length() * b.length() * cos()
 		
 	def dotProduct(self, b):
 		"""simple dot product function"""
@@ -124,7 +127,10 @@ class Vector3D():
 		#return sum([self.V[i]*b[i] for i in range(3)])
 	
 	def length(self):
-		return sqrt(sum([x*x for x in self.V]))
+		try:
+			return sqrt(sum([x*x for x in self.V]))
+		except ValueError:
+			return 0
 	
 	def normalize(self):
 		fLength =  self.length()

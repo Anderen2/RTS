@@ -21,13 +21,22 @@ class Action():
 			cls.PR_data = data
 			cls.PR_units = units
 
-			centerPos = group.getCenterPosition()
+			#centerPos = group.getCenterPosition()
 			targetPos = data["3dMouse"]
 
-			path = shared.Pathfinder.aStarPath.Graph.Search2((centerPos[0], centerPos[2]), (targetPos[0], targetPos[2]))
-			if path == None:
-				print("Impossible path requested by player!")
-				return False
+			pathdict = {}
+			for unit in units:
+				unitpath = shared.Pathfinder.aStarPath.Graph.Search2((unit._pos[0], unit._pos[2]), (targetPos[0], targetPos[2]))
+				if unitpath == None:
+					print("Impossible path requested by player!")
+					return False
+
+				pathdict[unit.ID] = unitpath
+
+			# path = shared.Pathfinder.aStarPath.Graph.Search2((centerPos[0], centerPos[2]), (targetPos[0], targetPos[2]))
+			# if path == None:
+			# 	print("Impossible path requested by player!")
+			# 	return False
 				
 			#None = presend is done, but no additional data is required to be sent
 			#False = presend failed/action fails, so do not send action
@@ -35,13 +44,13 @@ class Action():
 			#All other = presend is done, and additional data returned needs to be sent with the action
 			print "_________________ PREBEGIN _____________________"
 			#print path
-			return {"path":path}
+			return {"path":pathdict}
 		else:
 			return None
 
 	def __init__(self, unit, data):
 		self.data = data
-		self.path = list(data["path"]) #Note to self: Try to remember that a = b creates an reference to b, not an copy. This will save you plenty of time debugging all the time
+		self.path = list(data["path"][unit.ID]) #Note to self: Try to remember that a = b creates an reference to b, not an copy. This will save you plenty of time debugging all the time
 		#print data
 
 		self.abortable = True

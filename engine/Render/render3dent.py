@@ -360,8 +360,9 @@ class Entity():
 
 	def rotTurretTowardPos(self, x, y, z):
 		if not self.params["meshturret"]==None:
+			print("Rotating..")
 			self.nodeturret.setFixedYawAxis(True, ogre.Vector3().UNIT_Y)
-			self.nodeturret.lookAt((int(x), self.nodeturret.getPosition().y, int(z)), self.nodeturret.TS_PARENT, ogre.Vector3().UNIT_Z)
+			self.nodeturret.lookAt((int(x), self.node.getPosition().y, int(z)), self.nodeturret.TS_WORLD, ogre.Vector3().UNIT_Z)
 
 	def SetPosition(self, x, y, z):
 		self.lastMovementDirection = Vector(x,y,z) - Vector(self.GetPosition())
@@ -370,8 +371,9 @@ class Entity():
 		return self.node.getPosition()
 
 	def GetPosition(self):
-		pos = self.node.getPosition()
-		return (pos.x, pos.y, pos.z)
+		if self.node:
+			pos = self.node.getPosition()
+			return (pos.x, pos.y, pos.z)
 
 	def Translate(self, x, y, z):
 		lastpos = Vector(self.GetPosition())
@@ -426,7 +428,7 @@ class Entity():
 	def LookAtZ(self, x, y, z):
 		self.node.setFixedYawAxis(True, ogre.Vector3().UNIT_Y)
 		#self.node.setFixedRollAxis(True, ogre.Vector3().UNIT_X)
-		self.node.lookAt((int(x), self.node.getPosition().y, int(z)), self.node.TS_PARENT, ogre.Vector3().UNIT_Z)
+		self.node.lookAt((int(x), self.node.getPosition().y, int(z)), self.node.TS_WORLD, ogre.Vector3().UNIT_Z)
 		# direction=ogre.Vector3(int(x), int(y), int(z)) - self.node.getPosition()
 		# src = self.node.getOrientation() * ogre.Vector3().NEGATIVE_UNIT_Z
 		# quat = src.getRotationTo(direction)

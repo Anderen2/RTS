@@ -47,7 +47,9 @@ class BuildEffect():
 
 	def UpdateProgress(self, progress):
 		#Update progress/position according to progstep, entity height and terrain height
+		print(progress)
 		if self.entpos!=None:
+			print("I am not none!")
 			progress = float(progress)
 			self.ent.node.setPosition(self.entpos.x, (self.terrainheight-self.YOffset)+(self.progstep*progress), self.entpos.z)
 

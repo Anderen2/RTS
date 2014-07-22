@@ -24,6 +24,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		
 	def Create(self, tsizex, tsizey, terrainMat):
+		return
 		shared.DPrint("FOWManager", 1, "Creating Fog Of War")
 
 		self.created=True

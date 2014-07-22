@@ -24,6 +24,14 @@ class Scene():
 		self.sceneManager = self.root.createSceneManager(ogre.ST_EXTERIOR_CLOSE, "Default sceneManager")
 		shared.DPrint("Render3dScene",1,"Current scenemanager: %s" % str(self.sceneManager.getTypeName()))
 
+		shared.DPrint("Render3d",1,"Light...")
+		self.sceneManager.ambientLight = (1,1,1)
+		sunlight = self.sceneManager.createLight("DirectionalLight")
+		sunlight.type = ogre.Light.LT_DIRECTIONAL
+		sunlight.diffuseColour = (.5,.5,.0)
+		sunlight.specularColour = (.75,.75,.75)
+		sunlight.direction = (0,-1,-1)
+
 		shared.DPrint("Render3d",1,"Terrain..")
 		shared.render3dTerrain = render3dterrain.Terrain(self.sceneManager)
 

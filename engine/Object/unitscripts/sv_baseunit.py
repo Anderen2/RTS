@@ -31,6 +31,7 @@ class BaseUnit():
 		self.__oldsteeringpos = (0,0,0)
 
 		#State
+		self._constantaltitude = False
 		self._health = 100
 		self.steer_state = False
 		self.pendingattrib={}
@@ -77,6 +78,10 @@ class BaseUnit():
 	def SetSolid(self, yn):
 		self._solidentity=yn
 		self._updateAttrib("solidentity", yn)
+
+	def SetConstantAltitude(self, altitude):
+		self._constantaltitude = altitude
+		self._updateAttrib("constantaltitude", altitude)
 
 	def SetMoveType(self, movetype):
 		#Setup Pathfinding algorthim based on the movetype here
@@ -167,15 +172,20 @@ class BaseUnit():
 
 		if self._vehicle!=None:
 			if self.steer_state == "path":
-				self._vehicle.followPath(delta)
+				self._vehicle.followPath(delta, towards=self._movetype==0)
+
 			elif self.steer_state == "seek":
 				self._vehicle.seekPos(self.steer_target)
 
 			newpos = self._vehicle.step(delta)
 			if newpos!=self.__oldsteeringpos:
 				self.__oldsteeringpos = newpos
-				y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2])+1
-				#y = self._pos[1]
+
+				if not self._constantaltitude:
+					y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2])+1
+				else:
+					y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2]) + self._constantaltitude
+
 				self._setPosition((newpos[0], y, newpos[2]))
 
 		if self._movetopoint!=None:
@@ -259,6 +269,7 @@ class BaseUnit():
 			#self._vehicle.seekPos((pos[0], self._pos[1], pos[2]))
 			#self.steer_state = "seek"
 			#self.steer_target = (pos[0], self._pos[1], pos[1])
+			path = [path[len(path)-1]]
 			for node in path:
 				self._vehicle.addPosToPath((node[0], self._pos[1], node[1]))
 			self.steer_state = "path"

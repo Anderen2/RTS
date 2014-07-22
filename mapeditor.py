@@ -37,7 +37,7 @@ shared.mapBackend=backend.MapeditorBackend()
 
 #MapLoader
 shared.MapLoader=maploader.MapLoader()
-shared.Map=shared.MapLoader.Load("nice.map")
+shared.Map=shared.MapLoader.Load("tri2.map")
 
 #MapSaver
 shared.Mapfile=mapfile.Mapfile()

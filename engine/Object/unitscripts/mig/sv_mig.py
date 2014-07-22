@@ -21,6 +21,7 @@ class Unit(BaseUnit):
 		self.Actions=[sv_act.Action]
 
 		self.SetMoveType(0) #MOVETYPE_AIR
+		self.SetConstantAltitude(200)
 		self.SetMoveSpeed(100)
 		self.SetMaxHealth(100)
 		self.SetViewRange(500)
@@ -31,7 +32,7 @@ class Unit(BaseUnit):
 		self.SetVehicleArriveBreakingRadius(50)
 		self.SetVehicleMaxVelocity(3)
 		self.SetVehicleMaxSpeed(2)
-		self.SetVehicleBreakingForce(0)
+		self.SetVehicleBreakingForce(1)
 		self.SetVehicleSize(10)
 		self.SetVehicleMaxSeeAhead(50)
 		self.SetVehicleMaxAvoidForce(10)
@@ -69,9 +70,7 @@ class Unit(BaseUnit):
 
 	def OnCreation(self, pos):
 		self.SetupProjectileLaunchers()
-		th = shared.Map.Terrain.getHeightAtPos(pos[0], pos[2])
-		ty = th+100
-		self.SetPosition(pos[0], ty, pos[2])
+		self.SetPosition(pos[0], pos[1], pos[2])
 
 	#Action Triggers
 	def OnPrimaryAction(self, unit):

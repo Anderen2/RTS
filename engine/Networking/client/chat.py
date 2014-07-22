@@ -12,9 +12,15 @@ class ChatManager():
 		debug.ACC("net_say", self.ChatSay, info="Say something in chat\nUsage: net_say channel message", args=2)
 
 	def SA(self, fromuid, cid, message, Protocol=None):
-		username = shared.PlayerManager.getFromUID(fromuid)
-		if username != False:
-			username = username.username
+		fromuid = int(fromuid)
+		if fromuid>0:
+			username = shared.PlayerManager.getFromUID(fromuid)
+			if username != False:
+				username = username.username
+		elif fromuid == -1:
+			username = "SERVER"
+		elif fromuid == -2:
+			username = ""
 
 		self.getFromCID(cid).Message(username, message)
 
@@ -57,5 +63,8 @@ class Channel():
 	def Message(self, username, message):
 		shared.DPrint("Chat", 1, "["+str(self.CID)+"] "+str(username)+": "+message)
 		self.chatlog.append((username, message))
-		self.chatstring = self.chatstring + str(username) + ": "+str(message)+"\n"
+		if username!="":
+			self.chatstring = self.chatstring + str(username) + ": "+str(message)+"\n"
+		else:
+			self.chatstring = self.chatstring + str(message)+"\n"
 		shared.gui['chat'].setChatLog(self.chatstring)

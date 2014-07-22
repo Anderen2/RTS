@@ -8,13 +8,21 @@ import pickle
 class aStarGenerators():
 	def __init__(self):
 		self.AStar = shared.Pathfinder.aStarPath.Graph
+		if self.AStar==None:
+			shared.Pathfinder.aStarPath.InitGraph()
+			self.AStar = shared.Pathfinder.aStarPath.Graph
 
+		debug.ACC("a*_new", self.newGraph, args=2, info="Creates a new A* graph")
 		debug.ACC("a*_clear", self.clearGraph, args=0, info="Clears all cost from the entire a* graph")
 		debug.ACC("a*_gendec", self.generateDecorators, args=0, info="Regenerates nonwalkable areas due to decorator placement")
 		debug.ACC("a*_genwater", self.generateWater, args=0, info="Regenerates nonwalkable areas due to water elevation")
 
-		debug.ACC("a*_save", self.saveGraph, args=1, info="Save the current a* graph as an file\nUsage: a*_save filename")
-		debug.ACC("a*_load", self.loadGraph, args=1, info="Load an a* graph from an file\nUsage: a*_load filename")
+		debug.ACC("a*_save", shared.Pathfinder.aStarPath.Save, args=1, info="Save the current a* graph as an file\nUsage: a*_save filename")
+		debug.ACC("a*_load", shared.Pathfinder.aStarPath.Load, args=3, info="Load an a* graph from an file\nUsage: a*_load filename")
+
+	def newGraph(self, size, accuracy):
+		shared.Pathfinder.aStarPath.Create(int(size), int(accuracy))
+		self.AStar = shared.Pathfinder.aStarPath.Graph
 
 	def clearGraph(self):
 		shared.DPrint("a*gen", 0, "Clearing current graph (%d nodes)" % (len(self.AStar.totnodes)))
@@ -46,13 +54,14 @@ class aStarGenerators():
 			#altitude = TerrainManager.getHeightAtPos(nodewpos.x, nodewpos.y)
 
 	def saveGraph(self, filename):
-		with open(filename, "w") as f:
-			pickle.dump(self.AStar.nodes, f)
+		shared.Pathfinder.aStarPath.Save(filename)
+		# with open(filename, "w") as f:
+		# 	pickle.dump(self.AStar.nodes, f)
 
-	def loadGraph(self, filename):
-		with open(filename, "r") as f:
-			nodes = pickle.load(f)
-			self.AStar.regenerateGraph(1500, 30, nodes)
+	# def loadGraph(self, filename):
+	# 	with open(filename, "r") as f:
+	# 		nodes = pickle.load(f)
+	# 		self.AStar.regenerateGraph(1500, 30, nodes)
 
 	def calculateSceneNodeCost(self, ogrescenenode):
 		AABB = ogrescenenode._getWorldAABB()

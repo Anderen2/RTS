@@ -29,17 +29,20 @@ class MapLoader():
 		splattingDict = {}
 
 		i=0
-		for x in terraincfg["Texture"]["Alpha Splatmaps"]:
-			Fun = x.replace("[", "").replace("]", "").replace(" ", "")
-			splattingDict[terraincfg["Texture"]["Alpha SplatTextures"][i].replace("[", "").replace("]", "").replace(" ", "")]=Fun
-			i+=1
+		if terraincfg["Texture"]["Alpha Splatmaps"]!=None:
+			for x in terraincfg["Texture"]["Alpha Splatmaps"]:
+				Fun = x.replace("[", "").replace("]", "").replace(" ", "")
+				splattingDict[terraincfg["Texture"]["Alpha SplatTextures"][i].replace("[", "").replace("]", "").replace(" ", "")]=Fun
+				i+=1
 
 		shared.render3dTerrain.LoadTerrain()
 		shared.render3dTerrain.createTerrainMaterial(terraincfg["Texture"]["Base Texture"], splattingDict)
 
 		if terraincfg["Water"]["Type"]!="None":
-			terrainX=int(terraincfg["Heightmap"]["Scale"][0])
-			terrainY=int(terraincfg["Heightmap"]["Scale"][1])
+			#terrainX=int(terraincfg["Heightmap"]["Scale"][0])
+			#terrainY=int(terraincfg["Heightmap"]["Scale"][1])
+			terrainX = int(terraincfg["Heightmap"]["Size"])
+			terrainY = int(terraincfg["Heightmap"]["Size"])
 			if len(shared.WaterManager.waters)==0:
 				shared.WaterManager.Create((terrainX/2, int(terraincfg["Water"]["Altitude"]), terrainY/2), terrainX, terrainY)
 			else:
@@ -87,7 +90,7 @@ class Map():
 
 		#Setup A* Pathfinding
 		if shared.Pathfinder:
-			ACCURACY = 30
+			ACCURACY = 100 # GET/CALC THIS AUTOMATICLY (HARDCODE)
 			tmp = split(self.mapname, ".")
 			NavFile = "Data/Map/"+".".join(tmp[0:len(tmp)-1])+".nav"
 

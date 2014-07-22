@@ -39,10 +39,10 @@ class Service():
 	def ConnectionLost(self, proto, reason):
 		shared.DPrint("Service", 1, "Connection to client lost: "+reason)
 		try:
-			shared.playerManager.DCONN(proto)
+			shared.PlayerManager.DCONN(proto)
 			self.connections.remove(proto)
 		except KeyError:
-			shared.DPrint("Service", 1, "Client does not exsist!")
+			shared.DPrint("Service", 1, "Client does not exist!")
 		#proto.loseConnection()
 
 	def PingAll(self):

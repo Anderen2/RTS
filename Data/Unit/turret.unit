@@ -1,0 +1,11 @@
+turret
+name=USA Turret
+version=1.0
+tip=Effective against both ground and air targets
+ent=turret
+movable=0
+type=2
+faction=0
+action0=stop
+action1=attackmove
+action2=guardarea

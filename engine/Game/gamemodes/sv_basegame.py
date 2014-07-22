@@ -6,7 +6,8 @@ from engine.Lib.hook import Hook
 
 class BaseGame():
 	def __init__(self):
-		shared.Gamemode = self
+		print("BaseGame Init")
+		shared.ChatManager.systemSay("The game is about to start!")
 
 	def _playerJoin(self):
 		pass

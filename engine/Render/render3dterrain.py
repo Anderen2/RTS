@@ -128,8 +128,8 @@ class Terrain():
 		TX = 0
 		TY = 255
 
-		WX = float(x/1500) * 255
-		WY = float(y/1500) * 255
+		WX = float(x/1500) * 255 ## (HARDCODE)
+		WY = float(y/1500) * 255 ## (HARDCODE)
 
 		RX = WX
 		RY = TY - WY

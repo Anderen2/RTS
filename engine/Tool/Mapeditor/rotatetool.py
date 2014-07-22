@@ -57,23 +57,25 @@ class RotateTool():
 
 	def MouseMoved(self, X, Y):
 		if self.CurrentHold!=None:
-			mousePos = MouseCursor.getSingleton().getPosition()
-			# relx=(self.prevx-mousePos.d_x)/100
-			# rely=(self.prevy-mousePos.d_y)/100
-			# self.prevx=mousePos.d_x
-			# self.prevy=mousePos.d_y
-			# print(relx, rely)
-			# self.CurrentHold.entity.transRotate(0, relx, rely)
-			mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
-														  mousePos.d_y / float(self.dimv))
-			self.raySceneQuery.setRay(mouseRay)
-			result = self.raySceneQuery.execute()
-			if len(result)>0:
-				for item in result:
-					if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and "Unnamed" in item.movable.getParentSceneNode().getName():
-						hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
-						posMoved=mouseRay.getPoint(hitpoint.second)
-						#MovePosition=(posMoved[0],posMoved[1],posMoved[2])
-						#YOffset=self.CurrentHold.entity.node._getWorldAABB().getHalfSize().y
-						self.CurrentHold.entity.LookAtZ(posMoved[0],posMoved[1],posMoved[2])
-						break
+			MovePosition=shared.render3dSelectStuff.mousePosToWorldTerrainPos()
+			self.CurrentHold.entity.LookAtZ(MovePosition[0],MovePosition[1],MovePosition[2])
+			# mousePos = MouseCursor.getSingleton().getPosition()
+			# # relx=(self.prevx-mousePos.d_x)/100
+			# # rely=(self.prevy-mousePos.d_y)/100
+			# # self.prevx=mousePos.d_x
+			# # self.prevy=mousePos.d_y
+			# # print(relx, rely)
+			# # self.CurrentHold.entity.transRotate(0, relx, rely)
+			# mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(mousePos.d_x / float(self.dimh),
+			# 											  mousePos.d_y / float(self.dimv))
+			# self.raySceneQuery.setRay(mouseRay)
+			# result = self.raySceneQuery.execute()
+			# if len(result)>0:
+			# 	for item in result:
+			# 		if item.movable and not "PDecal" in item.movable.getParentSceneNode().getName() and "Unnamed" in item.movable.getParentSceneNode().getName():
+			# 			hitpoint=mouseRay.intersects(item.movable.getWorldBoundingBox())
+			# 			posMoved=mouseRay.getPoint(hitpoint.second)
+			# 			#MovePosition=(posMoved[0],posMoved[1],posMoved[2])
+			# 			#YOffset=self.CurrentHold.entity.node._getWorldAABB().getHalfSize().y
+			# 			self.CurrentHold.entity.LookAtZ(posMoved[0],posMoved[1],posMoved[2])
+			# 			break

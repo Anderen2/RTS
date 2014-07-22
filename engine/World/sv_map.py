@@ -30,7 +30,7 @@ class MapLoader():
 	def terrainLoad(self, terraincfg):
 		#Setup Terrain
 		TerrainHeightmap = terraincfg["Heightmap"]["Heightmap File"]
-		TerrainScale = terraincfg["Heightmap"]["Scale"]
+		TerrainScale = terraincfg["Heightmap"]["Size"]
 		TerrainHeight = terraincfg["Heightmap"]["Height"]
 		TerrainInstance = Terrain(self.MediaPlacement + TerrainHeightmap, TerrainScale, TerrainHeight)
 
@@ -70,7 +70,7 @@ class Map():
 		# 	shared.decHandeler.Create(name, pos).entity.setOrientation(rot[0], rot[1], rot[2], rot[3])
 
 		if shared.Pathfinder:
-			ACCURACY = 30
+			ACCURACY = 100
 			tmp = split(self.mapname, ".")
 			NavFile = "Data/Map/"+".".join(tmp[0:len(tmp)-1])+".nav"
 
@@ -86,22 +86,28 @@ class Terrain():
 		self.TerrainImagePath = filepath
 		self.TerrainScale = scale
 		self.TerrainHeight = height
+		#self.TerrainHeight = 200
 
 		self.TerrainFile = Image.open(filepath)
 		self.TerrainImage = self.TerrainFile.load()
 
 		self.grayres = self.TerrainFile.getextrema()
 		self.imgfact = self.TerrainFile.size[0]/float(100)
-		self.mapfact = float(scale[0])/float(100)
-		self.altfact = float(height)
+		self.mapfact = float(self.TerrainScale)/float(100)
+		self.altfact = float(self.TerrainHeight)
 
 	def getHeightAtPos(self, x, y):
-		lx = (((float(x)/float(1500))*self.imgfact)*100)-1
-		ly = (((float(y)/float(1500))*self.imgfact)*100)-1
-		#print("Requested: ",(x,y))
-		#print("Locals: ",(lx, ly))
+		lx = (((float(x)/float(self.TerrainScale))*self.imgfact)*100)-1
+		ly = (((float(y)/float(self.TerrainScale))*self.imgfact)*100)-1
+		print("Requested: ",(x,y))
+		print("Locals: ",(lx, ly))
 		try:
-			return (float(self.TerrainImage[lx,ly])/self.grayres[1]*self.altfact)
+			print(float(self.TerrainImage[lx,ly])/self.grayres[1]*self.altfact)
+			print("TImg: %f", (float(self.TerrainImage[lx,ly])))
+			print("GRes:   ", (self.grayres))
+			print("Fact: %f", (self.altfact))
+			#return (float(self.TerrainImage[lx,ly] + (self.grayres[0] - 16384))/self.grayres[1]*self.altfact)
+			return float(self.TerrainImage[lx,ly])/65535*self.altfact #Figure what the fuck that is going on here (HARDCODE)
 		except IndexError:
 			return 0
 

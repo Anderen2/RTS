@@ -37,10 +37,12 @@ class BaseUnit():
 		self._currentmoveeff = None
 
 		#State
+		self._constantaltitude = False
 		self._health=100 #Bogus value, Getting this from attributes instead See: UnitManager
 		self.steer_state = False
 
 		self.Initialize(self.ID)
+
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
 		self._setPosition(pos)
 		self.Hook.call("OnCreation", pos)
@@ -107,7 +109,7 @@ class BaseUnit():
 		return self._solidentity
 
 	def GetMoveType(self):
-		return MOVETYPE_AIR
+		return self._movetype
 
 	def GetMoveSpeed(self):
 		return self._movespeed
@@ -155,9 +157,9 @@ class BaseUnit():
 		if self._currentaction!=None:
 			self._currentaction.update()
 
-		if self._vehicle!=None:
+		if self._vehicle!=None and self._movetype!=-1:
 			if self.steer_state == "path":
-				self._vehicle.followPath(delta)
+				self._vehicle.followPath(delta, towards=self._movetype==0)
 
 			elif self.steer_state == "seek":
 				self._vehicle.seekPos(self.steer_target)
@@ -167,7 +169,11 @@ class BaseUnit():
 
 			self._entity.RotateTowardsDirection(newdir[0], 0, newdir[2])
 
-			y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2])+1
+			if not self._constantaltitude:
+				y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2])+1
+			else:
+				y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2]) + self._constantaltitude
+
 			self._setPosition((newpos[0], y, newpos[2]))
 			
 			if len(self._vehicle.path)==0:
@@ -238,6 +244,7 @@ class BaseUnit():
 			# self._vehicle.seekPos((pos[0], self._pos[1], pos[2]))
 			#self.steer_state = "seek"
 			#self.steer_target = (pos[0], self._pos[1], pos[1])
+			path = [path[len(path)-1]]
 			for node in path:
 				self._vehicle.addPosToPath((node[0], self._pos[1], node[1]))
 			self.steer_state = "path"

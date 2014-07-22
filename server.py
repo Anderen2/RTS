@@ -1,12 +1,15 @@
 #Dedicated Server - Main
 #import algotest
 from engine import shared, debug
+
+shared.wd = "./"
+shared.side = "Server"
+
 from engine.Networking import sh_netObject, TwCLI
 from engine.Networking.server import server
 from engine.World import sv_map, steering, pathfinding
 
-shared.wd = "./"
-shared.side = "Server"
+from engine.Game import gamemanager
 
 shared.logInit("server")
 shared.DPrint("Main",1,"Initializing Modules...")
@@ -28,8 +31,11 @@ shared.VehicleManager = steering.VehicleManager()
 
 shared.DPrint("Main",1,"Initializing MapLoader...")
 shared.MapLoader = sv_map.MapLoader()
-shared.Map = shared.MapLoader.Load("astar2.map")
+shared.Map = shared.MapLoader.Load("tri5.map")
 shared.Map.Setup()
+
+shared.DPrint("Main",1,"Initializing Gamemanager")
+shared.Gamemanager = gamemanager.sv_Gamemanager()
 
 shared.DPrint("Main",1,"Starting Server...")
 server.Startup()

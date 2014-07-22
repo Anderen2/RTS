@@ -52,4 +52,5 @@ def generate(uid, desc=None, abortable=True, placement=None):
 			self.unit._actionfinish()
 			self.constructionunit._actionfinish()
 	
+	print BaseAction
 	return BaseAction

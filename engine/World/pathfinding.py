@@ -5,6 +5,7 @@ import steering
 
 from engine import shared, debug
 from math import floor, sqrt, atan2
+from string import split
 from traceback import print_exc
 import astar_grid, movetypes
 
@@ -143,7 +144,7 @@ class aStar():
 		return True
 
 	def Save(self, filename):
-		self.InitGraph()
+		#self.InitGraph()
 		with open(filename, "w") as f:
 			pickle.dump(self.Graph.nodes, f)
 		self.InitGrid()
@@ -192,6 +193,35 @@ def testDecoMove3(decid, endx, endy, nodetype):
 	print("Found Path.. Starting A>B Movement")
 	shared.render.Hook.Add("OnRenderFrame", testDecoMove_Step)
 
+def testSmartPath(decids, endx, endy):
+	decids=split(decids, ",")
+	decos=[]
+	paths={}
+	allpaths=[]
+
+	for ID in decids:
+		decos.append(shared.decHandeler.Get(int(ID)))
+
+	for deco in decos:
+		decostart = deco.entity.GetPosition()
+		start = (decostart[0], decostart[2])
+		end = (int(endx), int(endy))
+
+		print("Searching")
+		path = shared.Pathfinder.aStarPath.Graph.Search2(start, end)
+		paths[deco] = list(path)
+		allpaths.extend(path)
+
+		if path==None:
+			print("Unit had invalid path")
+		else:
+			print("Found Unit Path")
+	
+	#Find all duplicate positions	
+	dupes = set([x for x in allpaths if l.count(x) > 1])
+	print(dupes)
+
+
 def testSteering(decid, endx, endy):
 	global deco
 	global end
@@ -214,6 +244,7 @@ def stopSteering():
 debug.ACC("a*_test", testDecoMove, args=5, info="Move decorator w/ a*\nUsage: decid startx starty endx endy")
 debug.ACC("a*_test2", testDecoMove2, args=3, info="Move decorator relative to current pos w/ a*\nUsage: decid endx endy")
 debug.ACC("a*_test3", testDecoMove3, args=4, info="Move decorator relative to current pos w/ a*\nUsage: decid endx endy only")
+debug.ACC("a*_tests", testSmartPath, args=3, info="Tests SmartPath Pathfinding \nUsage: decids(Seperated by ,), endx, endy")
 debug.ACC("steer_test", testSteering, args=3, info="Move decorator with steering towards position\nUsage: decid endx endy")
 debug.ACC("steer_stop", stopSteering, args=0, info="Stop current steering test")
 
@@ -232,8 +263,6 @@ def testSteerMove_Step(delta):
 	deco._setPos(newpos[0], newpos[1], newpos[2])
 	
 	#Forward = shared.Vector3D(Vehicle.velocity.asTuple()).normalize()
-
-
 
 def testDecoMove_Step(delta):
 	global mtmove

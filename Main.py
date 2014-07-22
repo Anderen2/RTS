@@ -6,6 +6,9 @@ from traceback import print_exc
 
 #Initialize stuff
 from engine import shared, debug
+shared.wd="./"
+shared.side = "Client"
+
 shared.logInit("engine")
 shared.DPrint("Main",1,"Initializing Modules...")
 
@@ -14,8 +17,7 @@ from engine.Object import prop, decorator, zone, directormanager
 from engine.Networking.client import client
 from engine.World import maploader, pathfinding, steering
 
-shared.wd="./"
-shared.side = "Client"
+from engine.Game import gamemanager
 
 #Networking and Mainloop
 shared.DPrint("Main",1,"Initializing Networking...")
@@ -42,7 +44,7 @@ shared.Pathfinder = pathfinding
 #MapLoader
 shared.DPrint("Main",1,"Initializing Maploader...")
 shared.MapLoader=maploader.MapLoader()
-shared.Map=shared.MapLoader.Load("astar2.map")
+shared.Map=shared.MapLoader.Load("tri5.map")
 
 #Command Parser
 shared.DPrint("Main",1,"Initializing CommandParser...")
@@ -51,6 +53,10 @@ shared.ParseCommand=debug.ParseCommand
 #DirectorManager
 shared.DPrint("Main",1,"Initializing DirectorManager...")
 shared.DirectorManager=directormanager.DirectorManager()
+
+#Gamemanager
+shared.DPrint("Main",1,"Initializing Gamemanager...")
+shared.Gamemanager = gamemanager.cl_Gamemanager()
 
 #Power it up!
 shared.DPrint("Main",1,"Startin' Powerin' up!..")

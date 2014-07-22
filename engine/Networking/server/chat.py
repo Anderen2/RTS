@@ -35,6 +35,14 @@ class ChatManager():
 		else:
 			print("Member "+str(uid)+" already in channel "+str(cid)+"!")
 
+	def serverSay(self, message, channel=1):
+		ch = self.getFromCID(channel)
+		ch.sendMessage(-1, message)
+
+	def systemSay(self, message, channel=1):
+		ch = self.getFromCID(channel)
+		ch.sendMessage(-2, message)
+
 	def LC(self, Protocol=None):
 		"""List Channels"""
 		player=shared.PlayerManager.getFromProto(Protocol)

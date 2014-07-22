@@ -27,6 +27,8 @@ class MethodProtocol(Protocol):
 		debug.ACC("net_dumpdata", self.DataDump, "Dump networkdata to console\nTrue/False", 1)
 		debug.ACC("net_sendmethod", self.sendMethodHuman, "Send networked method\nUsage: net_sendmethod object.function-arg1/arg2/arg3", 1)
 
+		
+
 		reactor.callLater(0, self.Frame)
 
 	def DataDump(self, state):
@@ -136,6 +138,8 @@ class MethodProtocol(Protocol):
 			self.factory.ConnectionLost(self, "No Response")
 
 	def sendData(self, data):
+		#Set TCP_NODELAY to keep TCP from hording our data
+		self.transport.setTcpNoDelay(True)
 		self.transport.write(data)
 
 	def sendMethodHuman(self, hummeth):
@@ -202,6 +206,9 @@ class MethodProtocol(Protocol):
 				print method
 			if RAWDECRYPT:
 				print prebaseargs
+
+			#Set TCP_NODELAY to keep TCP from hording our data
+			self.transport.setTcpNoDelay(True)
 
 			self.transport.write(method)
 		except:

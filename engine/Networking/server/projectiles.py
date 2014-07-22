@@ -34,6 +34,7 @@ class UnitLauncher():
 		self.projtype=Rocket
 		self.firerange=100
 		self.firespeed=1
+		self.firedelay=0
 		self.reloadspeed=2
 		self.magcap=10
 		self.rellive=True
@@ -76,6 +77,10 @@ class UnitLauncher():
 	def SetFiringSpeed(self, firespeed):
 		"""Set Launchers Firing speed (Time between projectile fires)"""
 		self.firespeed=firespeed
+
+	def SetFiringDelay(self, firedelay):
+		"""Sets Launchers Firing delay (Time between given the order, and projectile fireing)"""
+		self.firedelay=firedelay
 
 	def SetReloadingSpeed(self, reloadspeed):
 		"""Set Launchers reloading speed (Time to wait after magazine is empty)"""

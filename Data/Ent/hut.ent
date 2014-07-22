@@ -1,0 +1,22 @@
+hut
+name=Small hut
+version=1.1
+mesh=hut.mesh
+meshscale=(17,17,17)
+shadows=True
+meshturret=none
+addmesh=0
+mesh1=none
+moveeff=none
+addmoveeff=0
+dieeff=none
+acteff=0
+light=0
+animtime=none
+moveanim=none
+idleanim=none
+deadanim=none
+addidleanim=0
+idlehurtanim=none
+movehurtanim=none
+actanim=0

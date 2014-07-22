@@ -66,7 +66,7 @@ class RenderApplication(object):
  
 	def createRenderWindow(self):
 		shared.DPrint("Render",1,"Creating renderwindow")
-		self.root.initialise(True, "YARTS: v. alpha-alpha")
+		self.root.initialise(True, "YARTS: v. 0E-inf")
  
 	def initializeResourceGroups(self):
 		shared.DPrint("Render",1,"Initializing Resource Groups")
@@ -116,6 +116,7 @@ class RenderApplication(object):
 		self.alphatime=time()
 		#print(self.deltatime)
 
+		#Old updatemethod (Still used by some low-level engine modules)
 		try:
 			for x in self.renderqueue:
 				if not x.frameRenderingQueued(self.deltatime):
@@ -125,6 +126,7 @@ class RenderApplication(object):
 			reactor.stop()
 			print_exc()
 
+		#New updatemethod, uses hooks instead
 		if self.Hook.call("OnRenderFrame", self.deltatime) == False:
 			reactor.stop()
 			print_exc()
@@ -138,6 +140,7 @@ class RenderApplication(object):
 				self.root.renderOneFrame()
 		else:
 			reactor.stop()
+
 		reactor.callLater(0,self.renderHook)
 
 	def startRenderLoop(self):

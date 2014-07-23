@@ -16,15 +16,17 @@ class Unit(BaseUnit):
 	def Initialize(self, ID):
 		self.SetEntity("robot")
 		self.SetSelectedText("Infantry "+str(self.GetID()))
-		self.Actions=[cl_construct.generate("build"), cl_construct.generate("turret")]
+		self.Actions=[cl_construct.generate("build"), cl_construct.generate("turret"), cl_construct.generate("power")]
 
 		self.dead=False
+		self.hackOnTheMove=True
 
 		self.Hook.Add("OnCreation", self.OnCreation)
 		self.Hook.Add("OnDeath", self.OnDie)
 		self.Hook.Add("OnThink", self.OnThink)
 		self.Hook.Add("OnMove", self.OnMove)
-		self.Hook.Add("OnMoveStop", self.OnIdle)
+		self.Hook.Add("OnMoving", self.OnMoving)
+		self._vehicle.Hook.Add("OnPathEnd", self.OnIdle)
 
 	def OnCreation(self, pos):
 		self.GetEntity().actNone()
@@ -40,18 +42,21 @@ class Unit(BaseUnit):
 			if self.GetEntity().getIfAnimIsFinish():
 				self.Destroy()
 
-		#self._entity.node.yaw(Degree(float(270))) #Hackish override as the model is rotated wrong
+	def OnMoving(self):
+		if self.hackOnTheMove:
+			self._entity.node.yaw(Degree(float(270))) #Hackish override as the model is rotated wrong
 
 	def OnMove(self, pos):
-		#self.GetEntity().actMove(True)
-		pass
+		self.hackOnTheMove=True
+		self.GetEntity().actMove(True)
 
 	def OnIdle(self, pos):
+		self.hackOnTheMove=False
 		self._randomCallback(10, 50, self.RandomIdleAnim)
 		self.GetEntity().actNone()
 
 	def RandomIdleAnim(self): #Custom callback defined in OnIdle
-		if self.GetState()=="Idle":
+		if not self.hackOnTheMove:
 			self.GetEntity().actIdle(True)
 
 	#Action Triggers

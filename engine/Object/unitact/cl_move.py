@@ -37,7 +37,7 @@ class Action():
 
 	def finish(self):
 		print("I should have stopped here!")
-		#self.unit._stopmove()
+		self.unit._stoppedmove()
 		#self.unit._setPosition((self.data["3dMouse"][0], self.unit.GetPosition()[1], self.data["3dMouse"][2]))
 
 	def update(self):

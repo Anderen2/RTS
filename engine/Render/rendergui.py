@@ -30,6 +30,9 @@ class GUI():
 		#Setup pointers
 		self.windowManager = CEGUI.WindowManager.getSingleton()
 
+		debug.ACC("gui_hideall", self.HideAll, info="Hide all the gui elements", args=0)
+		debug.ACC("gui_showall", self.ShowAll, info="Show all the gui elements", args=0)
+
 	def Setup(self):
 		shared.DPrint("RenderGUI",1,"Setting up layout")
 
@@ -193,6 +196,3 @@ class GUI():
 	def ceguiTimer(self):
 		reactor.callLater(1, self.ceguiTimer)
 		CEGUI.System.getSingleton().injectTimePulse(1)
-
-	debug.ACC("gui_hideall", HideAll, info="Hide all the gui elements", args=0)
-	debug.ACC("gui_showall", ShowAll, info="Show all the gui elements", args=0)

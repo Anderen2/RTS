@@ -61,6 +61,7 @@ class Entity():
 			self.node=shared.render3dScene.sceneManager.getSceneNode("EntNode").createChildSceneNode(Interactive+"Node_"+str(Identifyer))
 			self.node.attachObject(self.mesh)
 			self.node.scale(self.params["meshscale"][0],self.params["meshscale"][1],self.params["meshscale"][2])
+			self.node.setPosition(self.params["meshoffset"][0],self.params["meshoffset"][1],self.params["meshoffset"][2])
 			self.meshturret=None
 			self.nodeturret=None
 
@@ -367,13 +368,14 @@ class Entity():
 	def SetPosition(self, x, y, z):
 		self.lastMovementDirection = Vector(x,y,z) - Vector(self.GetPosition())
 		#print(self.lastMovementDirection)
+		x, y, z = map(sum,zip((x,y,z),self.params["meshoffset"]))
 		self.node.setPosition(x, y, z)
 		return self.node.getPosition()
 
 	def GetPosition(self):
 		if self.node:
 			pos = self.node.getPosition()
-			return (pos.x, pos.y, pos.z)
+			return map(sum,zip((pos.x, pos.y, pos.z),(-self.params["meshoffset"][0],-self.params["meshoffset"][1],-self.params["meshoffset"][2])))
 
 	def Translate(self, x, y, z):
 		lastpos = Vector(self.GetPosition())

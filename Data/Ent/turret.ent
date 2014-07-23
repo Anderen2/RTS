@@ -3,6 +3,7 @@ name=UsaTurret
 version=1.1
 mesh=turret_base.mesh
 meshscale=(0.06,0.06,0.06)
+meshoffset=(0,0,0)
 shadows=True
 meshturret=turret_head.mesh
 addmesh=0

@@ -13,25 +13,37 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		#self.terrain = terrain # this is a string corresponding to the name of the terrain material. Ex: "OceanCg" DEPREACIATED
 
 		self.created=False
+		self.whiteOutToggle=False
 
 		debug.ACC("turn", self.ChangeShit, info="Enable a nein", args=3)
+		debug.ACC("dbg_fow", self.debugView, info="Show FowCam viewPort", args=0)
+		debug.ACC("fow_white", self.whiteOut, info="'Disable' Fog of War", args=0)
 
 		self.AllyNodes={}
 		self.EnemyNodes={}
 
 		self.CircleEnts=[]
 		self.CircleNodes=[]
-
 		
+	def whiteOut(self):
+		if not self.whiteOutToggle:
+			self.fogManager.setAmbientLight(ogre.ColourValue(1,1,1))
+			#self.planeMesh.getSubMesh(0).setMaterialName("FOW_circleMat")
+			self.whiteOutToggle=True
+			self.terrainTarget.update()
+		else:
+			self.fogManager.setAmbientLight(ogre.ColourValue(0.2,0.2,0.2))
+			self.whiteOutToggle=False
+			self.terrainTarget.update()
+
 	def Create(self, tsizex, tsizey, terrainMat):
-		return
 		shared.DPrint("FOWManager", 1, "Creating Fog Of War")
 
 		self.created=True
 
 		self.tsizex=tsizex #Terrain Size
 		self.tsizey=tsizey
-		self.tsize=(tsizex+tsizey)/2
+		self.tsize=((tsizex+tsizey)/2)+1000 #Find out an algorithm to calculate this properly (HARDCODE)
 
 		self.fogManager = ogre.Root.getSingleton().createSceneManager(ogre.ST_EXTERIOR_CLOSE)
 		self.fogManager.setAmbientLight(ogre.ColourValue(0.2,0.2,0.2))
@@ -39,8 +51,9 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.camera = self.fogManager.createCamera("fogCam")
 		self.camera.setAspectRatio(1)
 		#self.camera.setProjectionType(ogre.PT_ORTHOGRAPHIC)
-		self.camera.setPosition(self.tsizex, self.tsize, self.tsizey) 
-		self.camera.lookAt(self.tsizex/2, 0, (self.tsizey/2)+1)
+		#self.camera.setFOVy(ogre.Radian(50))
+		self.camera.setPosition(self.tsizex/2, self.tsize, self.tsizey/2) 
+		self.camera.lookAt((self.tsizex/2)+0.01, 1, (self.tsizey/2))
 		self.camera.nearClipDistance = 10
 		self.camera.setFarClipDistance(10000)
 
@@ -53,7 +66,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.plane.normal = ogre.Vector3().UNIT_Y
 
 		#ogre.MeshManager.getSingleton().createPlane(name,              group,                                                plane, width, height, xseg, yseg, Normals, texcoodsets, utile, vtile, upvector)
-		ogre.MeshManager.getSingleton().createPlane("ReflectionPlane", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME,self.plane, self.tsizex, self.tsizey, 1, 1, True, 1, 1, 1, ogre.Vector3().UNIT_Z)
+		self.planeMesh = ogre.MeshManager.getSingleton().createPlane("ReflectionPlane", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME,self.plane, self.tsizex, self.tsizey, 1, 1, True, 1, 1, 1, ogre.Vector3().UNIT_Z)
 		self.planeEnt = self.fogManager.createEntity( "Plane", "ReflectionPlane" ) 
 		self.planeNode = self.fogManager.getRootSceneNode().createChildSceneNode() 
 		self.planeNode.attachObject(self.planeEnt) 
@@ -68,7 +81,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		# construct a white circle material that can be blended on the Overlay plane to create the sight radius light area
 		circleMat = ogre.MaterialManager.getSingleton().create("FOW_circleMat",ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME) 
-		circleMat.getTechnique(0).getPass(0).createTextureUnitState("FOWbeta4.png")
+		circleMat.getTechnique(0).getPass(0).createTextureUnitState("FOWbeta5.png")
 		circleMat.setSelfIllumination(1,1,1) #make sure the image is always perfectly lit
 		circleMat.setSceneBlending(ogre.SBT_TRANSPARENT_ALPHA)
 		circleMat.setDepthWriteEnabled(False)
@@ -109,6 +122,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 	def addView(self, size):
 		size = float(size)/float(256)
 		circleEnt = self.fogManager.createEntity( "Circle"+str(len(self.CircleEnts)), "FOW_Circle" ) 
+		circleEnt.setCastShadows(False)
 		circleNode = self.fogManager.getRootSceneNode().createChildSceneNode() 
 		circleNode.attachObject(circleEnt)
 		circleNode.setPosition(0, 1+(len(self.CircleEnts)/10), 0)
@@ -237,6 +251,11 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		#self.circleNode.setPosition(float(x),float(y),float(z))
 		self.addView(200)[1].setPosition(float(x), 0, float(z))
 		self.update()
+
+	def debugView(self):
+		self.viewPort = shared.render.root.getAutoCreatedWindow().addViewport(self.camera, 1, 0 ,0.8 ,0.2 ,0.2)
+		debug.RCC("gui_hideall")
+		return "Run gui_showall to get the GUI back on"
 
 	def ogre2pyNodeCoord(self, node):
 		if type(node) == str:

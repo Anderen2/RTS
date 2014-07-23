@@ -53,6 +53,7 @@ class BaseUnit():
 		self.Hook.new("Initialize", 1)
 		self.Hook.new("OnCreation", 1)
 		self.Hook.new("OnThink", 1)
+		self.Hook.new("OnMoving", 0)
 		self.Hook.new("OnHealthChange", 1)
 		self.Hook.new("OnDamage", 2)
 		self.Hook.new("OnDeath", 1)
@@ -179,6 +180,9 @@ class BaseUnit():
 			if len(self._vehicle.path)==0:
 				pass
 
+			if newdir != (0,0,0):
+				self.Hook.call("OnMoving")
+
 		if self._movetopoint!=None:
 			if type(self._movetopoint)!=list:
 				dist, pos = movetypes.Move(self._pos, self._movetopoint, self._movespeed*delta, self._movetype)
@@ -268,6 +272,9 @@ class BaseUnit():
 			self._vehicle.clearPath()
 			self.steer_state = None
 			self.steer_target = None
+
+	def _stoppedmove(self):
+		self.Hook.call("OnMoveStop", self._movetopoint)
 
 	def _getMoveEffect(self, mveff):
 		if mveff in dir(moveeff):

@@ -10,7 +10,7 @@ class EffectManager():
 		self.types={"explosion":Explosion, "smallexplosion":SmallExplosion, "atomic":Atomic, "rain":Rain, "snow":Snow}
 		self.effects=[]
 		self.count=0
-		debug.ACC("recreate", self.Create, info="Create effect\nusage: type x y z size time", args=6)
+		debug.ACC("eff_create", self.Create, info="Create effect\nusage: type x y z size time", args=6)
 
 	def Create(self, effect, x, y, z, size, time):
 		eff=self.types[effect](self.count, (float(x), float(y), float(z)), float(size), float(time))

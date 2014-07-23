@@ -23,6 +23,7 @@ class UnitManager():
 		self.unitscripts["tank"] = import_module(modpath+"tank.cl_tank").Unit
 		self.unitscripts["robot"] = import_module(modpath+"robot.cl_robot").Unit
 		self.unitscripts["turret"] = import_module(modpath+"turret.cl_turret").Unit
+		self.unitscripts["power"] = import_module(modpath+"power.cl_power").Unit
 
 	#SERVER UPDATES/COMMANDS
 

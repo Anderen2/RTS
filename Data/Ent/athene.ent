@@ -3,6 +3,7 @@ name=Statue
 version=1.1
 mesh=athene.mesh
 meshscale=(1,1,1)
+meshoffset=(0,0,0)
 shadows=False
 meshturret=none
 addmesh=0

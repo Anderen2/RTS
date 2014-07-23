@@ -18,7 +18,7 @@ class Unit(BaseUnit):
 		self.SetEntity("robot")
 		self.SetSolid(True)
 
-		self.Actions=[sv_construct.generate("build"), sv_construct.generate("turret")]
+		self.Actions=[sv_construct.generate("build"), sv_construct.generate("turret"), sv_construct.generate("power")]
 
 		self.SetMoveType(1) #MOVETYPE_GROUND
 		self.SetMoveSpeed(50)

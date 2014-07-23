@@ -34,7 +34,7 @@ class BuildEffect():
 		self.YOffset=self.ent.mesh.getWorldBoundingBox().getHalfSize().y
 		print("YOffset")
 		print(self.YOffset)
-		self.buildnode.setPosition(self.entpos.x, self.terrainheight+self.YOffset, self.entpos.z)
+		self.buildnode.setPosition(self.entpos.x, self.terrainheight, self.entpos.z)
 
 		#Use an material to color it transparent green
 		self.buildmesh.setMaterialName("RTS/BuildHolo")
@@ -43,15 +43,15 @@ class BuildEffect():
 		self.ent.node.setPosition(self.entpos.x, self.terrainheight-self.YOffset, self.entpos.z)
 
 		#Calculate progress-step according to entity height
-		self.progstep = (self.YOffset*2) / 100
+		self.progstep = (self.YOffset) / 100
 
 	def UpdateProgress(self, progress):
 		#Update progress/position according to progstep, entity height and terrain height
 		print(progress)
 		if self.entpos!=None:
-			print("I am not none!")
 			progress = float(progress)
-			self.ent.node.setPosition(self.entpos.x, (self.terrainheight-self.YOffset)+(self.progstep*progress), self.entpos.z)
+			if progress<101:
+				self.ent.node.setPosition(self.entpos.x, (self.terrainheight-self.YOffset)+(self.progstep*progress), self.entpos.z)
 
 	def Remove(self):
 		self.buildnode.detachObject(self.buildmesh)
@@ -88,7 +88,7 @@ class BuildEffect2():
 
 		#Position according to terrain
 		self.terrainheight = shared.render3dTerrain.getHeightAtPos(self.entpos.x, self.entpos.z)
-		self.YOffset=self.ent.getWorldBoundingBox().getHalfSize().y
+		self.YOffset=self.ent.getWorldBoundingBox().getSize().y
 		print("YOffset")
 		print(self.YOffset)
 		self.buildnode.setPosition(self.entpos.x, self.terrainheight+self.YOffset, self.entpos.z)
@@ -97,7 +97,7 @@ class BuildEffect2():
 		self.entnode.setPosition(self.entpos.x, self.terrainheight-self.YOffset, self.entpos.z)
 
 		#Calculate progress-step according to entity height
-		self.progstep = (self.YOffset*2) / 100
+		self.progstep = (self.YOffset) / 100
 
 	def UpdateProgress(self, progress):
 		#Update progress/position according to progstep, entity height and terrain height
@@ -124,22 +124,22 @@ class PlacementEffect():
 		shared.renderioInput.Hook.Add("OnMouseMove", self.MouseMove)
 		shared.renderioInput.Hook.Add("OnMousePressed", self.MouseRelease)
 
-		self.YOffset=self.buildmesh.getWorldBoundingBox().getHalfSize().y
+		self.YOffset=self.buildmesh.getWorldBoundingBox().getSize().y
 		reactor.callLater(0, self.AABBShit) #Reupdate the YOffset after one frame
 
 		#Use an material to color it transparent green
 		self.buildmesh.setMaterialName("RTS/BuildHolo")
 
 		#Calculate progress-step according to entity height
-		self.progstep = (self.YOffset*2) / 100
+		self.progstep = (self.YOffset) / 100
 
 	def AABBShit(self):
-		self.YOffset=self.buildmesh.getWorldBoundingBox().getHalfSize().y
+		self.YOffset=self.buildmesh.getWorldBoundingBox().getSize().y
 
 	def MouseMove(self, pos):
 		worldpos = shared.render3dSelectStuff.mousePosToWorldTerrainPos()
 		#terrainheight = shared.render3dTerrain.getHeightAtPos(worldpos.x, worldpos.z)
-		self.buildnode.setPosition(worldpos[0], worldpos[1]+self.YOffset, worldpos[2])
+		self.buildnode.setPosition(worldpos[0], worldpos[1], worldpos[2])
 
 	def MouseRelease(self, mkey, pos):
 		print("KEY:")

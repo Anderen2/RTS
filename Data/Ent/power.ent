@@ -1,13 +1,12 @@
-palm2
-name=A Palm
+power
+name=Power Structure
 version=1.1
-mesh=palm2.mesh
-meshscale=(5,5,5)
+mesh=power.mesh
+meshscale=(0.6,0.6,0.6)
 meshoffset=(0,0,0)
 shadows=True
 meshturret=none
 addmesh=0
-mesh1=none
 moveeff=none
 addmoveeff=0
 dieeff=none

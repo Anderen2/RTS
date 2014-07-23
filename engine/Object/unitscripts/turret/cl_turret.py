@@ -1,5 +1,5 @@
-#Tank - Ground Unit
-#Serverside Unit Script File
+#Turret - Defence
+#Clientside Unit Script File
 
 from engine import shared, debug
 from engine.Object.unitscripts.cl_baseunit import BaseUnit

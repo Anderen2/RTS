@@ -5,9 +5,11 @@ from engine import shared, debug
 from engine.Object.unitscripts.sv_baseunit import BaseUnit
 from engine.Object.unitact import sv_setway, sv_settarg, sv_unitbuild, sv_const
 
+import sv_upgrade
 #AddCSFile("cl_init.py")
 
 class Unit(BaseUnit):
+	UnitID = "power"
 	Name = "Power"
 	Description = "Power Structure\nGives your base power"
 	Image = "unit_power"
@@ -19,7 +21,7 @@ class Unit(BaseUnit):
 		self.SetEntity("power")
 		self.SetSolid(True)
 
-		self.Actions=[]
+		self.Actions=[sv_upgrade.Action]
 
 		self.SetMoveType(-1) #MOVETYPE_NONE
 		self.SetMoveSpeed(0)

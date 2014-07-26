@@ -8,6 +8,7 @@ from engine.Object.unitact import sv_construct
 #AddCSFile("cl_init.py")
 
 class Unit(BaseUnit):
+	UnitID = "robot"
 	Name = "Robot"
 	Description = "Type: Ground Infantry / Worker\nEffective against Infantry, Airunits\nCan build structures"
 	Image = "unit_robot"
@@ -18,7 +19,7 @@ class Unit(BaseUnit):
 		self.SetEntity("robot")
 		self.SetSolid(True)
 
-		self.Actions=[sv_construct.generate("build"), sv_construct.generate("turret"), sv_construct.generate("power")]
+		self.Actions=[sv_construct.generate("build"), sv_construct.generate("turret"), sv_construct.generate("power"), sv_construct.generate("derrick")]
 
 		self.SetMoveType(1) #MOVETYPE_GROUND
 		self.SetMoveSpeed(50)

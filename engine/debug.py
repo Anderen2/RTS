@@ -157,16 +157,15 @@ def runCLI(args):
 			shared.DPrint("debug",0,"CLI: "+x)
 			shared.DPrint("debug",1,ParseCommand(x))
 
-#EXTRA COMMANDS
-ACC("man", manCMD, info="Prints the commands manual/infostring\nUsage: ex. man man", args=1)
-ACC("help", listCMD, info="Lists all commands in the console", args=0)
-ACC("find", findCMD, info="Searchs for a command with the letters in it \nUsage: find something, ex. find gui", args=1)
-ACC("which", whichCMD, info="Returns the name of the function which the command executes\nUsage: ex. which which", args=1)
-
 def echo(*kwargs):
 	foovar=""
 	for x in kwargs:
 		foovar=foovar+" "+x
 	return(foovar)
 
+#EXTRA COMMANDS
+ACC("man", manCMD, info="Prints the commands manual/infostring\nUsage: ex. man man", args=1)
+ACC("help", listCMD, info="Lists all commands in the console", args=0)
+ACC("find", findCMD, info="Searchs for a command with the letters in it \nUsage: find something, ex. find gui", args=1)
+ACC("which", whichCMD, info="Returns the name of the function which the command executes\nUsage: ex. which which", args=1)
 ACC("echo", echo, info="Prints the arguments")

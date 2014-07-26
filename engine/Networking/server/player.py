@@ -7,7 +7,7 @@ class Player():
 		self.PlayerInfo=Extras
 		self.UID=UID
 		self.username=Username
-		self.team = self.PlayerInfo["team"]
+		self.team = Team
 		self.Protocol=Protocol
 
 		self.Units=[]
@@ -15,6 +15,8 @@ class Player():
 
 	def Setup(self):
 		shared.ChatManager.addMember(self.UID, 1)
+		shared.PlayerManager.CatchUp(self)
+		shared.PlayerManager.PlayerStartupUnits(self)
 
 	def addUnit(self, unit):
 		self.Units.append(unit)

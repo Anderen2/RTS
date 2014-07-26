@@ -1,0 +1,302 @@
+
+material Chromf_5j
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0.47451 0.47451 0.47451 1
+			specular 0.192157 0.192157 0.192157 1 102.4
+		}
+
+	}
+
+}
+
+material Chrom_5
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 0.192157 0.192157 0.192157 1 102.4
+		}
+
+	}
+
+}
+
+material Chrom_5j
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 0.192157 0.192157 0.192157 1 102.4
+		}
+
+	}
+
+}
+
+material Material #16
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 0.796078 0.796078 0.796078 1 102.4
+		}
+
+	}
+
+}
+
+material Chromsxds_5j
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 0.192157 0.192157 0.192157 1 102.4
+		}
+
+	}
+
+}
+
+material Chromsds_5j
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 0.192157 0.192157 0.192157 1 102.4
+		}
+
+	}
+
+}
+
+material Chromsxds_ds5j
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 0.192157 0.192157 0.192157 1 102.4
+		}
+
+	}
+
+}
+
+material Material #8
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0.309804 0.309804 0.309804 1
+			specular 0.254902 0.254902 0.254902 1 128
+		}
+
+	}
+
+}
+
+material Copper
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 1 1 1 1 128
+		}
+
+	}
+
+}
+
+material Chromds_5
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 0.47451 0.47451 0.47451 1 102.4
+		}
+
+	}
+
+}
+
+material Material #5
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 1 0.964706 0 1
+			specular 1 1 1 1 128
+		}
+
+	}
+
+}
+
+material Material #7
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 1 1 1 1 128
+		}
+
+	}
+
+}
+
+material Material #6
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 1 0 0 1
+			specular 1 1 1 1 128
+		}
+
+	}
+
+}
+
+material Material02
+{
+	technique
+	{
+		pass
+		{
+
+			texture_unit
+			{
+				texture METAL09.JPG -1
+			}
+		}
+
+	}
+
+}
+
+material Material03
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.2 0.2 0.2 1
+			diffuse 0.8 0.8 0.8 1
+
+			texture_unit
+			{
+				texture MET002.JPG -1
+			}
+		}
+
+	}
+
+}
+
+material Material04
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.2 0.2 0.2 1
+			diffuse 0.8 0.8 0.8 1
+
+			texture_unit
+			{
+				texture METAL05.JPG -1
+			}
+		}
+
+	}
+
+}
+
+material Material05
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.2 0.2 0.2 1
+			diffuse 0.8 0.8 0.8 1
+
+			texture_unit
+			{
+				texture STONE33.jpg -1
+			}
+		}
+
+	}
+
+}
+
+material Material06
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.2 0.2 0.2 1
+			diffuse 0.8 0.8 0.8 1
+
+			texture_unit
+			{
+				texture METAL04.JPG -1
+			}
+		}
+
+	}
+
+}
+
+material Material07
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.2 0.2 0.2 1
+			diffuse 0.878431 1 0.184314 1
+		}
+
+	}
+
+}

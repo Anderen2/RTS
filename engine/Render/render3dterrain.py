@@ -53,7 +53,7 @@ class Terrain():
 		baseTexture.setTextureName(base)
 		baseTexture.setTextureScale(1, 1)
 
-		if platform() != "L1inux": #FGLRX/Catalyst on Linux is so shitty that they broke blendmaps in their latest driver (So if we are running linux, only use basetexture (FIXED)) ## FUTURE GFX OPTION!
+		if platform() == "L1inux": #FGLRX/Catalyst on Linux is so shitty that they broke blendmaps in their latest driver (So if we are running linux, only use basetexture (FIXED)) ## FUTURE GFX OPTION!
 			for texture, alphamap in splatting.iteritems():
 				splattingPass = Technique.createPass()
 				splattingPass.setLightingEnabled(False)
@@ -74,8 +74,8 @@ class Terrain():
 		shared.DPrint("R3DTerrain", 0, "Creating Terrain Config")
 		self.HeightmapImage = terraincfg["Heightmap"]["Heightmap File"]
 		self.MaxHeight = terraincfg["Heightmap"]["Height"]
-		self.PageWorldX = terraincfg["Heightmap"]["Scale"][0]
-		self.PageWorldZ = terraincfg["Heightmap"]["Scale"][1]
+		#self.PageWorldX = terraincfg["Heightmap"]["Scale"][0]
+		#self.PageWorldZ = terraincfg["Heightmap"]["Scale"][1]
 		self.TerrainSize = terraincfg["Heightmap"]["Size"]
 		#self.PageSize = 1500
 		self.TileSize = terraincfg["Heightmap"]["TileSize"]

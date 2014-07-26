@@ -44,7 +44,7 @@ shared.Pathfinder = pathfinding
 #MapLoader
 shared.DPrint("Main",1,"Initializing Maploader...")
 shared.MapLoader=maploader.MapLoader()
-shared.Map=shared.MapLoader.Load("tri5.map")
+shared.Map=shared.MapLoader.Load("tri6.map")
 
 #Command Parser
 shared.DPrint("Main",1,"Initializing CommandParser...")

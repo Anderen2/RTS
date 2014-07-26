@@ -8,6 +8,7 @@ import sv_act
 #AddCSFile("cl_init.py")
 
 class Unit(BaseUnit):
+	UnitID = "mig"
 	Name = "MIG"
 	Description = "Type: Air Fighter\nEffective against Airunits, Armored Units"
 	Image = "unit_mig"

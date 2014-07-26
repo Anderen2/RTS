@@ -19,6 +19,9 @@ sh_netObject.ObjectManager()
 shared.DPrint("Main",1,"Initializing Server Service...")
 shared.Service=server.Service()
 
+shared.DPrint("Main",1,"Initializing UnitManager...")
+server.UnitManager()
+
 shared.DPrint("Main",1,"Initializing PlayerManager...")
 server.PlayerManager()
 
@@ -31,7 +34,7 @@ shared.VehicleManager = steering.VehicleManager()
 
 shared.DPrint("Main",1,"Initializing MapLoader...")
 shared.MapLoader = sv_map.MapLoader()
-shared.Map = shared.MapLoader.Load("tri5.map")
+shared.Map = shared.MapLoader.Load("tri6.map")
 shared.Map.Setup()
 
 shared.DPrint("Main",1,"Initializing Gamemanager")

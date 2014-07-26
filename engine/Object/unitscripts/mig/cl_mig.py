@@ -29,6 +29,7 @@ class Unit(BaseUnit):
 	def OnDie(self, cause):
 		self.GetEntity().actNone()
 		self.GetEntity().actDead(True)
+		self._vehicle=None
 		self.StartMoveEffect("globDiveDie")
 	
 	def _die(self):

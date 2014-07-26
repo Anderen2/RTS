@@ -16,7 +16,7 @@ class Unit(BaseUnit):
 	def Initialize(self, ID):
 		self.SetEntity("robot")
 		self.SetSelectedText("Infantry "+str(self.GetID()))
-		self.Actions=[cl_construct.generate("build"), cl_construct.generate("turret"), cl_construct.generate("power")]
+		self.Actions=[cl_construct.generate("build"), cl_construct.generate("turret"), cl_construct.generate("power"), cl_construct.generate("derrick")]
 
 		self.dead=False
 		self.hackOnTheMove=True
@@ -52,7 +52,7 @@ class Unit(BaseUnit):
 
 	def OnIdle(self, pos):
 		self.hackOnTheMove=False
-		self._randomCallback(10, 50, self.RandomIdleAnim)
+		#self._randomCallback(10, 50, self.RandomIdleAnim)
 		self.GetEntity().actNone()
 
 	def RandomIdleAnim(self): #Custom callback defined in OnIdle

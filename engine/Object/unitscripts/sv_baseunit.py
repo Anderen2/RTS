@@ -34,7 +34,8 @@ class BaseUnit():
 		self._constantaltitude = False
 		self._health = 100
 		self.steer_state = False
-		self.pendingattrib={}
+		self.pendingattrib={} #All attributes waiting to be sent
+		self.currentattrib={} #All current attributes (Used for gamestate syncing)
 
 		self.Initialize(self.ID)
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
@@ -219,6 +220,7 @@ class BaseUnit():
 			#As the client seemly only could recieve 60 pkgs each secound [With the current transferring method], we keep the packagequeue from getting too big
 			reactor.callLater(0.1, self._broadcastAttrib)
 		self.pendingattrib[attribname]=data
+		self.currentattrib[attribname]=data
 
 	def _broadcastAttrib(self):
 		if len(self.pendingattrib)!=0:

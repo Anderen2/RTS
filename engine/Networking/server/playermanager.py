@@ -12,7 +12,12 @@ class PlayerManager():
 		self.PlayerCount=0
 		self.PDict={}
 
+		self.mapUnits = {}
+
 		self.brandwidthsaver=[]
+
+		#Add "None-player"
+		self.PDict[-1]=Player(-1, "None", -1, None, None)
 
 		#Player Thinking
 		self.lastframe=time()
@@ -45,7 +50,8 @@ class PlayerManager():
 
 	def Broadcast(self, obj, method, args):
 		for x in self.PDict:
-			self.PDict[x].Protocol.sendMethod(obj, method, args)
+			if x!=-1:
+				self.PDict[x].Protocol.sendMethod(obj, method, args)
 
 	def getFromUID(self, uid):
 		try:
@@ -61,6 +67,47 @@ class PlayerManager():
 			return False
 		except:
 			return None
+
+	def CatchUp(self, ply):
+		#Allows players joining late to get synced into the current game state
+		shared.ChatManager.systemSay("Player %s joined the game" % ply.username)
+		if shared.UnitManager.unitcount!=0:
+			shared.ChatManager.systemSay("Player %s joined the game late, syncing state.." % ply.username)
+			for unit in shared.UnitManager.generateAllUnits():
+				attrib = unit.currentattrib.copy()
+				attrib["pos"] = unit.GetPosition()
+				ply.Protocol.sendMethod(4, "build", [unit.UnitID, unit._owner.UID, unit.ID, attrib])
+
+	def SetupMapUnits(self, mapconfig):
+		for ID, Content in mapconfig.iteritems():
+			name = mapconfig[ID]["name"]
+			playerid = int(mapconfig[ID]["pid"])
+			pos = mapconfig[ID]["pos"]
+			pos = (float(pos[0]), float(pos[1]), float(pos[2]))
+			rot = mapconfig[ID]["rot"]
+
+			if not playerid in self.mapUnits:
+				self.mapUnits[playerid] = []
+
+			if playerid != -1: #If the unit is a prebuilt structure that should later be auto-provided
+				unit = shared.UnitManager.preCreate(playerid, name, ID, pos)
+				self.mapUnits[playerid].append(unit)
+			else:
+				unit = shared.UnitManager.preCreate(self.getFromUID(-1), name, ID, pos)
+				self.mapUnits[playerid].append(unit)
+				self.getFromUID(-1).addUnit(unit)
+
+	def PlayerStartupUnits(self, player):
+		print player.UID
+		print self.mapUnits
+		if player.UID in self.mapUnits:
+			for unit in self.mapUnits[player.UID]:
+				unit._owner=player
+				player.addUnit(unit)
+				attrib = unit.currentattrib.copy()
+				attrib["pos"] = unit.GetPosition()
+				player.Protocol.sendMethod(4, "build", [unit.UnitID, unit._owner.UID, unit.ID, attrib])
+
 
 	def ThinkPlayers(self):
 

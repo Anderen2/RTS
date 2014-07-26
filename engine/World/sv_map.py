@@ -81,6 +81,8 @@ class Map():
 				shared.DPrint("Map", 0, "Generating new aStar Grid.. Please Wait..")
 				##GENERATE NEW GRID AND SAVE IT HERE!
 
+		shared.PlayerManager.SetupMapUnits(self.config["Units"])
+
 class Terrain():
 	def __init__(self, filepath, scale, height):
 		self.TerrainImagePath = filepath

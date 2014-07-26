@@ -7,6 +7,7 @@ from engine.Object.unitscripts.sv_baseunit import BaseUnit
 #AddCSFile("cl_init.py")
 
 class Unit(BaseUnit):
+	UnitID = "tank"
 	Name = "Tank"
 	Description = "Type: Ground Armored Vehicle\nEffective against Infantry, Armored Units"
 	Image = "unit_tank"

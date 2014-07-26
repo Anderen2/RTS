@@ -25,6 +25,7 @@ class UnitManager():
 		self.unitscripts["robot"] = import_module(modpath+"robot.sv_robot").Unit
 		self.unitscripts["turret"] = import_module(modpath+"turret.sv_turret").Unit
 		self.unitscripts["power"] = import_module(modpath+"power.sv_power").Unit
+		self.unitscripts["derrick"] = import_module(modpath+"derrick.sv_derrick").Unit
 
 	def req_build(self, name, x, y, z, Protocol=None):
 		shared.DPrint(0, "netUnitManager", "Building "+str(name))
@@ -73,6 +74,23 @@ class UnitManager():
 				#shared.Gamemode._playerReqUnit(owner, self.unitscripts[name])
 				newunit=self.unitscripts[name](uid, owner, pos)
 				owner.addUnit(newunit)
+				return newunit
+
+			except:
+				shared.DPrint(0, "netUnitManager", "Unitscript for unit :"+str(name)+" has errors!")
+				print_exc()
+				return False
+
+		else:
+			shared.DPrint(0, "netUnitManager", "Unitscript for unit :"+str(name)+" does not exsist!")
+			return False
+
+	def preCreate(self, playerid, name, unitid, pos):
+		if name in self.unitscripts:
+			try:
+				#shared.Gamemode._playerReqUnit(owner, self.unitscripts[name])
+				newunit=self.unitscripts[name](unitid, playerid, pos)
+				self.unitcount+=1
 				return newunit
 
 			except:

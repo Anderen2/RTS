@@ -361,7 +361,6 @@ class Entity():
 
 	def rotTurretTowardPos(self, x, y, z):
 		if not self.params["meshturret"]==None:
-			print("Rotating..")
 			self.nodeturret.setFixedYawAxis(True, ogre.Vector3().UNIT_Y)
 			self.nodeturret.lookAt((int(x), self.node.getPosition().y, int(z)), self.nodeturret.TS_WORLD, ogre.Vector3().UNIT_Z)
 
@@ -464,6 +463,10 @@ class Entity():
 		# 		return queryResult.distance
 		talt = shared.render3dTerrain.getHeightAtPos(Pos[0], Pos[2])
 		return Pos[1] - talt
+
+	def setIllumination(self, a, b, c):
+		mat = self.mesh.getSubEntity(0).getMaterial()
+		mat.setSelfIllumination(a,b,c)
 
 	def Think(self, delta):
 		if self.error!=True:

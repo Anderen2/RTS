@@ -75,7 +75,6 @@ def Startup():
 	shared.Server=Server()
 
 	ChatManager()
-	UnitManager()
 	GroupManager()
 	LauncherManager()
 

@@ -31,7 +31,7 @@ class contextGround():
 		pass
 
 	def sTerrain(self):
-		layout={"Heightmap":{"Heightmap File":"file","Scale":"vector2","Height":"float", "TileSize":"int", "Size":"int"}, "Texture":{"Base Texture":"file", "Alpha Splatmaps":"filelist", "Alpha SplatTextures": "filelist"}, "Water":{"Type":["Ocean", "None"], "Altitude":"float"}, "Lightning":{"Position of sun":"vector3", "Ambient":"color"}}
+		layout={"Heightmap":{"Heightmap File":"file","Height":"float", "TileSize":"int", "Size":"int"}, "Texture":{"Base Texture":"file", "Alpha Splatmaps":"filelist", "Alpha SplatTextures": "filelist"}, "Water":{"Type":["Ocean", "None"], "Altitude":"float"}, "Lightning":{"Position of sun":"vector3", "Ambient":"color"}}
 		
 		config=shared.Mapfile.TerrainConfig
 

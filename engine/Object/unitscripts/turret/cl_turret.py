@@ -6,6 +6,8 @@ from engine.Object.unitscripts.cl_baseunit import BaseUnit
 
 from engine.Object.unitact import cl_fau, cl_const ## REMOVE LATER
 
+
+
 class Unit(BaseUnit):
 	Name = "Turret"
 	Description = "Type: Ground Defence Unit\nEffective against both ground and air units"
@@ -57,4 +59,3 @@ class Unit(BaseUnit):
 	def AimAtUnit(self, unit):
 		x, y, z = unit._pos
 		self.GetEntity().rotTurretTowardPos(x, y, z)
-		print("Aiming..")

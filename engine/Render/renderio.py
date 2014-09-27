@@ -8,6 +8,7 @@ from ogre.renderer.OGRE import FrameListener, Degree, Vector3, Vector2
 from ogre.gui.CEGUI import System, MouseCursor, LeftButton, RightButton, MiddleButton
 import ogre.io.OIS as OIS
 from string import split
+from platform import architecture
 
 def convertButton(oisID):
 	"""Convert mousebutton ID from OIS to CEGUI"""
@@ -43,7 +44,10 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 	def SetupBare(self):
 		shared.DPrint("RenderIO",1,"Setting up OIS")
 		renderWindow = shared.renderRoot.getAutoCreatedWindow()
-		windowHandle = renderWindow.getCustomAttributeInt("WINDOW")
+		if architecture[0]=="64bit":
+			windowHandle = renderWindow.getCustomAttributeUnsignedLong("WINDOW")
+		else:
+			windowHandle = renderWindow.getCustomAttributeInt("WINDOW")
 		paramList = [("WINDOW", str(windowHandle))]
 		self.inputManager = OIS.createPythonInputSystem(paramList)
 
@@ -65,7 +69,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		shared.DPrint("RenderIO",1,"Setting up OIS")
 		#The 4 lines below tells OIS what window to capture input from
 		renderWindow = shared.renderRoot.getAutoCreatedWindow()
-		windowHandle = renderWindow.getCustomAttributeInt("WINDOW")
+		windowHandle = renderWindow.getCustomAttributeUnsignedLong("WINDOW")
 		paramList = [("WINDOW", str(windowHandle))]
 		self.inputManager = OIS.createPythonInputSystem(paramList)
 

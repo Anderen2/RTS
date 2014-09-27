@@ -15,9 +15,12 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.created=False
 		self.whiteOutToggle=False
 
-		debug.ACC("turn", self.ChangeShit, info="Enable a nein", args=3)
+		debug.ACC("fow_add", self.ChangeShit, info="Add a FOW view", args=2)
 		debug.ACC("dbg_fow", self.debugView, info="Show FowCam viewPort", args=0)
 		debug.ACC("fow_white", self.whiteOut, info="'Disable' Fog of War", args=0)
+		debug.ACC("fow_srot", self.debugRot, info="Rotate FOW Camera", args=3)
+		debug.ACC("fow_spos", self.debugPos, info="Set FOW Camera Position", args=3)
+		debug.ACC("fow_stra", self.debugTra, info="Set FOW Camera translation", args=3)
 
 		self.AllyNodes={}
 		self.EnemyNodes={}
@@ -43,19 +46,27 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		self.tsizex=tsizex #Terrain Size
 		self.tsizey=tsizey
-		self.tsize=((tsizex+tsizey)/2)+1000 #Find out an algorithm to calculate this properly (HARDCODE)
+		self.tsize=((tsizex+tsizey)/2) 
+		self.camalt = self.tsize + 1000 #Find out an algorithm to calculate this properly (HARDCODE)
 
 		self.fogManager = ogre.Root.getSingleton().createSceneManager(ogre.ST_EXTERIOR_CLOSE)
 		self.fogManager.setAmbientLight(ogre.ColourValue(0.2,0.2,0.2))
 
 		self.camera = self.fogManager.createCamera("fogCam")
-		self.camera.setAspectRatio(1)
-		#self.camera.setProjectionType(ogre.PT_ORTHOGRAPHIC)
-		#self.camera.setFOVy(ogre.Radian(50))
-		self.camera.setPosition(self.tsizex/2, self.tsize, self.tsizey/2) 
-		self.camera.lookAt((self.tsizex/2)+0.01, 1, (self.tsizey/2))
+		self.camera.setAspectRatio(self.tsizex/self.tsizey)
 		self.camera.nearClipDistance = 10
 		self.camera.setFarClipDistance(10000)
+
+		self.camnode = self.fogManager.getRootSceneNode().createChildSceneNode()
+		self.camnode.attachObject(self.camera)
+
+		self.camera.setProjectionType(ogre.PT_ORTHOGRAPHIC)
+		self.camera.setOrthoWindowHeight(self.tsizey)
+		self.camera.setOrthoWindowWidth(self.tsizex)
+		#self.camera.setFOVy(ogre.Radian(50))
+		self.camnode.setPosition(self.tsizex/2, self.tsize, self.tsizey/2) 
+		self.camera.lookAt((self.tsizex/2)+0.01, 1, (self.tsizey/2))
+		
 
 		#"FOG" (Black plane)
 		#__________________________________________________________________________________________________________________________________________________________
@@ -92,8 +103,8 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		#__________________________________________________________________________________________________________________________________________________________
 
-		self.texture = ogre.TextureManager.getSingleton().createManual( "RttTex", "General", ogre.TextureType.TEX_TYPE_2D, 512, 512, 1, ogre.PixelFormat.PF_R8G8B8, ogre.TU_RENDERTARGET )
-		#self.texture = ogre.TextureManager.getSingleton().createManual( "terrainTex", "General", ogre.TEX_TYPE_2D, 512, 512, 0, ogre.PF_R8G8B8, ogre.TU_RENDERTARGET) 
+		self.texture = ogre.TextureManager.getSingleton().createManual( "RttTex", "General", ogre.TextureType.TEX_TYPE_2D, 2048, 2048, 1, ogre.PixelFormat.PF_R8G8B8, ogre.TU_RENDERTARGET )
+		#self.texture = ogre.TextureManager.getSingleton().createManual( "name", "group", texturetype, width, height, depth, pixelformat, ogre.TU_RENDERTARGET) 
 		self.RT = self.texture.getBuffer().getRenderTarget()
 
 		#terrainMat = terrainmat
@@ -127,6 +138,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		circleNode.attachObject(circleEnt)
 		circleNode.setPosition(0, 1+(len(self.CircleEnts)/10), 0)
 		circleNode.setScale(1*size, 1*size, 1*size)
+		circleNode.showBoundingBox(False)
 
 		self.CircleEnts.append(circleEnt)
 		self.CircleNodes.append(circleNode)
@@ -175,12 +187,30 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		elif node.getName() in self.AllyNodes:
 			AnodeIndex=self.AllyNodes[node.getName()]
 			Anode = AnodeIndex["node"]
+
 			AnodePos = self.ogre2pyNodeCoord(Anode)
 
 			#Set new view placement
-			UnitPos=node.getPosition()
-			Offset = Anode._getWorldAABB().getHalfSize()
-			Anode.setPosition(UnitPos.x-(Offset.x/2), AnodePos[1], UnitPos.z-(Offset.z/2))
+			#print("___________________________________________________________________________________________________________________________________________________________")
+			#print("NodeName: %s" % (node.getName()))
+			node._updateBounds()
+			Anode._updateBounds()
+			UnitPos=node._getWorldAABB().getCenter()
+			#UnitPos=node.getPosition()
+			#print(UnitPos)
+			AnodePos=Anode.getPosition()
+			#print(AnodePos)
+			AnodeCenter=Anode._getWorldAABB().getCenter()
+			#print(AnodeCenter)
+			AnodeSize=Anode._getWorldAABB().getHalfSize()
+			#print(AnodeSize)
+			#Offset = (AnodePos.x-AnodeCenter.x, AnodePos.z-AnodeCenter.z)
+			#Offset = (AnodeSize.x, AnodeSize.z)
+			Offset = (0,0)
+			#print(Offset)
+			#Anode.setPosition(UnitPos.x-(Offset.x/2), AnodePos[1], UnitPos.z-(Offset.z/2))
+			Anode.setPosition(UnitPos.x-Offset[0], AnodePos[1], UnitPos.z-Offset[1])
+			#print(UnitPos.x-Offset[0], AnodePos[1], UnitPos.z-Offset[1])
 
 			#Update the fowplane with the new viewplacements
 			self.update()
@@ -247,9 +277,9 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		else:
 			print("Node not in our ally Index!")
 
-	def ChangeShit(self, x, y, z):
+	def ChangeShit(self, x, z):
 		#self.circleNode.setPosition(float(x),float(y),float(z))
-		self.addView(200)[1].setPosition(float(x), 0, float(z))
+		self.addView(200)[1].setPosition(float(x), 1, float(z))
 		self.update()
 
 	def debugView(self):
@@ -262,3 +292,17 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 			print(node)
 		else:
 			return (int(node.getPosition().x), int(node.getPosition().y), int(node.getPosition().z))
+
+	def debugRot(self, x, y, z):
+		x, y, z = float(x), float(y), float(z)
+		self.camnode.lookAt(x, y, z)
+
+	def debugPos(self, x, y, z):
+		x, y, z = float(x), float(y), float(z)
+		self.camnode.setPosition(x, y, z) 
+		
+	def debugTra(self, x, y, z):
+		x, y, z = float(x), float(y), float(z)
+		#x, y, z = x, y, z + tuple(self.camera.getPosition())
+		
+		self.camnode.translate(x, y, z) 

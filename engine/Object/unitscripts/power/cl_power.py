@@ -32,7 +32,7 @@ class Unit(BaseUnit):
 		pass
 		
 	def _die(self):
-		#Workaround for video! FIX IT
+		#Workaround for video due to crashing when dying! FIX IT
 		self._entity.node.setVisible(False)
 		pass
 

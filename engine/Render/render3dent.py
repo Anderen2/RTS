@@ -396,6 +396,9 @@ class Entity():
 		self.node.resetOrientation()
 		self.Rotate(x, y, z)
 
+	def setDirection(self, x, y, z):
+		self.node.setDirection(x, y, z)
+
 	def RPYRotate(self, roll, pitch, yaw):
 		self.node.roll(ogre.Degree(float(roll)))
 		self.node.pitch(ogre.Degree(float(pitch)))

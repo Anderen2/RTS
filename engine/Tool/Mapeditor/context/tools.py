@@ -1,6 +1,7 @@
 #Tool Context Options
 
 from engine import debug, shared
+from traceback import print_exc
 
 class contextTools():
 	def __init__(self):
@@ -33,7 +34,7 @@ class contextTools():
 
 	def sSave(self):
 		layout={"Save": {"Filename":"str", "Working Directory":"str", "None":"str"}}
-		config={"Save": {"Filename":"nice.map", "Working Directory":shared.wd, "None":"none"}}
+		config={"Save": {"Filename":shared.Map.mapname, "Working Directory":shared.wd, "None":"none"}}
 		shared.globalGUI.OptionsGUI.ask("Save Map", self.callbackSave, layout, config)
 
 	def sLoad(self):
@@ -44,7 +45,21 @@ class contextTools():
 	def callbackSave(self,config):
 		filename=config["Save"]["Filename"]
 		workingdir=config["Save"]["Working Directory"]
-		shared.Mapfile.Save(workingdir+filename)
+		try:
+			shared.Mapfile.Save(workingdir+filename)
+			shared.Map.mapname = filename
+		except:
+			print("FAILED TO SAVE MAP!")
+			print("FAILED TO SAVE MAP!")
+			print("FAILED TO SAVE MAP!")
+			print("FAILED TO SAVE MAP!")
+			print("FAILED TO SAVE MAP!")
+			print_exc()
+			print("FAILED TO SAVE MAP!")
+			print("FAILED TO SAVE MAP!")
+			print("FAILED TO SAVE MAP!")
+			print("FAILED TO SAVE MAP!")
+			print("FAILED TO SAVE MAP!")
 
 	def callbackLoad(self, config):
 		filename=config["Load"]["Filename"]

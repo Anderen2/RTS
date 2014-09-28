@@ -24,8 +24,10 @@ class Director():
 		self.CurrentSelection=[]
 
 		for x in self.selections:
-			decoID=int(split(x.getName(),"_")[1])
-			Deco=shared.decHandeler.Get(decoID)
+			decoID=split(x.getName(),"Node_")
+			decoID=decoID[0]+decoID[1]
+			print(x.getName())
+			Deco=shared.decHandeler.GetAll(decoID)
 			Deco._selected()
 			self.CurrentSelection.append(Deco)
 

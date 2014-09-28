@@ -9,6 +9,7 @@ from engine.Object.unitact import cl_setway, cl_settarg, cl_const ## REMOVE LATE
 import cl_upgrade
 
 class Unit(BaseUnit):
+	UnitID = "power"
 	Name = "Power"
 	Description = "Power Structure\nGives your base power"
 	Image = "unit_power"

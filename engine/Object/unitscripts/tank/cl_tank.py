@@ -5,9 +5,11 @@ from engine import shared, debug
 from engine.Object.unitscripts.cl_baseunit import BaseUnit
 
 class Unit(BaseUnit):
+	UnitID = "tank"
 	Name = "Tank"
 	Description = "Type: Ground Armored Vehicle\nEffective against Infantry, Armored Units"
 	Image = "unit_tank"
+	BuildEntity = "tank"
 	Buildtime = 6
 	Cost = 500
 

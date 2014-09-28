@@ -42,7 +42,7 @@ class RotateTool():
 					shared.DPrint("movetool", 3, "This is not supported!")
 					#self.CurrentHold=shared.decHandeler.Get(int(item.movable.getParentSceneNode().getParentSceneNode().getName()[4:]))
 				else:
-					self.CurrentHold=shared.decHandeler.Get(int(item.movable.getName()[4:]))
+					self.CurrentHold=shared.decHandeler.GetAll(item.movable.getName())
 
 				if self.CurrentHold!=None:
 					self.CurrentHold.entity.node.showBoundingBox(True)

@@ -6,9 +6,11 @@ from engine.Object.unitscripts.cl_baseunit import BaseUnit
 import cl_act
 
 class Unit(BaseUnit):
+	UnitID = "mig"
 	Name = "MIG"
 	Description = "Type: Air Fighter\nEffective against Airunits, Armored Units"
 	Image = "unit_mig"
+	BuildEntity = "plane"
 	Buildtime = 5
 	Cost = 750
 

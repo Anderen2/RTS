@@ -5,7 +5,7 @@
 from engine import shared, debug
 import ogre.gui.CEGUI as CEGUI
 
-from engine.Tool.Mapeditor.search import entlist
+from engine.Tool.Mapeditor.search import entlist, unitlist
 
 class SSearchGUI():
 	def __init__(self):
@@ -36,8 +36,8 @@ class SSearchGUI():
 		self.CurrentEngine=None
 		self.CurrentEngName="None"
 		self.Customer=None
-		self.sEngines=[entlist.SearchEntlist()]
-		self.sEngName=["decorators"]
+		self.sEngines=[entlist.SearchEntlist(), unitlist.SearchUnitlist()]
+		self.sEngName=["decorators", "units"]
 
 		debug.ACC("sse", self.show, info="Show the SuperSearch", args=0)
 		debug.ACC("sse_hide", self.hide, info="Hide the SuperSearch", args=0)

@@ -5,6 +5,7 @@ from engine import shared, debug
 from random import randrange
 from engine.Object.unitscripts import sv_baseunit
 from engine.World import posalgo
+from os import listdir
 
 class UnitManager():
 	def __init__(self):
@@ -19,13 +20,19 @@ class UnitManager():
 	def Load(self):
 		#Find and import all availible UnitScripts HERE
 		modpath = "engine.Object.unitscripts."
-		self.unitscripts["mig"] = import_module(modpath+"mig.sv_mig").Unit
-		self.unitscripts["build"] = import_module(modpath+"build.sv_build").Unit
-		self.unitscripts["tank"] = import_module(modpath+"tank.sv_tank").Unit
-		self.unitscripts["robot"] = import_module(modpath+"robot.sv_robot").Unit
-		self.unitscripts["turret"] = import_module(modpath+"turret.sv_turret").Unit
-		self.unitscripts["power"] = import_module(modpath+"power.sv_power").Unit
-		self.unitscripts["derrick"] = import_module(modpath+"derrick.sv_derrick").Unit
+		filepath = "engine/Object/unitscripts/"
+
+		# self.unitscripts["mig"] = import_module(modpath+"mig.sv_mig").Unit
+		# self.unitscripts["build"] = import_module(modpath+"build.sv_build").Unit
+		# self.unitscripts["tank"] = import_module(modpath+"tank.sv_tank").Unit
+		# self.unitscripts["robot"] = import_module(modpath+"robot.sv_robot").Unit
+		# self.unitscripts["turret"] = import_module(modpath+"turret.sv_turret").Unit
+		# self.unitscripts["power"] = import_module(modpath+"power.sv_power").Unit
+		# self.unitscripts["derrick"] = import_module(modpath+"derrick.sv_derrick").Unit
+
+		for stuff in listdir(filepath):
+			if not "." in stuff:
+				self.unitscripts[stuff] = import_module(modpath+stuff+".sv_"+stuff).Unit
 
 	def req_build(self, name, x, y, z, Protocol=None):
 		shared.DPrint(0, "netUnitManager", "Building "+str(name))
@@ -85,12 +92,16 @@ class UnitManager():
 			shared.DPrint(0, "netUnitManager", "Unitscript for unit :"+str(name)+" does not exsist!")
 			return False
 
-	def preCreate(self, playerid, name, unitid, pos):
+	def preCreate(self, playerid, name, unitid, pos, attribs=None):
 		if name in self.unitscripts:
 			try:
 				#shared.Gamemode._playerReqUnit(owner, self.unitscripts[name])
 				newunit=self.unitscripts[name](unitid, playerid, pos)
 				self.unitcount+=1
+
+				if attribs!=None:
+					newunit.currentattrib.update(attribs)
+
 				return newunit
 
 			except:

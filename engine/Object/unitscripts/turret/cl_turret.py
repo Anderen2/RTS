@@ -9,6 +9,7 @@ from engine.Object.unitact import cl_fau, cl_const ## REMOVE LATER
 
 
 class Unit(BaseUnit):
+	UnitID = "turret"
 	Name = "Turret"
 	Description = "Type: Ground Defence Unit\nEffective against both ground and air units"
 	Image = "unit_turret"

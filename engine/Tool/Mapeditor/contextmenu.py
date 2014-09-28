@@ -6,7 +6,7 @@
 import ogre.renderer.OGRE as ogre
 import ogre.gui.CEGUI as CEGUI
 
-from engine.Tool.Mapeditor.context import dec, ground, tools
+from engine.Tool.Mapeditor.context import dec, ground, tools, unit
 from engine import debug, shared
 from engine.Render.render3dcamera import MASK_CAMERA
 from engine.Render.render3dwater import MASK_WATER
@@ -19,7 +19,7 @@ class Menu():
 		self.root = self.windowManager.getWindow("Root")
 		self.raySceneQuery = shared.render3dScene.sceneManager.createRayQuery(ogre.Ray())
 
-		self.contexts=[tools.contextTools(), dec.contextDec(), ground.contextGround()]
+		self.contexts=[tools.contextTools(), dec.contextDec(), ground.contextGround(), unit.context()]
 		self.options=["Hide gui", "Close"]
 		self.optfunc=[self.sHideGui, self.sClose]
 		self.listboxitems=[]
@@ -160,12 +160,18 @@ class Menu():
 					found = True
 					break
 
+				elif "unit" in item.movable.getName():
+					self.CurrentContext=3
+					found = True
+					print("Decorator")
+					break
+
 				else:
 					self.CurrentContext=None
 
 		if len(result)>0 and found == False:
 			for item in result:
-				if str(item.movable.getMovableType)=="OgreTerrainNodeMovable":
+				if str(item.movable.getMovableType())=="OgreTerrainNodeMovable" or "Unnamed" in str(item.movable.getMovableType):
 					self.CurrentContext=2
 					print("Terrain")
 					break

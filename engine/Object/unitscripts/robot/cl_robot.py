@@ -7,9 +7,11 @@ from engine.Object.unitact import cl_construct
 from ogre.renderer.OGRE import Degree
 
 class Unit(BaseUnit):
+	UnitID = "robot"
 	Name = "Robot"
 	Description = "Type: Ground Infantry / Worker\nEffective against Infantry, Airunits\nCan build structures"
 	Image = "unit_robot"
+	BuildEntity = "robot"
 	Buildtime = 3
 	Cost = 150
 

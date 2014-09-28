@@ -7,6 +7,7 @@ from engine.Object.unitscripts.cl_baseunit import BaseUnit
 from engine.Object.unitact import cl_setway, cl_settarg, cl_const ## REMOVE LATER
 
 class Unit(BaseUnit):
+	UnitID = "derrick"
 	Name = "Oil Derrick"
 	Description = "Oil Derrick\nGenerates money"
 	Image = "unit_derrick"

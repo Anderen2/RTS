@@ -45,7 +45,7 @@ class MoveTool():
 					shared.DPrint("movetool", 3, "This is not supported!")
 					#self.CurrentHold=shared.decHandeler.Get(int(item.movable.getParentSceneNode().getParentSceneNode().getName()[4:]))
 				else:
-					self.CurrentHold=shared.decHandeler.Get(int(item.movable.getName()[4:]))
+					self.CurrentHold=shared.decHandeler.GetAll(item.movable.getName())
 
 				if self.CurrentHold!=None:
 					self.CurrentHold.entity.node.showBoundingBox(True)
@@ -63,7 +63,7 @@ class MoveTool():
 			if self.CurrentHold!=None:
 				MovePosition=shared.render3dSelectStuff.mousePosToWorldTerrainPos()
 				YOffset=self.CurrentHold.entity.node._getWorldAABB().getHalfSize().y
-				self.CurrentHold.entity.SetPosition(MovePosition[0],MovePosition[1]+YOffset,MovePosition[2])
+				self.CurrentHold.entity.SetPosition(MovePosition[0],MovePosition[1],MovePosition[2])
 
 		elif self.CurrentType==1:
 			mousePos = MouseCursor.getSingleton().getPosition()

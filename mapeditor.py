@@ -10,6 +10,8 @@ from engine.Networking.client import client
 from engine.World import maploader, pathfinding
 from engine.Tool import astarGen
 from engine.Tool.Mapeditor import globalgui, toolmanager, backend, mapfile
+from sys import argv
+from os.path import isfile
 
 shared.wd="./Data/Map/"
 shared.side = "Tool"
@@ -37,7 +39,15 @@ shared.mapBackend=backend.MapeditorBackend()
 
 #MapLoader
 shared.MapLoader=maploader.MapLoader()
-shared.Map=shared.MapLoader.Load("tri5.map")
+if len(argv)!=1:
+	if isfile(shared.wd+argv[1]):
+		shared.Map=shared.MapLoader.Load(argv[1])
+	else:
+		print("Map %s does not exsist!" % (shared.wd+argv[1]))
+		exit()
+else:
+	print("No map specified. Loading empty map..")
+	shared.Map=shared.MapLoader.Load("empty.map")
 
 #MapSaver
 shared.Mapfile=mapfile.Mapfile()
@@ -81,6 +91,7 @@ shared.render3dSelectStuff.Trigger = MASK_UNIT | MASK_DECO | MASK_OTHER
 
 shared.DPrint("Main",1,"PWR: MapSetup")
 shared.Map.Setup()
+shared.Map.SetupUnits()
 
 #Release tha clutch and start moving forward
 shared.DPrint("Main", 1, "Starting Mainloop..")

@@ -1,6 +1,7 @@
 #Serverside Playermanager
 
 from time import time
+from string import split
 from twisted.internet import reactor
 from engine import debug, shared
 from player import Player
@@ -85,15 +86,30 @@ class PlayerManager():
 			pos = mapconfig[ID]["pos"]
 			pos = (float(pos[0]), float(pos[1]), float(pos[2]))
 			rot = mapconfig[ID]["rot"]
+			attribs = mapconfig[ID]["attribs"]
+			attributes = {}
+
+			if attribs!="":
+				print attribs
+				attribs=split(attribs,";")
+				print attribs
+				for attrib in attribs:
+					if attrib!="":
+						foo = split(attrib, "=")
+						print foo
+						try:
+							attributes[foo[0]]=int(foo[1])
+						except:
+							attributes[foo[0]]=foo[1]
 
 			if not playerid in self.mapUnits:
 				self.mapUnits[playerid] = []
 
 			if playerid != -1: #If the unit is a prebuilt structure that should later be auto-provided
-				unit = shared.UnitManager.preCreate(playerid, name, ID, pos)
+				unit = shared.UnitManager.preCreate(playerid, name, ID, pos, attribs=attributes)
 				self.mapUnits[playerid].append(unit)
 			else:
-				unit = shared.UnitManager.preCreate(self.getFromUID(-1), name, ID, pos)
+				unit = shared.UnitManager.preCreate(self.getFromUID(-1), name, ID, pos, attribs=attributes)
 				self.mapUnits[playerid].append(unit)
 				self.getFromUID(-1).addUnit(unit)
 
@@ -104,6 +120,7 @@ class PlayerManager():
 			for unit in self.mapUnits[player.UID]:
 				unit._owner=player
 				player.addUnit(unit)
+
 				attrib = unit.currentattrib.copy()
 				attrib["pos"] = unit.GetPosition()
 				player.Protocol.sendMethod(4, "build", [unit.UnitID, unit._owner.UID, unit.ID, attrib])

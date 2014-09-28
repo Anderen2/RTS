@@ -25,7 +25,16 @@ class contextGround():
 		shared.decHandeler.Create(result, pos=self.Position)
 
 	def sUnit(self):
-		pass
+		print("Pavin' ground")
+		self.Position=shared.render3dSelectStuff.mousePosToWorldTerrainPos()
+		shared.globalGUI.SSearch.ask("units", self.rUnit)
+
+	def rUnit(self, result):
+		newdec = shared.decHandeler.CreateCustomPrefix(result[1], prefix="unit", pos=self.Position)
+		newdec._mapeditorValues={}
+		newdec._mapeditorValues["pidowner"]=-1
+		newdec._mapeditorValues["attribs"]=[]
+		newdec._mapeditorValues["name"]=result[0]
 
 	def sEff(self):
 		pass

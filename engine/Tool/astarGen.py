@@ -12,7 +12,7 @@ class aStarGenerators():
 			shared.Pathfinder.aStarPath.InitGraph()
 			self.AStar = shared.Pathfinder.aStarPath.Graph
 
-		debug.ACC("a*_new", self.newGraph, args=2, info="Creates a new A* graph")
+		debug.ACC("a*_new", self.newGraph, args=2, info="Creates a new A* graph \nUsage: a*_new size accuracy")
 		debug.ACC("a*_clear", self.clearGraph, args=0, info="Clears all cost from the entire a* graph")
 		debug.ACC("a*_gendec", self.generateDecorators, args=0, info="Regenerates nonwalkable areas due to decorator placement")
 		debug.ACC("a*_genwater", self.generateWater, args=0, info="Regenerates nonwalkable areas due to water elevation")

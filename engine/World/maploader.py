@@ -100,3 +100,25 @@ class Map():
 				shared.DPrint("Map", 0, "Astar Grid Nodes could not be loaded from .nav file: "+str(NavFile))
 				shared.DPrint("Map", 0, "Generating new aStar Grid.. Please Wait..")
 				##GENERATE NEW GRID AND SAVE IT HERE!
+
+	def SetupUnits(self):
+		for ID, Content in self.config["Units"].iteritems():
+			entname=Content["ent"]
+			name=Content["name"]
+			pos=Content["pos"]
+			rot=Content["rot"]
+			pidowner=Content["pid"]
+			attribs=Content["attribs"]
+
+			shared.DPrint("Map", 0, "Placing unit: "+name+" ("+str(ID)+")"+" @ "+str(pos))
+			newdec = shared.decHandeler.CreateCustomPrefix(entname, "unit", pos)
+			newdec._mapeditorValues={}
+			newdec._mapeditorValues["pidowner"]=pidowner
+			newdec._mapeditorValues["attribs"]=attribs
+			newdec._mapeditorValues["name"]=name
+			print(newdec)
+			print(newdec.entity)
+			print(newdec._mapeditorValues)
+			#newdec.entity.setDirection(float(rot[0]), float(rot[1]), float(rot[2]))
+			newdec.entity.setOrientation(float(rot[0]), float(rot[1]), float(rot[2]), float(rot[3]))
+

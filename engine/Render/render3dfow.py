@@ -92,7 +92,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		# construct a white circle material that can be blended on the Overlay plane to create the sight radius light area
 		circleMat = ogre.MaterialManager.getSingleton().create("FOW_circleMat",ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME) 
-		circleMat.getTechnique(0).getPass(0).createTextureUnitState("FOWbeta5.png")
+		circleMat.getTechnique(0).getPass(0).createTextureUnitState("FOWbeta7.png")
 		circleMat.setSelfIllumination(1,1,1) #make sure the image is always perfectly lit
 		circleMat.setSceneBlending(ogre.SBT_TRANSPARENT_ALPHA)
 		circleMat.setDepthWriteEnabled(False)

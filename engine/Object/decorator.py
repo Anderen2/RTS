@@ -10,6 +10,7 @@ class DecoratorHandeler(FrameListener):
 	def __init__(self):
 		FrameListener.__init__(self)
 		shared.DPrint("DecoratorHandeler",1,"Initializing New Decoration Handeler")
+		self.customDecos={}
 		self.decorators={}
 		self.dcount=0
 
@@ -29,16 +30,43 @@ class DecoratorHandeler(FrameListener):
 
 		return pointer
 
-	def Remove(self, ID):
-		if ID in self.decorators:
-			self.Destroy(ID)
-			self.Delete(ID)
+	def CreateCustomPrefix(self, name, prefix, pos=None, rot=None):
+		if len(prefix)!=4:
+			print("Prefix must be 4 characters long!")
+			raise NameError
+			return False
 
-	def Destroy(self, ID):
-		self.decorators[ID]._del()
+		if not prefix in self.customDecos:
+			self.customDecos[prefix]={}
+			self.customDecos[prefix]["count"]=0
+			self.customDecos[prefix]["decos"]={}
+		self.customDecos[prefix]["count"]=self.customDecos[prefix]["count"]+1
+		ID=self.customDecos[prefix]["count"]-1
 
-	def Delete(self, ID):
-		del self.decorators[ID]
+		pointer=Decoration(ID, name, pos, rot, prefix=prefix)
+
+		self.customDecos[prefix]["decos"][ID]=pointer
+
+		#if shared.Pathfinder.aStarPath != None:
+		#	suf.WaitOneTick(shared.Pathfinder.aStarPath.calculateSceneNodeCost, pointer.entity.node) #We have to wait one Tick/Frame for Ogre to properly update the scenenodes AABB
+
+		return pointer
+
+	def Remove(self, ID, prefix="deco"):
+		if prefix=="deco":
+			if ID in self.decorators:
+				self.Destroy(self.decorators[ID])
+				del self.decorators[ID]
+		else:
+			if ID in self.customDecos[prefix]["decos"]:
+				self.Destroy(self.customDecos[prefix]["decos"][ID])
+				del self.customDecos[prefix]["decos"][ID]
+
+	def Destroy(self, deco):
+		deco._del()
+
+	def Delete(self, deco):
+		del deco
 		#self.dcount-=1
 
 	def Count(self):
@@ -71,15 +99,29 @@ class DecoratorHandeler(FrameListener):
 	def Get(self, ID):
 		return self.decorators[ID]
 
+	def GetAll(self, name):
+		prefix=name[:4]
+		ID = int(name[4:])
+		if prefix=="deco":
+			return self.Get(ID)
+		else:
+			return self.customDecos[prefix]["decos"][ID]
+
 	def frameRenderingQueued(self, evt):
-		for ID, unit in self.decorators.items():
-			unit._think()
+		for ID, decorator in self.decorators.items():
+			decorator._think()
 
 		return True
 
 	def _del(self):
-		for ID, unit in self.decorators.iteritems():
-			unit._del()
+		for ID, decorator in self.decorators.iteritems():
+			decorator._del()
+
+		for prefix, content in self.customDecos.iteritems():
+			print prefix
+			for ID, decorator in content["decos"].iteritems():
+				print ID
+				decorator._del()
 		self.decorators={}
 
 	def __del__(self):
@@ -87,22 +129,23 @@ class DecoratorHandeler(FrameListener):
 
 #Decoratorgroup:
 class Decoration():
-	def __init__(self, ID, name, pos=None, rot=None):
+	def __init__(self, ID, name, pos=None, rot=None, prefix="deco"):
 		#Setup constants
 		self.ID=ID
 		self.name=name
 		self.entity=None
 		self.node=None
 		self.text=None
+		self.prefix=prefix
 
 		#Start rendering the unit (self, Identifyer, Type, Team, Interactive)
-		self.entity=shared.EntityHandeler.Create(self.ID, self.name, "deco", None)
+		self.entity=shared.EntityHandeler.Create(self.ID, self.name, self.prefix, None)
 		try:
 			if self.entity.error:
-				shared.DPrint("Decoration",4,"Entity error! Dec creation aborted!")
+				shared.DPrint("Decoration",4,"Entity error! Decorator creation aborted!")
 				self._del()
 		except:
-			shared.DPrint("Decoration",4,"Entity critical error! Dec creation aborted!")
+			shared.DPrint("Decoration",4,"Entity critical error! Decorator creation aborted!")
 			self._del()
 
 		#Do some post-render stuff
@@ -143,7 +186,7 @@ class Decoration():
 		self.entity.Rotate(float(rotx), float(roty), float(rotz))
 
 	def _del(self):
-		shared.DPrint("Decoration",5,"Dec deleted: "+str(self.ID))
+		shared.DPrint("Decoration",5,"Decorator deleted: "+str(self.ID))
 
 		try:
 			xExsist=None
@@ -158,5 +201,5 @@ class Decoration():
 				self.entity=None
 			#shared.decHandeler.Delete(self.ID)
 		except:
-			shared.DPrint("Decoration",5,"Dec Deletion Failed! Dec may still be in memory and/or in game world!")
+			shared.DPrint("Decoration",5,"Decorator Deletion Failed! Decorator may still be in memory and/or in game world!")
 			traceback.print_exc()

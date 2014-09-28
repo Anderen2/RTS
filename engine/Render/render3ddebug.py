@@ -40,30 +40,33 @@ class aStarView():
 
 	def online(self):
 		i = 0
-		for node in shared.Pathfinder.aStarPath.Graph.totnodes:
-			newent = shared.render3dScene.sceneManager.createEntity("astarent"+str(i), "astar")
-			newmat = self.basemat.clone("astarnodemat"+str(i))
-			
-			if self.status == 1:
-				#print("typeView")
-				self.typeView(node, newmat)
+		if hasattr(shared.Pathfinder.aStarPath.Graph, "totnodes"):
+			for node in shared.Pathfinder.aStarPath.Graph.totnodes:
+				newent = shared.render3dScene.sceneManager.createEntity("astarent"+str(i), "astar")
+				newmat = self.basemat.clone("astarnodemat"+str(i))
+				
+				if self.status == 1:
+					#print("typeView")
+					self.typeView(node, newmat)
 
-			elif self.status == 2:
-				#print("costView")
-				self.costView(node, newmat)
-			
-			newmat.getTechnique(0).getPass(0).setDiffuse(0.5, 0.5, 0.5, 1)
-			newent.setMaterial(newmat)
-			newent.setQueryFlags(MASK_NONE)
-			newnode = self.basenode.createChildSceneNode("astarnode"+str(i))
-			newnode.attachObject(newent)
-			nx, ny = shared.Pathfinder.aStarPath.Graph.convertLPosToWPos(node.x, node.y)
-			newnode.setPosition(nx, shared.render3dTerrain.getHeightAtPos(nx, ny)+10, ny)
+				elif self.status == 2:
+					#print("costView")
+					self.costView(node, newmat)
+				
+				newmat.getTechnique(0).getPass(0).setDiffuse(0.5, 0.5, 0.5, 1)
+				newent.setMaterial(newmat)
+				newent.setQueryFlags(MASK_NONE)
+				newnode = self.basenode.createChildSceneNode("astarnode"+str(i))
+				newnode.attachObject(newent)
+				nx, ny = shared.Pathfinder.aStarPath.Graph.convertLPosToWPos(node.x, node.y)
+				newnode.setPosition(nx, shared.render3dTerrain.getHeightAtPos(nx, ny)+10, ny)
 
-			self.ents.append(newent)
-			self.entnodes.append(newnode)
-			self.entmats.append(newmat)
-			i+=1
+				self.ents.append(newent)
+				self.entnodes.append(newnode)
+				self.entmats.append(newmat)
+				i+=1
+		else:
+			print("No nodes to view exsist.")
 
 	def costView(self, node, newmat):
 		if node.c<500:

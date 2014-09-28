@@ -15,7 +15,7 @@ class Camera():
 		shared.DPrint("Camera",1,"Camera: Creating camera")
 		self.camera = scene.sceneManager.createCamera("Camera")
 		self.camera.nearClipDistance = 10
-		self.camera.setFarClipDistance(10000)
+		self.camera.setFarClipDistance(100000000)
 		self.camera.setQueryFlags(MASK_CAMERA)
 
 		print("LOD: !!!!!!!")

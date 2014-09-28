@@ -3,6 +3,7 @@ from importlib import import_module
 from engine import shared, debug
 from engine.Object.unitscripts import cl_baseunit
 from string import split
+from os import listdir
 
 class UnitManager():
 	def __init__(self):
@@ -18,13 +19,18 @@ class UnitManager():
 	def Load(self):
 		#Find and import all availible UnitScripts HERE
 		modpath = "engine.Object.unitscripts."
-		self.unitscripts["mig"] = import_module(modpath+"mig.cl_mig").Unit
-		self.unitscripts["build"] = import_module(modpath+"build.cl_build").Unit
-		self.unitscripts["tank"] = import_module(modpath+"tank.cl_tank").Unit
-		self.unitscripts["robot"] = import_module(modpath+"robot.cl_robot").Unit
-		self.unitscripts["turret"] = import_module(modpath+"turret.cl_turret").Unit
-		self.unitscripts["power"] = import_module(modpath+"power.cl_power").Unit
-		self.unitscripts["derrick"] = import_module(modpath+"derrick.cl_derrick").Unit
+		filepath = "engine/Object/unitscripts/"
+		# self.unitscripts["mig"] = import_module(modpath+"mig.cl_mig").Unit
+		# self.unitscripts["build"] = import_module(modpath+"build.cl_build").Unit
+		# self.unitscripts["tank"] = import_module(modpath+"tank.cl_tank").Unit
+		# self.unitscripts["robot"] = import_module(modpath+"robot.cl_robot").Unit
+		# self.unitscripts["turret"] = import_module(modpath+"turret.cl_turret").Unit
+		# self.unitscripts["power"] = import_module(modpath+"power.cl_power").Unit
+		# self.unitscripts["derrick"] = import_module(modpath+"derrick.cl_derrick").Unit
+
+		for stuff in listdir(filepath):
+			if not "." in stuff:
+				self.unitscripts[stuff] = import_module(modpath+stuff+".cl_"+stuff).Unit
 
 	#SERVER UPDATES/COMMANDS
 

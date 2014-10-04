@@ -85,6 +85,7 @@ class RenderApplication(object):
 			shared.FowManager=True
 			shared.render3dScene.Setup()
 			shared.render3dScene.FowSetup()
+			shared.render3dScene.MinimapSetup()
 		 
 	def setupInputSystem(self):
 		if not self.BARE:
@@ -168,7 +169,9 @@ class RenderApplication(object):
 			shared.renderioInput.inputManager.destroyInputObjectJoyStick(self.joystick)
 		except:
 			pass
+		shared.DPrint("Render",2,"Shutting down root render object")
 		self.root.shutdown()
+		shared.DPrint("Render",2,"Destroying InputSystem")
 		shared.renderioInput.inputManager.destroyInputSystem(shared.renderioInput.inputManager)
 		shared.renderioInput.inputManager = None
 

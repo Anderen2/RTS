@@ -45,6 +45,7 @@ class Entity():
  		self.Team=Team
  		self.Type=Type
  		self.text=None
+ 		self._AreAlive = True
 
  		#Used in movement effects
  		self.lastMovementDirection = Vector(0,0,0)
@@ -268,6 +269,7 @@ class Entity():
 		shared.render3dScene.sceneManager.destroyEntity(self.mesh.getName())
 		print("destroySceneNode")
 		shared.render3dScene.sceneManager.destroySceneNode(self.node.getName())
+		self._AreAlive = False
 		print("text.destroy")
 		if self.text:
 			self.text.destroy()
@@ -372,112 +374,125 @@ class Entity():
 		return self.node.getPosition()
 
 	def GetPosition(self):
-		if self.node:
+		if self.node and self._AreAlive:
 			pos = self.node.getPosition()
 			return map(sum,zip((pos.x, pos.y, pos.z),(-self.params["meshoffset"][0],-self.params["meshoffset"][1],-self.params["meshoffset"][2])))
 
 	def Translate(self, x, y, z):
-		lastpos = Vector(self.GetPosition())
-		self.node.translate(x, y, z)
-		newpos = Vector(self.GetPosition())
-		self.lastMovementDirection = newpos - lastpos
-		return self.node.getPosition()
+		if self._AreAlive:
+			lastpos = Vector(self.GetPosition())
+			self.node.translate(x, y, z)
+			newpos = Vector(self.GetPosition())
+			self.lastMovementDirection = newpos - lastpos
+			return self.node.getPosition()
 
 	def setOrientation(self, w, x, y, z):
-		self.node.setOrientation(float(w), float(x), float(y), float(z))
+		if self._AreAlive:
+			self.node.setOrientation(float(w), float(x), float(y), float(z))
 
 	def Rotate(self, x, y, z):
-		self.node.rotate((1,0,0),ogre.Degree(x))
-		self.node.rotate((0,1,0),ogre.Degree(y))
-		self.node.rotate((0,0,1),ogre.Degree(z))
-		return self.node.getOrientation()
+		if self._AreAlive:
+			self.node.rotate((1,0,0),ogre.Degree(x))
+			self.node.rotate((0,1,0),ogre.Degree(y))
+			self.node.rotate((0,0,1),ogre.Degree(z))
+			return self.node.getOrientation()
 
 	def SetRotation(self, x, y, z):
-		self.node.resetOrientation()
-		self.Rotate(x, y, z)
+		if self._AreAlive:
+			self.node.resetOrientation()
+			self.Rotate(x, y, z)
 
 	def setDirection(self, x, y, z):
-		self.node.setDirection(x, y, z)
+		if self._AreAlive:
+			self.node.setDirection(x, y, z)
 
 	def RPYRotate(self, roll, pitch, yaw):
-		self.node.roll(ogre.Degree(float(roll)))
-		self.node.pitch(ogre.Degree(float(pitch)))
-		self.node.yaw(ogre.Degree(float(yaw)))
+		if self._AreAlive:
+			self.node.roll(ogre.Degree(float(roll)))
+			self.node.pitch(ogre.Degree(float(pitch)))
+			self.node.yaw(ogre.Degree(float(yaw)))
 
 	def SetRPYRotation(self, roll, pitch, yaw):
-		pr=float(self.node.getOrientation().getRoll().valueDegrees())
-		pp=float(self.node.getOrientation().getPitch().valueDegrees())
-		py=float(self.node.getOrientation().getYaw().valueDegrees())
+		if self._AreAlive:
+			pr=float(self.node.getOrientation().getRoll().valueDegrees())
+			pp=float(self.node.getOrientation().getPitch().valueDegrees())
+			py=float(self.node.getOrientation().getYaw().valueDegrees())
 
-		self.RPYRotate(roll - pr, pitch - pp, yaw - py)
+			self.RPYRotate(roll - pr, pitch - pp, yaw - py)
 
 
 	def transRotate(self, x, y, z):
-		px=float(self.node.getOrientation().getRoll().valueDegrees())
-		py=float(self.node.getOrientation().getPitch().valueDegrees())
-		pz=float(self.node.getOrientation().getYaw().valueDegrees())
-		print("PrevRot:")
-		print (px, py, pz)
-		#self.node.rotate((1,0,0),ogre.Degree(px))
-		#self.node.rotate((0,1,0),ogre.Degree(float(py+0.00000000001)))
-		#self.node.rotate((0,0,1),ogre.Degree(pz))
-		self.node.roll(ogre.Degree(px+x))
-		self.node.pitch(ogre.Degree(py+y))
-		self.node.yaw(ogre.Degree(pz+z))
+		if self._AreAlive:
+			px=float(self.node.getOrientation().getRoll().valueDegrees())
+			py=float(self.node.getOrientation().getPitch().valueDegrees())
+			pz=float(self.node.getOrientation().getYaw().valueDegrees())
+			print("PrevRot:")
+			print (px, py, pz)
+			#self.node.rotate((1,0,0),ogre.Degree(px))
+			#self.node.rotate((0,1,0),ogre.Degree(float(py+0.00000000001)))
+			#self.node.rotate((0,0,1),ogre.Degree(pz))
+			self.node.roll(ogre.Degree(px+x))
+			self.node.pitch(ogre.Degree(py+y))
+			self.node.yaw(ogre.Degree(pz+z))
 
-		print("TRot:")
-		print(px+x, py+y, pz+z)
-		return self.node.getOrientation()
+			print("TRot:")
+			print(px+x, py+y, pz+z)
+			return self.node.getOrientation()
 
 	def LookAtZ(self, x, y, z):
-		self.node.setFixedYawAxis(True, ogre.Vector3().UNIT_Y)
-		#self.node.setFixedRollAxis(True, ogre.Vector3().UNIT_X)
-		self.node.lookAt((int(x), self.node.getPosition().y, int(z)), self.node.TS_WORLD, ogre.Vector3().UNIT_Z)
-		# direction=ogre.Vector3(int(x), int(y), int(z)) - self.node.getPosition()
-		# src = self.node.getOrientation() * ogre.Vector3().NEGATIVE_UNIT_Z
-		# quat = src.getRotationTo(direction)
-		# self.node.rotate(quat)
+		if self._AreAlive:
+			self.node.setFixedYawAxis(True, ogre.Vector3().UNIT_Y)
+			#self.node.setFixedRollAxis(True, ogre.Vector3().UNIT_X)
+			self.node.lookAt((int(x), self.node.getPosition().y, int(z)), self.node.TS_WORLD, ogre.Vector3().UNIT_Z)
+			# direction=ogre.Vector3(int(x), int(y), int(z)) - self.node.getPosition()
+			# src = self.node.getOrientation() * ogre.Vector3().NEGATIVE_UNIT_Z
+			# quat = src.getRotationTo(direction)
+			# self.node.rotate(quat)
 
 	def RotateTowardsPos(self, x, y, z):
-		mDestination = ogre.Vector3(x, y, z)
-		mDirection = mDestination - self.node.getPosition()
-		src = self.node.getOrientation() * ogre.Vector3().UNIT_Z
-		mDistance = mDirection.normalise()
-		quat = src.getRotationTo(mDirection)
+		if self._AreAlive:
+			mDestination = ogre.Vector3(x, y, z)
+			mDirection = mDestination - self.node.getPosition()
+			src = self.node.getOrientation() * ogre.Vector3().UNIT_Z
+			mDistance = mDirection.normalise()
+			quat = src.getRotationTo(mDirection)
 
-		self.node.rotate(quat)
+			self.node.rotate(quat)
 
 	def RotateTowardsDirection(self, x, y, z):
-		mDirection = ogre.Vector3(x, y, z)		
-		src = self.node.getOrientation() * ogre.Vector3().UNIT_Z
-		mDistance = mDirection.normalise()
-		quat = src.getRotationTo(mDirection)
+		if self._AreAlive:
+			mDirection = ogre.Vector3(x, y, z)		
+			src = self.node.getOrientation() * ogre.Vector3().UNIT_Z
+			mDistance = mDirection.normalise()
+			quat = src.getRotationTo(mDirection)
 
-		self.node.rotate(quat)
+			self.node.rotate(quat)
 
 	def getAltitude(self):
-		Pos = self.GetPosition()
-		# Raytrace=ogre.Ray()
-		# Raytrace.setOrigin(Pos)
-		# Raytrace.setDirection(ogre.Vector3().NEGATIVE_UNIT_Y)
-		# self.raySceneQuery=shared.render3dScene.sceneManager.createRayQuery(Raytrace)
-		# for queryResult in self.raySceneQuery.execute():
-		# 	if queryResult.worldFragment is not None:  
-		# 		return queryResult.distance
-		talt = shared.render3dTerrain.getHeightAtPos(Pos[0], Pos[2])
-		return Pos[1] - talt
+		if self._AreAlive:
+			Pos = self.GetPosition()
+			# Raytrace=ogre.Ray()
+			# Raytrace.setOrigin(Pos)
+			# Raytrace.setDirection(ogre.Vector3().NEGATIVE_UNIT_Y)
+			# self.raySceneQuery=shared.render3dScene.sceneManager.createRayQuery(Raytrace)
+			# for queryResult in self.raySceneQuery.execute():
+			# 	if queryResult.worldFragment is not None:  
+			# 		return queryResult.distance
+			talt = shared.render3dTerrain.getHeightAtPos(Pos[0], Pos[2])
+			return Pos[1] - talt
 
 	def setIllumination(self, a, b, c):
-		mat = self.mesh.getSubEntity(0).getMaterial()
-		mat.setSelfIllumination(a,b,c)
+		if self._AreAlive:
+			mat = self.mesh.getSubEntity(0).getMaterial()
+			mat.setSelfIllumination(a,b,c)
 
 	def Think(self, delta):
-		if self.error!=True:
+		if self.error!=True and self._AreAlive:
 			if self.curranim!=None and self.animtime!=None:
 				self.curranim.addTime(self.animtime*delta)
 
 	def getIfAnimIsFinish(self):
-		if self.curranim!=None:
+		if self.curranim!=None and self._AreAlive:
 			return self.curranim.hasEnded()
 		else:
 			return True

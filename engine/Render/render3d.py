@@ -2,7 +2,7 @@
 #Classes for rendering 3d enviroment
 #By Anderen2 (Dec. 2012)
 
-import render3dent, render3deffects, render3ddecal, render3dterrain, render3dwaypoint, render3dwater, render3dcamera, render3dfow, render3dselection, render3ddebug
+import render3dent, render3deffects, render3ddecal, render3dterrain, render3dwaypoint, render3dwater, render3dcamera, render3dfow, render3dselection, render3ddebug, render3dminimap
 from engine.Object import projectiles
 from engine import shared, debug
 import ogre.renderer.OGRE as ogre
@@ -94,6 +94,10 @@ class Scene():
 	def FowSetup(self):
 		shared.DPrint("Render3d",1,"New FOWManager..")
 		shared.FowManager=render3dfow.FogOfWarListener()
+
+	def MinimapSetup(self):
+		shared.DPrint("Render3d",1,"MinimapListener..")
+		shared.MinimapManager = render3dminimap.MinimapListener()
 
 	def PostFilterEnable(self,PF):
 		ogre.CompositorManager.getSingleton().addCompositor(shared.render3dCamera.viewPort, PF)

@@ -21,6 +21,7 @@ class BaseUnit():
 		self._owner=owner
 		self._group=None
 		self._text = ""
+		self._isAlive = True
 
 		#Initialize hooks
 		self._inithooks()
@@ -225,13 +226,17 @@ class BaseUnit():
 
 		if shared.FowManager!=None and shared.FowManager!=True:
 			shared.FowManager.rmNode(self._entity.node)
+		self._isAlive = False
 
 	def _die(self):
+		shared.DPrint("BaseUnit", 0, "_die")
 		self._rm()
 
 	def _rm(self):
 		#Removing all visuals and itself
+		shared.DPrint("BaseUnit", 0, "_rm - Units remove self")
 		self._owner.Units.remove(self)
+		shared.DPrint("BaseUnit", 0, "Entity delete")
 		self._entity.Delete()
 		print("Dead Referances: "+str(getrefcount(self)))
 

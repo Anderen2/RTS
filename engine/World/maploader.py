@@ -59,6 +59,10 @@ class MapLoader():
 			if shared.FowManager.created==False:
 				shared.FowManager.Create(int(terraincfg["Heightmap"]["Size"]), int(terraincfg["Heightmap"]["Size"]), shared.render3dTerrain.TerrainMaterial)
 
+		if shared.MinimapManager!=None:
+			if shared.MinimapManager.created==False:
+				shared.MinimapManager.Create(int(terraincfg["Heightmap"]["Size"]), int(terraincfg["Heightmap"]["Size"]), None)
+
 class Map():
 	def __init__(self, mapname, mapfile):
 		self.mapname = mapname

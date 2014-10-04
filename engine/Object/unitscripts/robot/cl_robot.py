@@ -37,6 +37,7 @@ class Unit(BaseUnit):
 		self.GetEntity().actNone()
 		self.GetEntity().actDead(True)
 		self.dead=True
+		shared.DPrint("UnitRobot", 0, "OnDie..")
 		return True
 
 	def OnThink(self, delta):

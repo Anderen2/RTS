@@ -32,10 +32,10 @@ class Unit(BaseUnit):
 		#Generate power
 		pass
 		
-	def _die(self):
-		#Workaround for video due to crashing when dying! FIX IT
-		self._entity.node.setVisible(False)
-		pass
+	# def _die(self):
+	# 	#Workaround for video due to crashing when dying! FIX IT
+	# 	self._entity.node.setVisible(False)
+	# 	pass
 
 	def OnDie(self, cause):
 		shared.EffectManager.Create("atomic", self._pos[0], self._pos[1], self._pos[2], 0.05, 3)

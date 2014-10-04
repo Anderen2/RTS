@@ -24,13 +24,14 @@ class Debug():
 		#shared.renderGUI.registerLayout(self.DIVcounter)
 
 		self.GuiStats(debug.GUISTATS)
+		debug.ACC("dbg_stats", self.GuiStats, info="Show/Hide Debug Stats\nUsage: 1/0", args=1)
 
 	def GuiStats(self, foo):
+		if type(foo)==str:
+			foo=int(foo)
 		if foo:
 			self.FPScounter.show()
 			self.DIVcounter.show()
 		else:
 			self.FPScounter.hide()
 			self.DIVcounter.hide()
-
-	debug.ACC("dbg_stats", GuiStats, info="Show/Hide Debug Stats\nUsage: 1/0", args=1)

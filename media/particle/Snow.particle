@@ -8,7 +8,7 @@ particle_system Snow
 
 	particle_height 10.0
 
-	quota 7000
+	quota 15000
 
 	cull_each false
 
@@ -36,7 +36,7 @@ particle_system Snow
 
 	{
 
-		position 0.0 500.0 0.0
+		position 0.0 50.0 0.0
 
 		direction 0.0 0.0 1.0
 
@@ -44,19 +44,19 @@ particle_system Snow
 
 		width 3000.0
 
-		height 500.0
+		height 1.0
 
 		depth 3000.0
 
-		emission_rate 3000.0
+		emission_rate 1000.0
 
 		velocity_min 1.0
 
 		velocity_max 1.0
 
-		time_to_live_min 10.0
+		time_to_live_min 5.0
 
-		time_to_live_max 20.0
+		time_to_live_max 10.0
 
 		duration_min 0.0
 

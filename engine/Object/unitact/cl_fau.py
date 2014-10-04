@@ -34,7 +34,7 @@ class Action():
 	def begin(self):
 		shared.DPrint("UnitAction - Move", 0, "Action begun!")
 		self.aborted=False
-		if not self.targetunit.GetHealth()<2:
+		if not self.targetunit.GetHealth()<1:
 			self.unit.AimAtUnit(self.targetunit)
 		self.unit.OnPrimaryAction(self.targetunit)
 
@@ -47,7 +47,7 @@ class Action():
 		self.unit.OnPrimaryActionFinish()
 
 	def update(self):
-		if self.aborted==False:
+		if self.aborted==False and self.targetunit._isAlive:
 			self.unit.AimAtUnit(self.targetunit)
 
 	def netupdate(self, state, data):

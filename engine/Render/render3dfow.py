@@ -1,3 +1,6 @@
+#Render3dExtension - render3dfow
+#Classes for rendering and managing the fog of war
+#Lowlevel Module
 #http://www.youtube.com/watch?feature=player_embedded&v=VjGSMUep6_4
 
 import ogre.renderer.OGRE as ogre
@@ -54,8 +57,8 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		self.camera = self.fogManager.createCamera("fogCam")
 		self.camera.setAspectRatio(self.tsizex/self.tsizey)
-		self.camera.nearClipDistance = 10
-		self.camera.setFarClipDistance(10000)
+		#self.camera.nearClipDistance = 10
+		#self.camera.setFarClipDistance(10000)
 
 		self.camnode = self.fogManager.getRootSceneNode().createChildSceneNode()
 		self.camnode.attachObject(self.camera)
@@ -64,7 +67,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.camera.setOrthoWindowHeight(self.tsizey)
 		self.camera.setOrthoWindowWidth(self.tsizex)
 		#self.camera.setFOVy(ogre.Radian(50))
-		self.camnode.setPosition(self.tsizex/2, self.tsize, self.tsizey/2) 
+		self.camnode.setPosition(self.tsizex/2, 200, self.tsizey/2) 
 		self.camera.lookAt((self.tsizex/2)+0.01, 1, (self.tsizey/2))
 		
 
@@ -77,8 +80,8 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.plane.normal = ogre.Vector3().UNIT_Y
 
 		#ogre.MeshManager.getSingleton().createPlane(name,              group,                                                plane, width, height, xseg, yseg, Normals, texcoodsets, utile, vtile, upvector)
-		self.planeMesh = ogre.MeshManager.getSingleton().createPlane("ReflectionPlane", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME,self.plane, self.tsizex, self.tsizey, 1, 1, True, 1, 1, 1, ogre.Vector3().UNIT_Z)
-		self.planeEnt = self.fogManager.createEntity( "Plane", "ReflectionPlane" ) 
+		self.planeMesh = ogre.MeshManager.getSingleton().createPlane("FOWPlane", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME,self.plane, self.tsizex, self.tsizey, 1, 1, True, 1, 1, 1, ogre.Vector3().UNIT_Z)
+		self.planeEnt = self.fogManager.createEntity( "Plane", "FOWPlane" ) 
 		self.planeNode = self.fogManager.getRootSceneNode().createChildSceneNode() 
 		self.planeNode.attachObject(self.planeEnt) 
 		self.planeNode.setPosition(self.tsizex/2,0,self.tsizey/2) #Set plane directly over the terrain

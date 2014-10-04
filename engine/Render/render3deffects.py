@@ -104,6 +104,7 @@ class Rain():
 		self.ID = ID
 		self.particle=shared.render3dScene.sceneManager.createParticleSystem("expeff"+str(self.ID),"Rain")
 		self.node = shared.render3dCamera.pitchnode.createChildSceneNode("expeff"+str(self.ID))
+		self.node.setInheritOrientation(False)
 
 		#self.node.setPosition(position)
 		#self.node.setPosition()
@@ -111,6 +112,8 @@ class Rain():
 		self.node.setScale(size, size, size)
 		self.node.attachObject(self.particle)
 		for x in range(0, self.particle.getNumEmitters()):
+			#print(x)
+			#self.particle.getEmitter(0).setTimeToLive(time)
 			self.particle.getEmitter(x).setEnabled(True)
 
 		#reactor.callLater(time, self.Stop)
@@ -132,22 +135,28 @@ class Snow():
 		self.ID = ID
 		self.particle=shared.render3dScene.sceneManager.createParticleSystem("expeff"+str(self.ID),"Snow")
 		self.node = shared.render3dCamera.pitchnode.createChildSceneNode("expeff"+str(self.ID))
+		self.node.setInheritOrientation(False)
 
 		#self.node.setPosition(position)
 		self.node.setScale(size, size, size)
 		self.node.attachObject(self.particle)
+		print("Let it snow")
 		for x in range(0, self.particle.getNumEmitters()):
+			#print(x)
+			#self.particle.getEmitter(0).setTimeToLive(time)
 			self.particle.getEmitter(x).setEnabled(True)
 
 		#reactor.callLater(time, self.Stop)
 
 	def Stop(self):
+		print("Stop")
 		for x in range(0, self.particle.getNumEmitters()):
 			self.particle.getEmitter(x).setEnabled(False)
 		
 		reactor.callLater(5, self.Remove)
 
 	def Remove(self):
+		print("Remove")
 		shared.EffectManager.effects.remove(self)
 		self.node.detachObject(self.particle)
 		shared.render3dScene.sceneManager.destroyParticleSystem(self.particle)

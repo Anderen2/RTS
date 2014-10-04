@@ -32,6 +32,7 @@ class Unit(BaseUnit):
 		self.GetEntity().actNone()
 		self.GetEntity().actDead(True)
 		self._vehicle=None
+		shared.DPrint("UnitMig", 0, "Starting globDiveDie mveff")
 		self.StartMoveEffect("globDiveDie")
 	
 	def _die(self):

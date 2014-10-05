@@ -3,6 +3,7 @@
 #Lowlevel Module
 
 import ogre.renderer.OGRE as ogre
+import ogre.gui.CEGUI as CEGUI
 import math
 from engine import shared, debug
 from engine.World import posalgo
@@ -62,10 +63,6 @@ class MinimapListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.planeNode.setPosition(self.tsizex/2, 0, self.tsizey/2)
 		self.planeNode.yaw(ogre.Radian(ogre.Degree(180)))
 
-		# Setup RTT for FOW
-		ogre.TextureManager.getSingleton().setDefaultNumMipmaps(0)
-		self.texture = ogre.TextureManager.getSingleton().createManual( "MinimapRTT", "General", ogre.TextureType.TEX_TYPE_2D, 300, 300, 1, 1, ogre.PixelFormat.PF_R8G8B8, ogre.TU_RENDERTARGET )
-		#self.RT = self.texture.getBuffer().getRenderTarget()
 
 		#Pass for applying texture to planeMat
 		self.planePass = self.planeMat.getTechnique(0).createPass()
@@ -80,18 +77,22 @@ class MinimapListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		# #print(str(FOWtex.getTextureDimensions()))
 
-		#FOW RTT
+		#Create RTT for CEGUI
+		ogre.TextureManager.getSingleton().setDefaultNumMipmaps(0)
+		self.texture = ogre.TextureManager.getSingleton().createManual( "MinimapRTT", "General", ogre.TextureType.TEX_TYPE_2D, 300, 300, 1, ogre.MIP_DEFAULT, ogre.PixelFormat.PF_R8G8B8, ogre.TU_RENDERTARGET | ogre.TU_AUTOMIPMAP | ogre.TU_STATIC )
+
+		#Render Target
 		self.FOWTarget = self.texture.getBuffer().getRenderTarget()
-		self.FOWTarget.addViewport(shared.FowManager.camera)
-		self.FOWTarget.getViewport(0).setOverlaysEnabled(False)
-		self.FOWTarget.getViewport(0).setClearEveryFrame(False)
+		self.FOWTarget.addViewport(self.camera)
+		self.FOWTarget.getViewport(0).setOverlaysEnabled(True)
+		self.FOWTarget.getViewport(0).setClearEveryFrame(True)
 		self.FOWTarget.getViewport(0).clear()
 		self.FOWTarget.getViewport(0).setBackgroundColour(ogre.ColourValue().Black)
 		#self.FOWTarget.getViewport(0).setDimensions(0,0,1,1)
 
-		self.FOWTarget.setAutoUpdated(False)
+		#self.FOWTarget.setAutoUpdated(True)
 		self.FOWTarget.update()
-		self.FOWTarget.setPriority(1)
+		#self.FOWTarget.setPriority(1)
 
 		#Hook into FOW and steal its rendering
 		shared.FowManager.renderTargets.append(self.FOWTarget)
@@ -127,5 +128,10 @@ class MinimapListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		# self.camNode.setPosition(self.tsizex/2, 700, self.tsizey/2)
 		# self.camera.lookAt((self.tsizex/2)+0.01, 1, (self.tsizey/2))
 
-		debug.RCC("gui_hideall")
-		self.viewPort = shared.render.root.getAutoCreatedWindow().addViewport(self.camera, 1, 0, 0.8, 0.2, 0.2)
+		self.ceguiTexture = CEGUI.System.getSingleton().getRenderer().createTexture(self.texture)
+		#self.ceguiTexture.setOgreTexture(self.texture)
+
+		shared.gui['minimap'].Initialize()
+
+		#debug.RCC("gui_hideall")
+		#self.viewPort = shared.render.root.getAutoCreatedWindow().addViewport(self.camera, 1, 0, 0.5, 0.2, 0.2)

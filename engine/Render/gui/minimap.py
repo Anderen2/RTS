@@ -11,12 +11,19 @@ class Minimap():
 		self.Background = self.windowManager.getWindow("Root/Map/BG")
 		self.Image = self.windowManager.getWindow( "Root/Map/BG/Image")
 
+	def Initialize(self):
+		self.RttImageset = CEGUI.ImagesetManager.getSingleton().create("RttImageset", shared.MinimapManager.ceguiTexture)
+		#self.RttImageset.defineImage("RTT_Minimap", CEGUI.Rect(0.0, 0.0, CEGUI.Size(300, 300)), CEGUI.Vector2(0.0, 0.0))
+		self.RttImageset.defineImage("RTT_Minimap", CEGUI.Vector2(0,0), CEGUI.Size(300, 300), CEGUI.Vector2(0,0))
+		#self.RttImageset.defineImage("RTT_Minimap",CEGUI.Rect(0.0, 0.0, ceguiTexture.getSize().d_width, ceguiTexture.getSize().d_height), CEGUI.Vector2(0.0, 0.0))
+		#self.BasicImage.setTexture("RTT_Minimap")
+
 		#Load minimap
 		self.Imageset=CEGUI.ImagesetManager.getSingleton().createFromImageFile("minimapset", "./minimap4.png")
 		self.Imageset.defineImage("minimap", CEGUI.Vector2(0,0), CEGUI.Size(300,300),CEGUI.Vector2(0,0))
 
 		#Minimap
-		self.Image.setProperty("Image","set:minimapset image:minimap")
+		self.Image.setProperty("Image","set:RttImageset image:RTT_Minimap")
 		self.Image.subscribeEvent(self.Image.EventMouseEnters, self, "Map_Menter")
 		self.Image.subscribeEvent(self.Image.EventMouseLeaves, self, "Map_Mleave")
 		self.Image.subscribeEvent(self.Image.EventMouseButtonDown, self, "Map_Mclick")
@@ -24,15 +31,15 @@ class Minimap():
 
 		shared.renderGUI.registerLayout(self.Window)
 
-		self.test = MinimapUnit(0)
+		#self.test = MinimapUnit(0)
 
 		#Load VisibilityImage:
 		self.Imageset=CEGUI.ImagesetManager.getSingleton().createFromImageFile("minimapVisibility", "./minimapVisibility.png")
 		self.Imageset.defineImage("minimapVisibility", CEGUI.Vector2(0,0), CEGUI.Size(16,16),CEGUI.Vector2(0,0))
 
-		self.Visibility0 = MinimapVisibility(0, 0.3, 0.3)
-		self.Visibility1 = MinimapVisibility(1, 0.35, 0.35)
-		self.Visibility2 = MinimapVisibility(2, 0.39, 0.39)
+		#self.Visibility0 = MinimapVisibility(0, 0.3, 0.3)
+		#self.Visibility1 = MinimapVisibility(1, 0.35, 0.35)
+		#self.Visibility2 = MinimapVisibility(2, 0.39, 0.39)
 
 	def Map_Menter(self, evt):
  		pass

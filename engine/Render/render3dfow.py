@@ -134,7 +134,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		self.renderTargets.append(self.terrainTarget)
 
-		self.debugView()
+		#self.debugView()
 
 	def update(self):
 		for RT in self.renderTargets:

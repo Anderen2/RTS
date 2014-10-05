@@ -33,7 +33,7 @@ uniform mat4 invProj;
 void main()                    
 {
 	vec4 projPos = gl_ModelViewProjectionMatrix * gl_Vertex;
-	projPos = projPos/projPos.w;
+	//projPos = projPos/projPos.w;
 
 	// projPos is now in nonhomogeneous 2d space -- this makes sure no perspective interpolation is
 	// done that could mess with our concept.

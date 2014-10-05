@@ -77,6 +77,7 @@ class Terrain():
 		#self.PageWorldX = terraincfg["Heightmap"]["Scale"][0]
 		#self.PageWorldZ = terraincfg["Heightmap"]["Scale"][1]
 		self.TerrainSize = terraincfg["Heightmap"]["Size"]
+		shared.DPrint("R3DTerrain",0,"Terrain Config:"+ str(terraincfg["Heightmap"]))
 		#self.PageSize = 1500
 		self.TileSize = terraincfg["Heightmap"]["TileSize"]
 

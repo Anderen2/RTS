@@ -39,7 +39,7 @@ VS_OUTPUT main(float4 Pos: POSITION)
 	VS_OUTPUT Out;
 
 	float4 projPos = mul(worldViewProj, Pos);
-	projPos = projPos/projPos.w;
+	//projPos = projPos/projPos.w;
 	//projPos[2] = 0;
 
 	// projPos is now in nonhomogeneous 2d space -- this makes sure no perspective interpolation is

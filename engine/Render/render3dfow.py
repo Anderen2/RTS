@@ -30,17 +30,19 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		self.CircleEnts=[]
 		self.CircleNodes=[]
+
+		self.renderTargets=[]
 		
 	def whiteOut(self):
 		if not self.whiteOutToggle:
 			self.fogManager.setAmbientLight(ogre.ColourValue(1,1,1))
 			#self.planeMesh.getSubMesh(0).setMaterialName("FOW_circleMat")
 			self.whiteOutToggle=True
-			self.terrainTarget.update()
+			self.update()
 		else:
 			self.fogManager.setAmbientLight(ogre.ColourValue(0.2,0.2,0.2))
 			self.whiteOutToggle=False
-			self.terrainTarget.update()
+			self.update()
 
 	def Create(self, tsizex, tsizey, terrainMat):
 		shared.DPrint("FOWManager", 1, "Creating Fog Of War")
@@ -105,8 +107,8 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		mesh.getSubMesh(0).setMaterialName("FOW_circleMat")
 
 		#__________________________________________________________________________________________________________________________________________________________
-
-		self.texture = ogre.TextureManager.getSingleton().createManual( "RttTex", "General", ogre.TextureType.TEX_TYPE_2D, 2048, 2048, 1, ogre.PixelFormat.PF_R8G8B8, ogre.TU_RENDERTARGET )
+		ogre.TextureManager.getSingleton().setDefaultNumMipmaps(0)
+		self.texture = ogre.TextureManager.getSingleton().createManual( "RttTex", "General", ogre.TextureType.TEX_TYPE_2D, 2048, 2048, 1, ogre.MIP_DEFAULT, ogre.PixelFormat.PF_R8G8B8, ogre.TU_RENDERTARGET | ogre.TU_AUTOMIPMAP | ogre.TU_STATIC)
 		#self.texture = ogre.TextureManager.getSingleton().createManual( "name", "group", texturetype, width, height, depth, pixelformat, ogre.TU_RENDERTARGET) 
 		self.RT = self.texture.getBuffer().getRenderTarget()
 
@@ -130,8 +132,13 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.terrainTarget.getViewport(0).setBackgroundColour(ogre.ColourValue().Black)
 		self.terrainTarget.setPriority(1) # as we want the plane to be rendered first, set this target's rendering priority to 1 (0 is first)
 
+		self.renderTargets.append(self.terrainTarget)
+
+		self.debugView()
+
 	def update(self):
-		self.terrainTarget.update()
+		for RT in self.renderTargets:
+			RT.update()
 
 	def addView(self, size):
 		size = float(size)/float(256)
@@ -282,11 +289,11 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 	def ChangeShit(self, x, z):
 		#self.circleNode.setPosition(float(x),float(y),float(z))
-		self.addView(200)[1].setPosition(float(x), 1, float(z))
+		self.addView(100)[1].setPosition(float(x), 1, float(z))
 		self.update()
 
 	def debugView(self):
-		self.viewPort = shared.render.root.getAutoCreatedWindow().addViewport(self.camera, 1, 0 ,0.8 ,0.2 ,0.2)
+		self.viewPort = shared.render.root.getAutoCreatedWindow().addViewport(self.camera, 2, 0.2 ,0.8 ,0.2 ,0.2)
 		debug.RCC("gui_hideall")
 		return "Run gui_showall to get the GUI back on"
 

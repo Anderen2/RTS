@@ -10,8 +10,10 @@ class SelfPlayer():
 	def __init__(self):
 		self.username="Anderen2"+str(randrange(0,100,1))
 		self.team=0
-		self.Extras={"team":self.team, "land":"Of the dead"}
+		self.color=(randrange(0,255), randrange(0,255), randrange(0,255))
+		self.Extras={"team":self.team, "land":"Of the dead", "color":self.color}
 		self.UID=None
+		self.yourself = True
 
 		self.Units=[]
 		self.brandwidthsaver=[]

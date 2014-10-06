@@ -34,6 +34,10 @@ class BaseUnit():
 		self._vehicle = shared.VehicleManager.create(pos)
 		self._movetopoint=None
 
+		#Visibility, minimap and FOW
+		self._visible = True
+		self._unitIndicator = None
+
 		#MoveEffects
 		self._currentmoveeff = None
 
@@ -136,6 +140,9 @@ class BaseUnit():
 		self._rm()
 
 	### Trigger Hooks
+	def _setVisible(self, visible):
+		self._visible = visible
+		self._entity.node.setVisible(visible)
 
 	def _selected(self):
 		self.Hook.call("OnSelected")
@@ -226,6 +233,10 @@ class BaseUnit():
 
 		if shared.FowManager!=None and shared.FowManager!=True:
 			shared.FowManager.rmNode(self._entity.node)
+
+		if shared.MinimapManager!=None and self._unitIndicator!=None:
+			self._unitIndicator.remove()
+
 		self._isAlive = False
 
 	def _die(self):
@@ -291,6 +302,9 @@ class BaseUnit():
 		self._entity.SetPosition(pos[0], pos[1], pos[2])
 		if shared.FowManager!=None and shared.FowManager!=True:
 			shared.FowManager.nodeUpdate(self._entity.node)
+
+		if shared.MinimapManager!=None and self._unitIndicator!=None:
+			self._unitIndicator.update()
 
 	def _getPosition(self):
 		self._pos = self._entity.GetPosition()

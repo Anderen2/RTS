@@ -31,7 +31,7 @@ class Minimap():
 
 		shared.renderGUI.registerLayout(self.Window)
 
-		#self.test = MinimapUnit(0)
+		# self.test = MinimapUnit(0)
 
 		#Load VisibilityImage:
 		self.Imageset=CEGUI.ImagesetManager.getSingleton().createFromImageFile("minimapVisibility", "./minimapVisibility.png")
@@ -48,40 +48,21 @@ class Minimap():
  		pass
 
  	def Map_Mclick(self, evt):
- 		pass
+ 		sTW = CEGUI.CoordConverter.screenToWindow(self.Image, evt.position)
+		size = self.Image.getSize().asAbsolute(self.Image.getPixelSize())
+		print(sTW.d_y)
+		pos = ((sTW.d_x/size.d_x), 1-(sTW.d_y/size.d_y))
+		realpos = (shared.Map.size*pos[1], shared.Map.size*pos[0])
+		print(realpos)
+
+ 		if evt.button == CEGUI.LeftButton:
+ 			camdim = shared.render3dCamera.getDimensions()
+ 			campos = ((camdim[1]/2)+realpos[0], (camdim[0]/2)+realpos[1])
+ 			print campos
+ 			shared.render3dCamera.set2DPos(campos)
+ 			
+ 			
+
 
  	def Map_Mrelease(self, evt):
  		pass
-
-class MinimapUnit():
-
-	def __init__(self, ID):
-		self.windowManager = CEGUI.WindowManager.getSingleton()
-		self.minimap = self.windowManager.getWindow("Root/Map/BG/Image")
-		self.dot = self.windowManager.createWindow("Vanilla/StaticImage", "GreenDot")
-		self.minimap.addChildWindow(self.dot)
-
-		#Load Image:
-		self.Imageset=CEGUI.ImagesetManager.getSingleton().createFromImageFile("minimapUnit", "./minimapGreenDot.png")
-		self.Imageset.defineImage("minimapUnit", CEGUI.Vector2(0,0), CEGUI.Size(16,16),CEGUI.Vector2(0,0))
-		self.dot.setProperty("Image","set:minimapUnit image:minimapUnit")
-		self.dot.setProperty("FrameEnabled", "False")
-		self.dot.setProperty("BackgroundEnabled", "False")
-
-		self.dot.setPosition(CEGUI.UVector2(CEGUI.UDim(0.5, 0), CEGUI.UDim(0.5, 0)))
-		self.dot.setSize(CEGUI.UVector2(CEGUI.UDim(0.05, 0), CEGUI.UDim(0.05, 0)))
-		
-class MinimapVisibility():
-	def __init__(self, ID, x, y):
-		self.windowManager = CEGUI.WindowManager.getSingleton()
-		self.minimap = self.windowManager.getWindow("Root/Map/BG/Image")
-		self.dot = self.windowManager.createWindow("Vanilla/StaticImage", "Visibility"+str(ID))
-		self.minimap.addChildWindow(self.dot)
-
-		
-		self.dot.setProperty("Image","set:minimapVisibility image:minimapVisibility")
-		self.dot.setProperty("FrameEnabled", "False")
-		self.dot.setProperty("BackgroundEnabled", "False")
-
-		self.dot.setPosition(CEGUI.UVector2(CEGUI.UDim(x, 0), CEGUI.UDim(y, 0)))
-		self.dot.setSize(CEGUI.UVector2(CEGUI.UDim(0.1, 0), CEGUI.UDim(0.1, 0)))

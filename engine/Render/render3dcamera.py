@@ -1,9 +1,9 @@
 #Render3dExtension - render3dcamera
-#Classes for handeling camera controll
+#Classes for handeling camera control
 #Highlevel module camera
 
 from ogre.renderer.OGRE import Degree, Vector3, Vector2
-
+from engine.Lib.hook import Hook
 from engine import debug, shared
 
 #Camera QueryFlag
@@ -32,6 +32,12 @@ class Camera():
 		self.rotate = 0.13
 		self.move = 250
 
+		#Hooks
+		self.Hook = Hook(self)
+		self.Hook.new("OnMove", 1)
+		self.Hook.new("OnRotate", 1)
+		self.Hook.new("OnSetPos", 1)
+
 	def Move(self, direction, delta):
 		transVector = Vector3(0, 0, 0)
 
@@ -43,13 +49,25 @@ class Camera():
 		# print(direction)
 		# print(transVector)
 
+		self.Hook.call("OnMove", self.camNode.orientation * transVector * delta)
+
 		self.camNode.translate(self.camNode.orientation * transVector * delta)
 
-	def SetPos(self, array):
+	def SetPos(self, pos):
+		self.Hook.call("OnMove", pos)
 		#Sets the camera's scenenode position. Translate is used to translate relative movement to world coordinates
-		self.camNode.translate(array)
+		self.camNode.translate(pos)
+
+	def setAbsolutePos(self, pos):
+		self.Hook.call("OnSetPos", pos)
+		self.camNode.setPosition(pos)
+
+	def set2DPos(self, pos):
+		self.Hook.call("OnSetPos", pos)
+		self.camNode.setPosition(pos[0], self.camNode.getPosition().y, pos[1])
 
 	def Rotate(self, relativemousepos):
+		self.Hook.call("OnRotate", relativemousepos)
 		self.camNode.yaw(Degree(-self.rotate * relativemousepos[0]).valueRadians())
 		self.camNode.getChild(0).pitch(Degree(-self.rotate * relativemousepos[1]).valueRadians())
 

@@ -18,7 +18,7 @@ class PlayerManager():
 		self.brandwidthsaver=[]
 
 		#Add "None-player"
-		self.PDict[-1]=Player(-1, "None", -1, None, None)
+		self.PDict[-1]=Player(-1, "None", -1, {"land":"", "color":(1,1,1)}, None)
 
 		#Player Thinking
 		self.lastframe=time()

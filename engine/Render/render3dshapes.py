@@ -144,3 +144,6 @@ def Sylinder():
 
 def Sphere():
 	pass
+
+def RemoveMesh(mesh):
+	ogre.MeshManager.getSingleton().remove(mesh)

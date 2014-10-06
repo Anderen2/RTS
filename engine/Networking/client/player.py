@@ -7,6 +7,8 @@ class Player():
 		self.team=Team
 		self.UID=UID
 		self.username=Username
+		self.color=Extras["color"]
+		self.yourself = False
 
 		self.Units=[]
 

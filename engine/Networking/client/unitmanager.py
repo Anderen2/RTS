@@ -66,12 +66,18 @@ class UnitManager():
 			#Updating the Fog Of War
 			if int(owner.team) == int(shared.SelfPlayer.team):
 				shared.DPrint("netUnitManager", 0, "Adding unit as ally")
-				newunit._fowview = shared.FowManager.addAlly(newunit._entity.node, attributes["viewrange"])
+				newunit._fowview = shared.FowManager.addAlly(newunit._entity.node, newunit, attributes["viewrange"])
 			else:
 				shared.DPrint("netUnitManager", 0, "Adding unit as enemy")
-				newunit._fowview = shared.FowManager.addEnemy(newunit._entity.node)
+				newunit._fowview = shared.FowManager.addEnemy(newunit._entity.node, newunit)
 
 			shared.FowManager.nodeUpdate(newunit._entity.node)
+
+			#Updating the minimap
+			UI = shared.MinimapManager.newUnitIndicator()
+			UI.setUnit(newunit)
+
+			
 
 		else:
 			shared.DPrint(5, "netUnitManager", "Unitscript for "+str(name)+" does not exsist!")

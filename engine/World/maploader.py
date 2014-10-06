@@ -72,6 +72,8 @@ class Map():
 		self.description=self.config["Map"]["General"]["Description"]
 		self.maxplayers=self.config["Map"]["Players"]["Count"]
 
+		self.size = self.config["Terrain"]["Heightmap"]["Size"]
+
 		shared.DPrint("Map", 0, "Map "+self.name+" Initialized")
 
 	def Setup(self):

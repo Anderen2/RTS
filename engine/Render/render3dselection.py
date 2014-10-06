@@ -215,6 +215,20 @@ class SelectStuff():
 													  mousePos.d_y / float(self.hackvz))	
 		result = shared.render3dTerrain.TerrainEnt.rayIntersects(mouseRay)
 		return (result.second.x, result.second.y, result.second.z)
+
+	def ScreenPosToWorldTerrainPos(self, x, y):
+		mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(x / float(self.hackhz),
+													  y / float(self.hackvz))	
+		result = shared.render3dTerrain.TerrainEnt.rayIntersects(mouseRay)
+		return (result.second.x, result.second.y, result.second.z)
+
+	def RelScreenPosToWorldTerrainPos(self, x, y):
+		print(x, y)
+		print((x * float(self.hackhz)),(y * float(self.hackvz)))
+		mouseRay = shared.render3dCamera.camera.getCameraToViewportRay(x ,
+													  y )	
+		result = shared.render3dTerrain.TerrainEnt.rayIntersects(mouseRay)
+		return (result.second.x, result.second.y, result.second.z)
 					
 
 class SelectionRectangle(ogre.ManualObject):

@@ -169,6 +169,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		if node.getName() in self.EnemyNodes:
 			EnodeIndex = self.EnemyNodes[node.getName()]
 			Enode = EnodeIndex["node"]
+			EnodeUnit = EnodeIndex["unit"]
 			EnodePos = self.ogre2pyNodeCoord(Enode)
 
 			#print("Enode Defaulting to False")
@@ -183,14 +184,14 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 					#print(AnodePos[0], AnodePos[2], 256, EnodePos[0], EnodePos[2])
 					AnodeIndex["vision"].append(EnodeIndex)
 					EnodeIndex["viewedby"].append(AnodeIndex)
-					Enode.setVisible(True)
+					EnodeUnit._setVisible(True)
 				else:
 					if EnodeIndex in AnodeIndex["vision"]:
 						#print("ENODE: Im not visible for him, removing myself")
 						AnodeIndex["vision"].remove(EnodeIndex)
 
 			if len(EnodeIndex["viewedby"])==0:
-				Enode.setVisible(False)
+				EnodeUnit._setVisible(False)
 
 
 
@@ -233,7 +234,8 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 					if len(EnodeIndex["viewedby"])==0:
 						#print("ANODE: Enode is empty, hiding")
-						EnodeIndex["node"].setVisible(False)
+						#EnodeIndex["node"].setVisible(False)
+						EnodeIndex["unit"]._setVisible(False)
 				#print(EnodeIndex)
 
 			AnodeIndex["vision"] = []
@@ -241,29 +243,30 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 			#Find everything that is currently in the units view now
 			for EnodeName, EnodeIndex in self.EnemyNodes.iteritems():
 				Enode = EnodeIndex["node"]
+				EnodeUnit = EnodeIndex["unit"]
 				EnodePos = self.ogre2pyNodeCoord(Enode)
 
 				if posalgo.in_circle(AnodePos[0], AnodePos[2], AnodeIndex["size"]-5, EnodePos[0], EnodePos[2]):
 					#print("ANODE: Unit is in circle! VISIBLE")
 					AnodeIndex["vision"].append(EnodeIndex)
 					EnodeIndex["viewedby"].append(AnodeIndex)
-					Enode.setVisible(True)
+					EnodeUnit._setVisible(True)
 
 		else:
 			print("Node not found!")
 			print node
 
-	def addAlly(self, node, viewsize):
+	def addAlly(self, node, unit, viewsize):
 		tupview = self.addView(viewsize)
-		allynodeIndex = {"ent":tupview[0], "node":tupview[1], "size":viewsize, "vision":[]}
+		allynodeIndex = {"ent":tupview[0], "node":tupview[1], "size":viewsize, "vision":[], "unit":unit}
 
 		self.AllyNodes[node.getName()]=allynodeIndex
 		self.nodeUpdate(node)
 
 		return allynodeIndex
 
-	def addEnemy(self, node):
-		enemynodeIndex = {"node":node, "viewedby":[]}
+	def addEnemy(self, node, unit):
+		enemynodeIndex = {"node":node, "viewedby":[], "unit":unit}
 
 		self.EnemyNodes[node.getName()]=enemynodeIndex
 		self.nodeUpdate(node)

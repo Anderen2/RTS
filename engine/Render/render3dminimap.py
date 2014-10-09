@@ -18,8 +18,10 @@ class MinimapListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.created=False
 
 		self.UnitIndicators=[]
+		self.WarningIndicators=[]
 
 		debug.ACC("dbg_minimap", self.debugmode, info="Enable minimap viewPort", args=0)
+		debug.ACC("mm_warn", self.createWarn, info="Simulate a warning", args=3)
 
 	def Create(self, tsizex, tsizey, textureTarget):
 		shared.DPrint("render3dminimap", 0, "Creating Minimap RTT")
@@ -94,6 +96,8 @@ class MinimapListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.InitializeUnitIndicators()
 		self.MinimapCameraIndicator = MinimapCameraIndicator()
 
+		self.InitializeWarningIndicators()
+
 		# test = self.createUnitIndicator(6, (0, 1, 0))
 		# test[1].setPosition(3000,1, 2000)
 
@@ -120,7 +124,22 @@ class MinimapListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		self.UnitIndicatorMat.setDepthWriteEnabled(False)
 
 		UnitIndicatorMesh = ogre.MeshManager.getSingleton().createPlane("MM_UnitIndicator", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME, UnitIndicator, 16, 16, 1, 1, True, 1, 1, 1, ogre.Vector3().UNIT_Z)
-		#UnitIndicatorMesh.getSubMesh(0).setMaterialName("MM_UnitIndicator")
+		UnitIndicatorMesh.getSubMesh(0).setMaterialName("MM_UnitIndicator")
+
+	def InitializeWarningIndicators(self):
+		WarningIndicator = ogre.MovablePlane("WarningIndicator")
+		WarningIndicator.d = 0
+		WarningIndicator.normal = ogre.Vector3().UNIT_Y
+
+		self.WarningIndicatorMat = ogre.MaterialManager.getSingleton().create("MM_WarningIndicator", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME)
+		self.WarningIndicatorMat.getTechnique(0).getPass(0).createTextureUnitState("warn1.png")
+		self.WarningIndicatorMat.setSceneBlending(ogre.SBT_TRANSPARENT_ALPHA)
+		self.WarningIndicatorMat.setDepthWriteEnabled(False)
+
+		WarningIndicatorMesh = ogre.MeshManager.getSingleton().createPlane("MM_WarningIndicator", ogre.ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME, WarningIndicator, 65, 60, 1, 1, True, 1, 1, 1, ogre.Vector3().UNIT_Z)
+		WarningIndicatorMesh.getSubMesh(0).setMaterialName("MM_WarningIndicator")
+
+		shared.render.Hook.Add("OnRenderFrame", self.update)
 
 	def updateUnitIndicators(self, node=None):
 		pass
@@ -132,6 +151,17 @@ class MinimapListener(ogre.RenderTargetListener,ogre.Node.Listener):
 	def debugmode(self):
 		debug.RCC("gui_hideall")
 		self.viewPort = shared.render.root.getAutoCreatedWindow().addViewport(self.camera, 1, 0, 0.5, 0.2, 0.2)
+
+	def createWarn(self, x, z, warnlvl):
+		foo = MinimapWarningIndicator()
+		foo.Node.setPosition(int(x), 1, int(z))
+		foo.setWarnLvl(int(warnlvl))
+
+
+	def update(self, delta):
+		for WarningIndicator in self.WarningIndicators:
+			WarningIndicator.frame(delta)
+
 
 class MinimapUnitIndicator():
 	def __init__(self):
@@ -181,7 +211,8 @@ class MinimapUnitIndicator():
 	def remove(self):
 		self.Node.detachObject(self.Entity)
 		shared.MinimapManager.sceneManager.destroyEntity(self.Entity)
-		self.unit._unitIndicator = None
+		if self.unit!=None:
+			self.unit._unitIndicator = None
 		shared.MinimapManager.UnitIndicators.remove(self)
 
 	def update(self):
@@ -190,6 +221,85 @@ class MinimapUnitIndicator():
 			self.setColor(self.unit._owner.color)
 			self.selectable = self.unit._owner.yourself
 			self.setVisible(self.unit._visible)
+
+
+class MinimapWarningIndicator():
+	def __init__(self):
+		self.size = 6
+		self.color = (255,0,0)
+		self.unit = None
+		self.selectable = False
+		self.jaw=0
+		self.warnlevels = {0: (255,255,255), 1: (0, 255, 0), 2: (0, 0, 255), 3: (255,255,0), 4:(255,0,0)}
+
+		self.Entity = shared.MinimapManager.sceneManager.createEntity("WI"+str(len(shared.MinimapManager.WarningIndicators)), "MM_WarningIndicator")
+		self.Entity.setCastShadows(False)
+
+		self.Material = shared.MinimapManager.WarningIndicatorMat.clone("WI_UI"+str(len(shared.MinimapManager.WarningIndicators)))
+		self.Material.setAmbient(self.color[0],self.color[1],self.color[2])
+
+		#Entity.getMesh().getSubMesh(0).setMaterialName("MM_UI"+str(len(self.UIEnts)))
+		self.Entity.setMaterial(self.Material)
+
+
+		self.Node = shared.MinimapManager.sceneManager.getRootSceneNode().createChildSceneNode()
+		self.Node.attachObject(self.Entity)
+		self.Node.setPosition(2000, 1, 1000)
+		self.Node.setScale(1*self.size, 1*self.size, 1*self.size)
+		self.Node.showBoundingBox(False)
+
+		self.setColor(self.color)
+
+		shared.MinimapManager.WarningIndicators.append(self)
+
+	def setWarnLvl(self, warnlvl):
+		#0 = Information
+		#1 = Friendly
+		#2 = Friendly 2
+		#3 = Attention
+		#4 = Warning
+		self.setColor(self.warnlevels[warnlvl])
+
+
+	def setUnit(self, unit):
+		if self.unit!=None:
+			shared.DPrint("render3dminimap", 0, "WarningIndicator changed owner!")
+
+		self.unit = unit
+		unit._unitIndicator = self
+		self.update()
+
+	def setColor(self, color):
+		self.color = color
+		self.Material.setAmbient(float(color[0])/255, float(color[1])/255, float(color[2])/255)
+
+	def setSize(self, size):
+		self.size = size
+		self.Node.setScale(1*self.size, 1*self.size, 1*self.size)
+
+	def setVisible(self, visible):
+		self.visible = visible
+		self.Node.setVisible(visible)
+
+	def remove(self):
+		self.Node.detachObject(self.Entity)
+		shared.MinimapManager.sceneManager.destroyEntity(self.Entity)
+		if self.unit!=None:
+			self.unit._unitIndicator = None
+		shared.MinimapManager.WarningIndicators.remove(self)
+
+	def update(self):
+		if self.unit:
+			self.Node.setPosition(self.unit._pos[0], 1, self.unit._pos[2])
+			self.setColor(self.unit._owner.color)
+			self.selectable = self.unit._owner.yourself
+			self.setVisible(self.unit._visible)
+
+	def frame(self, delta):
+		# self.jaw+=0.0001
+		# if self.jaw>359:
+		# 	self.jaw = 0
+		self.Node.yaw(0.05)
 	
 
 class MinimapCameraIndicator():
@@ -198,6 +308,7 @@ class MinimapCameraIndicator():
 		self.regenerateMesh()
 
 		shared.render3dCamera.Hook.Add("OnMove", self.update)
+		shared.render3dCamera.Hook.Add("OnSetPos", self.updateAbs)
 		shared.renderioInput.Hook.Add("OnKeyReleased", self.regenerateHook)
 
 		debug.ACC("mm_cireg", self.regenerateMesh, info="Regenerate camera indicator mesh")
@@ -224,6 +335,16 @@ class MinimapCameraIndicator():
 	
 	def update(self, direction):
 		self.Node.translate(direction)
+
+	def updateAbs(self, pos, prev):
+		p1v = shared.Vector3D((pos[0], 1, pos[1]))
+		p2v = shared.Vector3D((prev[0], 1, prev[1]))
+
+		trans = p1v - p2v
+
+		#self.Node.setPosition(pos[0], 1, pos[1])
+		self.Node.translate(trans[0], 1, trans[2])
+		#self.regenerateMesh()
 
 	def regenerateHook(self, key):
 		if key == shared.renderioInput.keys["camstear"] or key == shared.renderioInput.keys["up"] or key == shared.renderioInput.keys["down"]:

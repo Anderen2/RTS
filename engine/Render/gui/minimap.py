@@ -42,27 +42,28 @@ class Minimap():
 		#self.Visibility2 = MinimapVisibility(2, 0.39, 0.39)
 
 	def Map_Menter(self, evt):
- 		pass
+		pass
 
- 	def Map_Mleave(self, evt):
- 		pass
+	def Map_Mleave(self, evt):
+		pass
 
- 	def Map_Mclick(self, evt):
- 		sTW = CEGUI.CoordConverter.screenToWindow(self.Image, evt.position)
+	def Map_Mclick(self, evt):
+		sTW = CEGUI.CoordConverter.screenToWindow(self.Image, evt.position)
 		size = self.Image.getSize().asAbsolute(self.Image.getPixelSize())
 		print(sTW.d_y)
 		pos = ((sTW.d_x/size.d_x), 1-(sTW.d_y/size.d_y))
 		realpos = (shared.Map.size*pos[1], shared.Map.size*pos[0])
 		print(realpos)
 
- 		if evt.button == CEGUI.LeftButton:
- 			camdim = shared.render3dCamera.getDimensions()
- 			campos = ((camdim[1]/2)+realpos[0], (camdim[0]/2)+realpos[1])
- 			print campos
- 			shared.render3dCamera.set2DPos(campos)
- 			
- 			
+		if evt.button == CEGUI.LeftButton:
+			camdim = shared.render3dCamera.getDimensions()
+			#campos = ((camdim[1]/2)+realpos[0], (camdim[0]/2)+realpos[1])
+			campos = (realpos[0]-camdim[1]/2, realpos[1])
+			print campos
+			shared.render3dCamera.set2DPos(campos)
+			
+			
 
 
- 	def Map_Mrelease(self, evt):
- 		pass
+	def Map_Mrelease(self, evt):
+		pass

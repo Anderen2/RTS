@@ -36,7 +36,7 @@ class Camera():
 		self.Hook = Hook(self)
 		self.Hook.new("OnMove", 1)
 		self.Hook.new("OnRotate", 1)
-		self.Hook.new("OnSetPos", 1)
+		self.Hook.new("OnSetPos", 2)
 
 	def Move(self, direction, delta):
 		transVector = Vector3(0, 0, 0)
@@ -54,22 +54,24 @@ class Camera():
 		self.camNode.translate(self.camNode.orientation * transVector * delta)
 
 	def SetPos(self, pos):
-		self.Hook.call("OnMove", pos)
 		#Sets the camera's scenenode position. Translate is used to translate relative movement to world coordinates
 		self.camNode.translate(pos)
+		self.Hook.call("OnMove", pos)
 
 	def setAbsolutePos(self, pos):
-		self.Hook.call("OnSetPos", pos)
 		self.camNode.setPosition(pos)
+		self.Hook.call("OnSetPos", pos)
 
 	def set2DPos(self, pos):
-		self.Hook.call("OnSetPos", pos)
+		prev = self.camNode.getPosition()
+		prev = (prev.x, prev.z)
 		self.camNode.setPosition(pos[0], self.camNode.getPosition().y, pos[1])
+		self.Hook.call("OnSetPos", pos, prev)
 
 	def Rotate(self, relativemousepos):
-		self.Hook.call("OnRotate", relativemousepos)
 		self.camNode.yaw(Degree(-self.rotate * relativemousepos[0]).valueRadians())
 		self.camNode.getChild(0).pitch(Degree(-self.rotate * relativemousepos[1]).valueRadians())
+		self.Hook.call("OnRotate", relativemousepos)
 
 	def getDimensions(self):
 		return (self.viewPort.getActualWidth(), self.viewPort.getActualHeight())

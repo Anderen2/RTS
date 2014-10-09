@@ -41,7 +41,7 @@ class GUI():
 		self.upperalpha=0.5
 		self.hackhz, self.hackvz = shared.render3dCamera.getDimensions()
 		self.IgnoreMe=["Root/UnitOpt/BG/Actions","Root/UnitOpt/BG/Upgrades"]
-		self.IgnoreMyParent=["Root/Chat/BG", "Root/Chat", "Root/GameInfo/BG", "Root/GameInfo"]
+		self.IgnoreMyParent=["Root/Chat/BG", "Root/Chat", "Root/GameInfo/BG", "Root/GameInfo", "Root/Map", "Root/Map/BG"]
 
 		#Loading Layouts
 		self.sheet = CEGUI.WindowManager.getSingleton().loadWindowLayout("RTS.layout")

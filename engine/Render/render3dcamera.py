@@ -2,7 +2,7 @@
 #Classes for handeling camera control
 #Highlevel module camera
 
-from ogre.renderer.OGRE import Degree, Vector3, Vector2
+from ogre.renderer.OGRE import Degree, Vector3, Vector2, Quaternion
 from engine.Lib.hook import Hook
 from engine import debug, shared
 
@@ -32,6 +32,9 @@ class Camera():
 		self.rotate = 0.13
 		self.move = 250
 
+		self.camNode.setPosition(1649.85, 1229.42, 1183.86) #GET THIS FROM MAPFILE LATER (HARDCODE)
+		#self.camera.setOrientation(Quaternion(0.0, 0.6989771127700806, 0.0, -0.7151437401771545))
+
 		#Hooks
 		self.Hook = Hook(self)
 		self.Hook.new("OnMove", 1)
@@ -52,6 +55,7 @@ class Camera():
 		self.Hook.call("OnMove", self.camNode.orientation * transVector * delta)
 
 		self.camNode.translate(self.camNode.orientation * transVector * delta)
+		print(self.camNode.getPosition())
 
 	def SetPos(self, pos):
 		#Sets the camera's scenenode position. Translate is used to translate relative movement to world coordinates
@@ -71,6 +75,8 @@ class Camera():
 	def Rotate(self, relativemousepos):
 		self.camNode.yaw(Degree(-self.rotate * relativemousepos[0]).valueRadians())
 		self.camNode.getChild(0).pitch(Degree(-self.rotate * relativemousepos[1]).valueRadians())
+		wad = self.camNode.getOrientation()
+		print(wad.x, wad.y, wad.z, wad.w)
 		self.Hook.call("OnRotate", relativemousepos)
 
 	def getDimensions(self):

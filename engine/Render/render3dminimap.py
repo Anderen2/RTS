@@ -343,7 +343,7 @@ class MinimapCameraIndicator():
 		trans = p1v - p2v
 
 		#self.Node.setPosition(pos[0], 1, pos[1])
-		self.Node.translate(trans[0], 1, trans[2])
+		self.Node.translate(trans[0], 0, trans[2])
 		#self.regenerateMesh()
 
 	def regenerateHook(self, key):

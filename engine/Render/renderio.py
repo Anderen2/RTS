@@ -198,13 +198,7 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			System.getSingleton().injectMouseButtonDown(convertButton(id)) #GUI Events
 
 		if self.CurrentMiceInterface==2:
-			#Grouprelated
-			if self.Keyboard.isKeyDown(self.keys["queueaction"]):
-				print("IO: AQ TRUE")
-				shared.DirectorManager.actionQueueing=True
-			else:
-				print("IO: AQ FALSE")
-				shared.DirectorManager.actionQueueing=False
+			
 
 			#Selectionstuff
 			if id==OIS.MB_Left:
@@ -310,6 +304,12 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			self.CurrentMiceInterface=0
 			MouseCursor.getSingleton().hide()
 
+		#Grouprelated
+		#if self.Keyboard.isKeyDown(self.keys["queueaction"]):
+		if evt.key==self.keys["queueaction"]:
+			print("IO: AQ TRUE")
+			shared.DirectorManager.actionQueueing=True
+
 
 	def keyReleased(self, evt):
 		self.Hook.call("OnKeyReleased", evt.key)
@@ -328,6 +328,10 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 			if self.CurrentMiceInterface==0:
 				self.CurrentMiceInterface=2
 			MouseCursor.getSingleton().show() #Show mousecursor
+
+		if evt.key==self.keys["queueaction"]:
+			print("IO: AQ FALSE")
+			shared.DirectorManager.actionQueueing=False
 
 		if evt.key==OIS.KC_ESCAPE:
 			try:

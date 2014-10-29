@@ -83,9 +83,19 @@ class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 		#Setup renderlistener
 		shared.render.renderqueue.append(shared.renderioInput)
 
+
 		#These 2 lines say that you want to capture i/o from the keyboard and the mice, the last argument means that you want "ois buffered input" (Google it if you want more info)
 		self.Keyboard = self.inputManager.createInputObjectKeyboard(OIS.OISKeyboard, True)
 		self.Mouse = self.inputManager.createInputObjectMouse(OIS.OISMouse, True)
+
+		#Fix slow mousemovement for positive direction
+		windowHeight = renderWindow.getHeight()
+		windowWidth = renderWindow.getWidth()
+		#self.inputManager.setWindowExtents(windowWidth, windowHeight)
+		mState = self.Mouse.getMouseState()
+		mState.width = windowWidth
+		mState.height = windowHeight
+
 		#These 2 lines just specifies which class instance it should call functions from (mouseMoved, mousePressed, keyPressed, etc), in this case, its this class
 		self.Mouse.setEventCallback(self)
 		self.Keyboard.setEventCallback(self)

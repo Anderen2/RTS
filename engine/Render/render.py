@@ -27,6 +27,7 @@ class RenderApplication(object):
 
 	def PowerUp(self):
 		self.createRoot()
+		self.setupEssentials()
 		self.defineResources()
 		self.setupRenderSystem()
 		self.createRenderWindow()
@@ -44,6 +45,10 @@ class RenderApplication(object):
 		shared.DPrint("Render",1,"Creating Root")
 		self.root = ogre.Root()
 		shared.renderRoot=self.root
+
+	def setupEssentials(self):
+		self.Hook = Hook(self)
+		self.Hook.new("OnRenderFrame", 1) #Deltatime
  
 	def defineResources(self):
 		shared.DPrint("Render",1,"Defining Resources")
@@ -66,7 +71,7 @@ class RenderApplication(object):
  
 	def createRenderWindow(self):
 		shared.DPrint("Render",1,"Creating renderwindow")
-		self.root.initialise(True, "YARTS: v. 0E-inf")
+		self.renderwindow = self.root.initialise(True, "YARTS: v. 0E-inf")
  
 	def initializeResourceGroups(self):
 		shared.DPrint("Render",1,"Initializing Resource Groups")
@@ -148,9 +153,6 @@ class RenderApplication(object):
 		shared.DPrint("Render",1,"Starting renderloop")
 		#self.root.startRendering()
 		self.weu = ogre.WindowEventUtilities()
-
-		self.Hook = Hook(self)
-		self.Hook.new("OnRenderFrame", 1) #Deltatime
 
 		reactor.callLater(0,self.renderHook)
 

@@ -4,7 +4,7 @@ from traceback import print_exc
 from twisted.internet import reactor
 
 from engine import shared, debug
-from engine.Render.gui import chat, debugGUI, gameinfo, minimap, moneybar, options, powerbar, tactical, unitinfo, unitopt
+from engine.Render.gui import chat, debugGUI, gameinfo, minimap, moneybar, options, powerbar, tactical, unitinfo, unitopt, borders
 
 class GUI():
 	def __init__(self):
@@ -85,6 +85,7 @@ class GUI():
 		shared.gui['tactical']=tactical.Tactical()
 		shared.gui['unitinfo']=unitinfo.UnitInfo()
 		shared.gui['unitopt']=unitopt.UnitOpt()
+		shared.gui['borders']=borders.Borders()
 
 	def createDebugOnly(self):
 		# self.root = self.windowManager.getWindow("Root")

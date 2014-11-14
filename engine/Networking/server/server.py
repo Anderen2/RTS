@@ -15,8 +15,11 @@ from chat import ChatManager
 class Service():
 	def __init__(self):
 		shared.objectManager.addEntry(0, 0, self)
+		shared.Service=self
 		self.RetBackQueue={}
 		self.connections=[]
+
+		reactor.callLater(5, self.PingAll)
 
 	def RetMeBack(self, function, method):
 		self.RetBackQueue[method]=function
@@ -37,9 +40,10 @@ class Service():
 		self.connections.append(proto)
 
 	def ConnectionLost(self, proto, reason):
-		shared.DPrint("Service", 1, "Connection to client lost: "+reason)
+		shared.DPrint("Service", 1, "Connection to client lost: "+reason.getErrorMessage())
 		try:
-			shared.PlayerManager.DCONN(proto)
+			ply = shared.PlayerManager.getFromProto(proto)
+			shared.PlayerManager.PlayerDisconnect(ply, reason.getErrorMessage())
 			self.connections.remove(proto)
 		except KeyError:
 			shared.DPrint("Service", 1, "Client does not exist!")
@@ -47,11 +51,7 @@ class Service():
 
 	def PingAll(self):
 		for x in self.connections:
-			x.Ping()
-			try:
-				shared.DPrint("Service", 0, x.player.name+": "+str(x.ping))
-			except:
-				shared.DPrint("Service", 0, "UNINITIALIZED"+": "+str(x.ping))
+			x.sendPing()
 		reactor.callLater(5, self.PingAll)
 
 	def Broadcast(self, obj, method, args):

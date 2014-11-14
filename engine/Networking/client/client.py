@@ -3,6 +3,8 @@ from traceback import print_exc
 from string import split
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred
+from twisted.internet.protocol import ClientCreator
+from twisted.internet.endpoints import TCP4ClientEndpoint, connectProtocol
 
 from engine import shared, debug
 from engine.Networking import sh_netObject, sh_netMethod
@@ -30,17 +32,22 @@ class Service():
 	def Connect(self, ip, port):
 		if not self.Connected:
 			shared.DPrint("Service", 0, "Connecting to: "+str(ip)+":"+str(port))
-			reactor.connectTCP(ip, port, sh_netMethod.MethodFactory(), 15)
+			self.destination = TCP4ClientEndpoint(reactor, ip, port)
+			self.protocol = sh_netMethod.AMPMethod(self)
+			self.conProto = connectProtocol(self.destination, self.protocol)
+			#reactor.connectTCP(ip, port, sh_netMethod.MethodFactory(), 15)
 			self.Connected=True
+			self.conProto.addCallback(self.ConnectionMade)
+
 		else:
 			shared.DPrint("Service", 0, "Tried to connect to: "+str(ip)+":"+str(port)+" but we are already connected to someone else!")
 
 	def ConnectionMade(self, protocol):
 		shared.DPrint("Service", 0, "A connection has been made")
-		shared.protocol=protocol
-		shared.Tjener=Tjener(protocol)
+		shared.protocol=self.protocol
+		shared.Tjener=Tjener(self.protocol)
 
-	def ConnectionLost(self, reason):
+	def ConnectionLost(self, proto, reason):
 		shared.DPrint("Service", 2, "Connection was lost, Reason: "+str(reason))
 
 	def RetMeBack(self, function, method):
@@ -64,16 +71,21 @@ class Tjener():
 		self.playercount=1
 		shared.DPrint("Tjener", 0, "Pulling Serverinfo")
 
-		debug.ACC("net_serverinfo", self.PrintNice, info="Prints serverinfo", args=0)
+		try:
 
-		protocol.sendMethod(1, "SI", [])
-		shared.client.RetMeBack(self.GimmeServerInfo, "SI")
+			debug.ACC("net_serverinfo", self.PrintNice, info="Prints serverinfo", args=0)
 
-		shared.PlayerManager=playermanager.PlayerManager()
-		shared.netUnitManager=unitmanager.UnitManager()
-		groupmanager.GroupManager()
-		projectilemanager.ProjectileManager()
-		shared.ChatManager=chat.ChatManager()
+			protocol.sendMethod(1, "SI", [])
+			shared.client.RetMeBack(self.GimmeServerInfo, "SI")
+
+			shared.PlayerManager=playermanager.PlayerManager()
+			shared.netUnitManager=unitmanager.UnitManager()
+			groupmanager.GroupManager()
+			projectilemanager.ProjectileManager()
+			shared.ChatManager=chat.ChatManager()
+		except:
+			print_exc()
+			reactor.stop()
 
 	def GimmeServerInfo(self, method, serverinfo):
 		self.ServerInfo=serverinfo

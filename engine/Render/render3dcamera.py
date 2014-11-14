@@ -32,8 +32,9 @@ class Camera():
 		self.rotate = 0.13
 		self.move = 250
 
-		self.camNode.setPosition(1649.85, 1229.42, 1183.86) #GET THIS FROM MAPFILE LATER (HARDCODE)
-		#self.camera.setOrientation(Quaternion(0.0, 0.6989771127700806, 0.0, -0.7151437401771545))
+		# self.camNode.setPosition(1649.85, 1229.42, 1183.86) #GET THIS FROM MAPFILE LATER (HARDCODE)
+		# self.camNode.setOrientation(Quaternion(0.000000,-0.714840,0.000000,0.699290))
+		# self.pitchnode.setOrientation(Quaternion(-0.473705,0.000000,0.000000,0.880684))
 
 		#Hooks
 		self.Hook = Hook(self)
@@ -75,8 +76,11 @@ class Camera():
 	def Rotate(self, relativemousepos):
 		self.camNode.yaw(Degree(-self.rotate * relativemousepos[0]).valueRadians())
 		self.camNode.getChild(0).pitch(Degree(-self.rotate * relativemousepos[1]).valueRadians())
-		wad = self.camNode.getOrientation()
-		print(wad.x, wad.y, wad.z, wad.w)
+		#wad = self.camNode.getOrientation()
+		#print("camNode: %f,%f,%f,%f" % (wad.x, wad.y, wad.z, wad.w))
+		#print(wad.x, wad.y, wad.z, wad.w)
+		#wad2 = self.pitchnode.getOrientation()
+		#print("pitchnode: %f,%f,%f,%f" % (wad2.x, wad2.y, wad2.z, wad2.w))
 		self.Hook.call("OnRotate", relativemousepos)
 
 	def getDimensions(self):

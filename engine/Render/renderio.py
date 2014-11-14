@@ -23,7 +23,6 @@ def convertButton(oisID):
 
 class Input(FrameListener, OIS.MouseListener, OIS.KeyListener):
 	def __init__(self):
-		#The three below lines are required because ogre3d is a C++ port (More I don't know)
 		FrameListener.__init__(self)
 		OIS.MouseListener.__init__(self)
 		OIS.KeyListener.__init__(self)

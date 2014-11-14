@@ -125,6 +125,9 @@ class PlayerManager():
 				attrib["pos"] = unit.GetPosition()
 				player.Protocol.sendMethod(4, "build", [unit.UnitID, unit._owner.UID, unit.ID, attrib])
 
+	def PlayerDisconnect(self, player, reason):
+		shared.ChatManager.systemSay("Player '%s' leaved the gave. Reason '%s'" % (player.username, reason))
+
 
 	def ThinkPlayers(self):
 

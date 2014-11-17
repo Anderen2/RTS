@@ -22,7 +22,7 @@ class Unit(BaseUnit):
 
 		self.SetMoveType(1) #MOVETYPE_GROUND
 		self.SetMoveSpeed(50)
-		self.SetHealth(200)
+		self.SetHealth(50)
 		self.SetViewRange(200)
 
 		self.SetVehicleMaxForce(1)

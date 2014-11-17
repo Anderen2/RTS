@@ -38,6 +38,7 @@ class Unit(BaseUnit):
 		shared.EffectManager.Create("explosion", self._pos[0], self._pos[1], self._pos[2], 1, 1)
 		self.GetEntity().actNone()
 		self.GetEntity().actDead(True)
+		return True
 
 	def OnMove(self, pos):
 		self.GetEntity().actMove(True)

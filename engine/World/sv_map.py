@@ -101,13 +101,13 @@ class Terrain():
 	def getHeightAtPos(self, x, y):
 		lx = (((float(x)/float(self.TerrainScale))*self.imgfact)*100)-1
 		ly = (((float(y)/float(self.TerrainScale))*self.imgfact)*100)-1
-		print("Requested: ",(x,y))
-		print("Locals: ",(lx, ly))
+		#print("Requested: ",(x,y))
+		#print("Locals: ",(lx, ly))
 		try:
-			print(float(self.TerrainImage[lx,ly])/self.grayres[1]*self.altfact)
-			print("TImg: %f", (float(self.TerrainImage[lx,ly])))
-			print("GRes:   ", (self.grayres))
-			print("Fact: %f", (self.altfact))
+			#print(float(self.TerrainImage[lx,ly])/self.grayres[1]*self.altfact)
+			#print("TImg: %f", (float(self.TerrainImage[lx,ly])))
+			#print("GRes:   ", (self.grayres))
+			#print("Fact: %f", (self.altfact))
 			#return (float(self.TerrainImage[lx,ly] + (self.grayres[0] - 16384))/self.grayres[1]*self.altfact)
 			return float(self.TerrainImage[lx,ly])/65535*self.altfact #Figure what the fuck that is going on here (HARDCODE)
 		except IndexError:

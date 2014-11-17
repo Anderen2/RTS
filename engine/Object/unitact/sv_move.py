@@ -78,7 +78,7 @@ class Action():
 		self.unit._stopmove()
 		
 	def finish(self):
-		pass
+		self.unit._finishedmove()
 
 	def update(self):
 		# if self.aborted==False:

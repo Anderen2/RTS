@@ -13,9 +13,10 @@ class DecoratorHandeler(FrameListener):
 		self.customDecos={}
 		self.decorators={}
 		self.dcount=0
+		
 
 	def PowerUp(self):
-		pass
+		shared.render.Hook.Add("OnRenderFrame", self.Frame)
 
 	def Create(self, name, pos=None, rot=None):
 		self.dcount=self.dcount+1
@@ -28,6 +29,13 @@ class DecoratorHandeler(FrameListener):
 		#if shared.Pathfinder.aStarPath != None:
 		#	suf.WaitOneTick(shared.Pathfinder.aStarPath.calculateSceneNodeCost, pointer.entity.node) #We have to wait one Tick/Frame for Ogre to properly update the scenenodes AABB
 
+		return pointer
+
+	def Import(self, entity):
+		self.dcount = self.dcount+1
+		ID=self.dcount-1
+		pointer = Decoration(ID, "Imported", entity=entity)
+		self.decorators[ID]=pointer
 		return pointer
 
 	def CreateCustomPrefix(self, name, prefix, pos=None, rot=None):
@@ -107,11 +115,11 @@ class DecoratorHandeler(FrameListener):
 		else:
 			return self.customDecos[prefix]["decos"][ID]
 
-	def frameRenderingQueued(self, evt):
+	def Frame(self, delta):
 		for ID, decorator in self.decorators.items():
-			decorator._think()
+			decorator._think(delta)
 
-		return True
+		#return True
 
 	def _del(self):
 		for ID, decorator in self.decorators.iteritems():
@@ -129,7 +137,7 @@ class DecoratorHandeler(FrameListener):
 
 #Decoratorgroup:
 class Decoration():
-	def __init__(self, ID, name, pos=None, rot=None, prefix="deco"):
+	def __init__(self, ID, name, pos=None, rot=None, prefix="deco", entity=None):
 		#Setup constants
 		self.ID=ID
 		self.name=name
@@ -137,35 +145,48 @@ class Decoration():
 		self.node=None
 		self.text=None
 		self.prefix=prefix
+		self.sink_factor = False
 
 		#Start rendering the unit (self, Identifyer, Type, Team, Interactive)
-		self.entity=shared.EntityHandeler.Create(self.ID, self.name, self.prefix, None)
-		try:
-			if self.entity.error:
-				shared.DPrint("Decoration",4,"Entity error! Decorator creation aborted!")
+		if not entity:
+			self.entity=shared.EntityHandeler.Create(self.ID, self.name, self.prefix, None)
+			try:
+				if self.entity.error:
+					shared.DPrint("Decoration",4,"Entity error! Decorator creation aborted!")
+					self._del()
+			except:
+				shared.DPrint("Decoration",4,"Entity critical error! Decorator creation aborted!")
 				self._del()
-		except:
-			shared.DPrint("Decoration",4,"Entity critical error! Decorator creation aborted!")
-			self._del()
 
-		#Do some post-render stuff
-		if pos==None:
-			self.entity.RandomPlacement()
+			#Do some post-render stuff
+			if pos==None:
+				self.entity.RandomPlacement()
+			else:
+				print(pos)
+				x, y, z = pos
+				self._setPos(x, y, z)
+
+			if rot!=None:
+				print(rot)
+				x, y, z = rot
+				self._setRot(x, y, z)
+
 		else:
-			print(pos)
-			x, y, z = pos
-			self._setPos(x, y, z)
-
-		if rot!=None:
-			print(rot)
-			x, y, z = rot
-			self._setRot(x, y, z)
+			self.entity = entity
+			self.entity.convertToDecoration()
 
 		#Notify that we have successfuly created a unit!
 		shared.DPrint("Decoration",5,"Decorator created! ID="+str(self.ID))
 
-	def _think(self):
-		pass
+	def _think(self, delta):
+		if self.entity:
+			if self.sink_factor:
+				self.sink_progress = self.sink_progress + (self.sink_factor*delta)
+				self.entity.node.setPosition(self.sink_pos.x, self.sink_pos.y-(self.sink_progstep*self.sink_progress), self.sink_pos.z)
+				if self.sink_progress>100:
+					self._del()
+		if self.entity:
+			self.entity.Think(delta)
 
 	def _selected(self):
 		#This should never run ingame, as decs cannot be (de)selected. They can however in the mapeditor
@@ -199,7 +220,14 @@ class Decoration():
 			if not self.entity.error:
 				self.entity.Delete()
 				self.entity=None
-			#shared.decHandeler.Delete(self.ID)
+			shared.decHandeler.Delete(self.ID)
 		except:
 			shared.DPrint("Decoration",5,"Decorator Deletion Failed! Decorator may still be in memory and/or in game world!")
 			traceback.print_exc()
+
+	def sinkSlowly(self, sinkfactor):
+		self.sink_yoffset=self.entity.mesh.getWorldBoundingBox().getSize().y
+		self.sink_progstep = (self.sink_yoffset) / 100
+		self.sink_factor = sinkfactor
+		self.sink_progress = 0
+		self.sink_pos = self.entity.node.getPosition()

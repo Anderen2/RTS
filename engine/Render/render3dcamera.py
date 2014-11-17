@@ -56,7 +56,7 @@ class Camera():
 		self.Hook.call("OnMove", self.camNode.orientation * transVector * delta)
 
 		self.camNode.translate(self.camNode.orientation * transVector * delta)
-		print(self.camNode.getPosition())
+		#print(self.camNode.getPosition())
 
 	def SetPos(self, pos):
 		#Sets the camera's scenenode position. Translate is used to translate relative movement to world coordinates

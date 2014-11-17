@@ -12,7 +12,7 @@ class ProjectileManager():
 		self.Projectiles={}
 
 		self.lastframe=time()
-		self.update()
+		shared.render.Hook.Add("OnRenderFrame", self.update)
 
 	def recv_rocket(self, uid, pos, target, speed, Protocol=None):
 		projectile = projectiles.Rocket(uid, pos, target, speed)
@@ -27,10 +27,7 @@ class ProjectileManager():
 			if uid == ID:
 				projectile._explode(pos)
 
-	def update(self):
-		deltatime = time()-self.lastframe
-		self.lastframe=time()
+	def update(self, deltatime):
 
 		for uid, projectile in self.Projectiles.iteritems():
 			projectile._think(deltatime)
-		reactor.callLater(0, self.update)

@@ -148,6 +148,7 @@ class BaseUnit():
 		self.Hook.call("OnSelected")
 		shared.DPrint("Globalunit",5,"Unit selected: "+str(self.ID))
 		self._entity.text.enable(True)
+		self._updateText()
 		if debug.AABB:
 			self._entity.node.showBoundingBox(True)
 
@@ -159,12 +160,10 @@ class BaseUnit():
 			self._entity.node.showBoundingBox(False)
 
 	def _think(self, delta):
-		self.Hook.call("OnThink", delta)
-		self._entity.text.setText(self._text+": HP "+str(self.GetHealth()))
-		self._entity.text.update()
-		self._entity.Think(delta)
+		self.Hook.call("OnThink", delta) #Additional THINK Calls [??]
+		self._entity.Think(delta) #Additional THINK Calls [??]
 		if self._currentaction!=None:
-			self._currentaction.update()
+			self._currentaction.update() #Additional THINK Calls [??]
 
 		if self._vehicle!=None and self._movetype!=-1:
 			if self.steer_state == "path":
@@ -173,23 +172,32 @@ class BaseUnit():
 			elif self.steer_state == "seek":
 				self._vehicle.seekPos(self.steer_target)
 
-			newpos = self._vehicle.step(delta)
-			newdir = self._vehicle.velocity.asTuple()
+			elif self.steer_state == None:
+				#print("Should stop here")
+				self._vehicle.Break()
 
-			self._entity.RotateTowardsDirection(newdir[0], 0, newdir[2])
-
-			if not self._constantaltitude:
-				y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2])+1
-			else:
-				y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2]) + self._constantaltitude
-
-			self._setPosition((newpos[0], y, newpos[2]))
-			
-			if len(self._vehicle.path)==0:
+			if self.steer_state == None and self._vehicle.velocity.length()==0:
+				#print("\nStopped entirely!\n")
 				pass
 
-			if newdir != (0,0,0):
-				self.Hook.call("OnMoving")
+			else:
+				newpos = self._vehicle.step(delta)
+				newdir = self._vehicle.velocity.asTuple()
+
+				self._entity.RotateTowardsDirection(newdir[0], 0, newdir[2])
+
+				if not self._constantaltitude:
+					y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2])+1
+				else:
+					y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2]) + self._constantaltitude
+
+				self._setPosition((newpos[0], y, newpos[2]))
+				
+				if len(self._vehicle.path)==0:
+					pass
+
+				if newdir != (0,0,0):
+					self.Hook.call("OnMoving")
 
 		if self._movetopoint!=None:
 			if type(self._movetopoint)!=list:
@@ -213,16 +221,34 @@ class BaseUnit():
 				self.Hook.call("OnMoveEffectDone", self._currentmoveeff.func_name)
 				self._currentmoveeff=None
 
+	def _updateText(self):
+		self._entity.text.setText(self._text+": HP "+str(self.GetHealth()))
+
 	### Internal Functions
 
 	# Health
 	def _setHealth(self, health):
 		self.Hook.call("OnDamage", health, "DamageType Here!")
 		self._health=health
+		self._updateText()
 		if self._health<1:
 			self._predie()
-			self.Hook.call("OnDeath", "LastDamageType Here!")
-			self._die()
+
+			dieAction = self.Hook.call("OnDeath", "LastDamageType Here!")
+			if not dieAction:
+				self._die()
+			else:
+				print("convertToDecoration")
+				dec = shared.decHandeler.Import(self._entity)
+				dec.sinkSlowly(10)
+
+				temp = self._entity
+				#shared.EntityHandeler.entsWithNoOwner.append(self._entity)
+				#reactor.callLater(5, lambda: shared.EntityHandeler.Destroy(temp))
+				self._entity = None
+				self._die()
+
+
 
 	def _predie(self):
 		#Removing from interaction with game
@@ -247,9 +273,13 @@ class BaseUnit():
 		#Removing all visuals and itself
 		shared.DPrint("BaseUnit", 0, "_rm - Units remove self")
 		self._owner.Units.remove(self)
+		shared.DPrint("BaseUnit", 0, "Removing all hooks")
+		self.Hook.removeAll()
+
 		shared.DPrint("BaseUnit", 0, "Entity delete")
-		self._entity.Delete()
-		print("Dead Referances: "+str(getrefcount(self)))
+		if self._entity!=None:
+			self._entity.Delete()
+			print("Dead Referances: "+str(getrefcount(self)))
 
 	# Movement
 	def _steerToPath(self, path):
@@ -285,12 +315,16 @@ class BaseUnit():
 		self.Hook.call("OnMoveStop", self._movetopoint)
 		self._movetopoint=None
 		if self._vehicle:
+			self._vehicle.Break()
 			self._vehicle.clearPath()
 			self.steer_state = None
 			self.steer_target = None
 
-	def _stoppedmove(self):
+	def _finishedmove(self):
 		self.Hook.call("OnMoveStop", self._movetopoint)
+		self._movetopoint=None
+		self.steer_state = None
+		self.steer_target = None
 
 	def _getMoveEffect(self, mveff):
 		if mveff in dir(moveeff):
@@ -371,7 +405,7 @@ class BaseUnit():
 
 		if "viewrange" in updated:
 			if shared.FowManager!=None and shared.FowManager!=True:
-				shared.FowManager.chViewSize(self._entity.node)
+				shared.FowManager.chViewSize(self._entity.node, self._viewrange)
 
 		if "entityname" in updated:
 			pass #out

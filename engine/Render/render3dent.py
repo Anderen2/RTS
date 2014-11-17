@@ -18,6 +18,9 @@ MASK_OTHER = 1 << 3 #All other entitys
 MASK_GADGET = 1 << 4 #All entity additonal entitys/meshes (ex. the tank turret)
 
 class EntityHandeler():
+	def __init__(self):
+		self.entsWithNoOwner = [] #TEMPOARY ENTITY STORAGE! DO NOT KEEP HERE
+
 	def ReadEntitys(self):
 		self.parser=YModConfig.Parser("Data/Ent/","ent")
 		self.EntDict=self.parser.start()
@@ -35,8 +38,15 @@ class EntityHandeler():
 		ent=Entity(Identifyer, Type, Team, Interactive)
 		return ent
 
-	def Destroy(self, Identifyer):
+	def Destroy(self, entity):
+		if entity in self.entsWithNoOwner:
+			entity.Delete()
+			self.entsWithNoOwner.remove(entity)
+		print("Trying to destroy %s" % str(entity))
+
+	def DieNicely(self, entity):
 		pass
+
 
 class Entity():
  	def __init__(self, Identifyer, Type, Team, Interactive):
@@ -491,11 +501,17 @@ class Entity():
 			if self.curranim!=None and self.animtime!=None:
 				self.curranim.addTime(self.animtime*delta)
 
+		if self.text:
+			self.text.update()
+
 	def getIfAnimIsFinish(self):
 		if self.curranim!=None and self._AreAlive:
 			return self.curranim.hasEnded()
 		else:
 			return True
+
+	def convertToDecoration(self):
+		self.mesh.setQueryFlags(MASK_DECO)
 
 	def __del__(self):
 		if shared!=None:

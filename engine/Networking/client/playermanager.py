@@ -27,7 +27,7 @@ class PlayerManager():
 
 		#Start thinking!
 		self.lastframe=time()
-		self.ThinkPlayers()
+		shared.render.Hook.Add("OnRenderFrame", self.ThinkPlayers)
 
 	def getFromUID(self, uid):
 		if int(uid)==int(shared.SelfPlayer.UID):
@@ -53,10 +53,21 @@ class PlayerManager():
 				self.PDict[x["uid"]]=Player(x["uid"], x["username"], x["team"], x["info"])
 				shared.DPrint("PlayerManager", 1, "Player "+x["username"]+" ("+str(x["uid"])+")"+" joined the game")
 
+	def getPlayersInTeam(self, team):
+		for pid, player in self.PDict.iteritems():
+			if player.team == team:
+				yield player
+
 	def recv_chteam(self, ID, team, Protocol=None):
 		player = self.getFromUID(ID)
+		if player == shared.SelfPlayer:
+			for player in self.getPlayersInTeam(team):
+				#NEED TO GET ALL NODES BELONGING TO PLAYER
+				shared.FowManager.convertNode()
+
 		player.team = team
 		shared.DPrint("PlayerManager", 1, "Player "+player.username+" ("+str(ID)+")"+" changed team to "+str(player.team))
+
 
 	def HI(self, ID, username, team, extras, Protocol=None):
 		self.playerlist.append({"uid":ID, "username":username, "info":extras})
@@ -65,11 +76,7 @@ class PlayerManager():
 
 	#### EVENTS
 
-	def ThinkPlayers(self):
-		reactor.callLater(0, self.ThinkPlayers)
-		deltatime = time()-self.lastframe
-		self.lastframe=time()
-
+	def ThinkPlayers(self, deltatime):
 		shared.SelfPlayer.Think(deltatime)
 		for pid, player in self.PDict.iteritems():
 			player.Think(deltatime)

@@ -9,7 +9,7 @@ from engine.Networking import sh_netObject, sh_netMethod
 class SelfPlayer():
 	def __init__(self):
 		self.username="Anderen2"+str(randrange(0,100,1))
-		self.team=0
+		self.team=randrange(0,4)
 		self.color=(randrange(0,255), randrange(0,255), randrange(0,255))
 		self.Extras={"team":self.team, "land":"Of the dead", "color":self.color}
 		self.UID=None

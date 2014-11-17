@@ -28,7 +28,8 @@ class Unit(BaseUnit):
 		self.Hook.Add("OnThink", self.OnThink)
 		self.Hook.Add("OnMove", self.OnMove)
 		self.Hook.Add("OnMoving", self.OnMoving)
-		self._vehicle.Hook.Add("OnPathEnd", self.OnIdle)
+		self.Hook.Add("OnMoveStop", self.OnIdle)
+		#self._vehicle.Hook.Add("OnPathEnd", self.OnIdle)
 
 	def OnCreation(self, pos):
 		self.GetEntity().actNone()
@@ -42,21 +43,26 @@ class Unit(BaseUnit):
 
 	def OnThink(self, delta):
 		if self.dead:
+			print("I am Dead")
 			if self.GetEntity().getIfAnimIsFinish():
+				#self.dead = None
 				self.Destroy()
 
 	def OnMoving(self):
-		if self.hackOnTheMove:
-			self._entity.node.yaw(Degree(float(270))) #Hackish override as the model is rotated wrong
+		if not self.dead:
+			if self.hackOnTheMove:
+				self._entity.node.yaw(Degree(float(270))) #Hackish override as the model is rotated wrong
 
 	def OnMove(self, pos):
-		self.hackOnTheMove=True
-		self.GetEntity().actMove(True)
+		if not self.dead:
+			self.hackOnTheMove=True
+			self.GetEntity().actMove(True)
 
 	def OnIdle(self, pos):
-		self.hackOnTheMove=False
-		#self._randomCallback(10, 50, self.RandomIdleAnim)
-		self.GetEntity().actNone()
+		if not self.dead:
+			self.hackOnTheMove=False
+			#self._randomCallback(10, 50, self.RandomIdleAnim)
+			self.GetEntity().actNone()
 
 	def RandomIdleAnim(self): #Custom callback defined in OnIdle
 		if not self.hackOnTheMove:

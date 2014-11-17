@@ -98,7 +98,7 @@ class Vehicle():
 	def Break(self):
 		self.Hook.call("OnBreaking", self.velocity)
 		self.velocity = self.velocity * self.breaking_force
-		if self.velocity.length<0.1:
+		if self.velocity.length()<0.1:
 			self.Stop()
 			return True
 

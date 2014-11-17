@@ -23,7 +23,7 @@ from engine.Game import gamemanager
 shared.DPrint("Main",1,"Initializing Networking...")
 shared.client=client.Service()
 shared.reactor=client.reactor
-shared.client.Connect("localhost", 1337)
+shared.client.Connect("192.168.1.111", 1337)
 
 #Render
 shared.DPrint("Main",1,"Initializing Render...")
@@ -66,6 +66,8 @@ shared.DPrint("Main",1,"PWR: Render")
 shared.render.PowerUp()
 shared.DPrint("Main",1,"PWR: MapSetup")
 shared.Map.Setup()
+shared.DPrint("Main",1,"PWR: DecoratorHandeler")
+shared.decHandeler.PowerUp()
 
 #Autoexec
 shared.DPrint("Main",1,"Executing autoexec")

@@ -273,6 +273,27 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 		return enemynodeIndex
 
+	def convertNode(self, node):
+		if node.getName() in self.AllyNodes:
+			Index = self.AllyNodes[node.getName()]
+			#Remove View
+			self.rmView(Index)
+			#Remove vision
+			del Index["vision"]
+			#Remove size
+			del Index["size"]
+			#Create EnemyNode
+			self.addEnemy(Index["node"], Index["unit"])
+			#Remove AllyNode
+			del self.AllyNodes[node.getName()]
+		else:
+			Index = self.EnemyNodes[node.getName()]
+			#Create AllyNode
+			self.addAlly(Index["node"], Index["unit"], Index["unit"]._viewrange)
+			#Remove EnemyNode
+			del self.EnemyNodes[node.getName()]
+
+
 	def rmNode(self, node):
 		if node.getName() in self.AllyNodes:
 			self.rmView(self.AllyNodes[node.getName()])

@@ -178,16 +178,25 @@ class BaseUnit():
 			elif self.steer_state == "seek":
 				self._vehicle.seekPos(self.steer_target)
 
-			newpos = self._vehicle.step(delta)
-			if newpos!=self.__oldsteeringpos:
-				self.__oldsteeringpos = newpos
+			elif self.steer_state == None and self._vehicle.velocity.length()!=0:
+				#print("Should stop here")
+				self._vehicle.Break()
 
-				if not self._constantaltitude:
-					y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2])+1
-				else:
-					y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2]) + self._constantaltitude
+			if self.steer_state == None and self._vehicle.velocity.length()==0:
+				#print("\nStopped entirely!\n")
+				pass
 
-				self._setPosition((newpos[0], y, newpos[2]))
+			else:
+				newpos = self._vehicle.step(delta)
+				if newpos!=self.__oldsteeringpos:
+					self.__oldsteeringpos = newpos
+
+					if not self._constantaltitude:
+						y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2])+1
+					else:
+						y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2]) + self._constantaltitude
+
+					self._setPosition((newpos[0], y, newpos[2]))
 
 		if self._movetopoint!=None:
 			if type(self._movetopoint)!=list:
@@ -292,10 +301,16 @@ class BaseUnit():
 		self.Hook.call("OnMoveStop", self._movetopoint)
 		self._movetopoint=None
 		if self._vehicle:
+			self._vehicle.Break()
 			self._vehicle.clearPath()
 			self.steer_state = None
 			self.steer_target = None
 
+	def _finishedmove(self):
+		self.Hook.call("OnMoveStop", self._movetopoint)
+		self._movetopoint=None
+		self.steer_state = None
+		self.steer_target = None
 
 	# ENTITY
 	def _setPosition(self, pos):

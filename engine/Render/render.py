@@ -22,6 +22,7 @@ class RenderApplication(object):
 		#If BARE==True only initialization will be done, and setup will be handeled elsewhere
 		#Mostly only affects renderGUI and renderScene
 		self.BARE=bare
+		self.PROFILING = True
 
 		self.renderqueue=[]
 
@@ -114,7 +115,9 @@ class RenderApplication(object):
 		self.renderlistener = RenderListener()
 		#self.pframeListener.showDebugOverlay(True)
 
-		self.renderqueue.append(self.renderlistener)
+		#self.renderqueue.append(self.renderlistener)
+		reactor.callLater(1, self.renderlistener.frameRenderingQueued)
+
 		self.renderqueue.append(shared.DirectorManager)
 
 	def renderHook(self):
@@ -125,9 +128,31 @@ class RenderApplication(object):
 		#Old updatemethod (Still used by some low-level engine modules)
 		try:
 			for x in self.renderqueue:
-				if not x.frameRenderingQueued(self.deltatime):
-					reactor.stop()
-					print_exc()
+				if self.PROFILING:
+					starttime = time()
+
+					if not x.frameRenderingQueued(self.deltatime):
+						reactor.stop()
+						print_exc()
+
+					endtime = time()
+					timeused = endtime - starttime
+
+					valueExists = False
+					for pro_value in shared.Profile:
+						if pro_value[0] == str(x):
+							valueExists = (pro_value, (str(x), timeused))
+
+					if valueExists:
+						indx = shared.Profile.index(valueExists[0])
+						shared.Profile[indx] = valueExists[1]
+					else:
+						shared.Profile.append((str(x), timeused))
+
+				else:
+					if not x.frameRenderingQueued(self.deltatime):
+						reactor.stop()
+						print_exc()
 		except:
 			reactor.stop()
 			print_exc()
@@ -191,7 +216,8 @@ class RenderListener(ogre.FrameListener):
 		# self.FPSs=0
 		# self.FPSsample=2
 		# self.FPStable=range(0,self.FPSsample)
-	def frameRenderingQueued(self, evt):
+	def frameRenderingQueued(self):
+		reactor.callLater(2, self.frameRenderingQueued)
 		# if self.FPSt!=gmtime()[5]:
 		# 	if self.FPSs==self.FPSsample:
 		# 		self.FPSs=0
@@ -204,8 +230,9 @@ class RenderListener(ogre.FrameListener):
 		# self.FPS=sum(self.FPStable)/self.FPSsample
 		# #print(self.FPStable)
 		if debug.GUISTATS:
-			shared.gui['debug'].FPScounter.setText(str(int(self.RT.getLastFPS()))+"|"+str(int(self.RT.getWorstFPS())))
-			shared.gui['debug'].DIVcounter.setText(str(int(self.RT.getTriangleCount()))+"|"+str(int(self.RT.getBatchCount())))
+			RT = shared.renderRoot.getAutoCreatedWindow()
+			shared.gui['debug'].FPScounter.setText(str(int(RT.getLastFPS()))+"|"+str(int(RT.getWorstFPS())))
+			shared.gui['debug'].DIVcounter.setText(str(int(RT.getTriangleCount()))+"|"+str(int(RT.getBatchCount())))
 		# self.FPS=self.FPS+1
 		# if self.FPS>60:
 		# 	tt=gmtime()[5]+1

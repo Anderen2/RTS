@@ -32,7 +32,7 @@ class Unit(BaseUnit):
 		self.SetVehicleArriveBreakingRadius(30)
 		self.SetVehicleMaxVelocity(1)
 		self.SetVehicleMaxSpeed(1)
-		self.SetVehicleBreakingForce(0.1)
+		self.SetVehicleBreakingForce(0.01)
 		self.SetVehicleSize(2)
 		self.SetVehicleMaxSeeAhead(50)
 		self.SetVehicleMaxAvoidForce(10)

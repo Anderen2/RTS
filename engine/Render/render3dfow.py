@@ -226,7 +226,9 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 			#Update the fowplane with the new viewplacements
 			self.update()
 
-			#Set everything that was previously in view, to be invision if they are not in viewrange anymore
+			setToInvisibleList = []
+
+			#Set everything that was previously in view, to be invisible if they are not in viewrange anymore
 			for EnodeIndex in AnodeIndex["vision"]:
 				if AnodeIndex in EnodeIndex["viewedby"]:
 					#print("ANODE: Removing myself from Enode")
@@ -235,7 +237,8 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 					if len(EnodeIndex["viewedby"])==0:
 						#print("ANODE: Enode is empty, hiding")
 						#EnodeIndex["node"].setVisible(False)
-						EnodeIndex["unit"]._setVisible(False)
+						#EnodeIndex["unit"]._setVisible(False)
+						setToInvisibleList.append(EnodeIndex["unit"])
 				#print(EnodeIndex)
 
 			AnodeIndex["vision"] = []
@@ -249,8 +252,16 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 				if posalgo.in_circle(AnodePos[0], AnodePos[2], AnodeIndex["size"]-5, EnodePos[0], EnodePos[2]):
 					#print("ANODE: Unit is in circle! VISIBLE")
 					AnodeIndex["vision"].append(EnodeIndex)
+					if EnodeIndex["unit"] in setToInvisibleList:
+						setToInvisibleList.remove(EnodeIndex["unit"])
+					else:
+						EnodeUnit._setVisible(True)
+
 					EnodeIndex["viewedby"].append(AnodeIndex)
-					EnodeUnit._setVisible(True)
+					
+
+			for EnodeUnit in setToInvisibleList:
+				EnodeUnit._setVisible(False)
 
 		else:
 			print("Node not found!")
@@ -258,7 +269,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 
 	def addAlly(self, node, unit, viewsize):
 		tupview = self.addView(viewsize)
-		allynodeIndex = {"ent":tupview[0], "node":tupview[1], "size":viewsize, "vision":[], "unit":unit}
+		allynodeIndex = {"ent":tupview[0], "node":tupview[1], "size":viewsize, "vision":[], "unit":unit, "parentnode": node}
 
 		self.AllyNodes[node.getName()]=allynodeIndex
 		self.nodeUpdate(node)
@@ -266,7 +277,7 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 		return allynodeIndex
 
 	def addEnemy(self, node, unit):
-		enemynodeIndex = {"node":node, "viewedby":[], "unit":unit}
+		enemynodeIndex = {"node":node, "viewedby":[], "unit":unit, "parentnode": node}
 
 		self.EnemyNodes[node.getName()]=enemynodeIndex
 		self.nodeUpdate(node)
@@ -279,19 +290,22 @@ class FogOfWarListener(ogre.RenderTargetListener,ogre.Node.Listener):
 			#Remove View
 			self.rmView(Index)
 			#Remove vision
-			del Index["vision"]
+			#del Index["vision"]
 			#Remove size
-			del Index["size"]
+			#del Index["size"]
 			#Create EnemyNode
-			self.addEnemy(Index["node"], Index["unit"])
+			self.addEnemy(Index["parentnode"], Index["unit"])
 			#Remove AllyNode
 			del self.AllyNodes[node.getName()]
 		else:
 			Index = self.EnemyNodes[node.getName()]
 			#Create AllyNode
-			self.addAlly(Index["node"], Index["unit"], Index["unit"]._viewrange)
+			Index["unit"]._setVisible(True)
+			self.addAlly(Index["parentnode"], Index["unit"], Index["unit"]._viewrange)
 			#Remove EnemyNode
 			del self.EnemyNodes[node.getName()]
+
+		self.nodeUpdate(node)
 
 
 	def rmNode(self, node):

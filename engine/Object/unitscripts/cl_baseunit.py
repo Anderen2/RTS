@@ -143,6 +143,9 @@ class BaseUnit():
 	def _setVisible(self, visible):
 		self._visible = visible
 		self._entity.node.setVisible(visible)
+		if self._unitIndicator:
+			self._unitIndicator.update()
+		#print("I now have Visibility set to %s!" % str(visible))
 
 	def _selected(self):
 		self.Hook.call("OnSelected")

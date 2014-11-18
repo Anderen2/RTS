@@ -39,7 +39,7 @@ class PlayerManager():
 	def LP(self, Protocol=None):
 		foolist=[]
 		for x in self.PDict:
-			foolist.append({"uid":self.PDict[x].UID, "username":self.PDict[x].username, "team":self.PDict[x].team, "info":self.PDict[x].PlayerInfo})
+			foolist.append({"uid":self.PDict[x].UID, "username":self.PDict[x].username, "team":self.PDict[x].team, "info":self.PDict[x].Extras})
 
 		return [foolist]
 

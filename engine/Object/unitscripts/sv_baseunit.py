@@ -43,6 +43,7 @@ class BaseUnit():
 		self.Hook.call("OnCreation", self._pos)
 
 	def _inithooks(self):
+		#Add OnBuild hook
 		self.Hook = Hook(self)
 		self.Hook.new("Initialize", 1)
 		self.Hook.new("OnCreation", 1)

@@ -215,11 +215,13 @@ class UnitLauncher():
 		if self.dmgradius!=None and self.dmgradius!=0:
 			dmgsquare = self.generateDamageSquare(projectile.pos)
 			for unit in shared.UnitManager.generateUnitsWithin(dmgsquare):
-				print "\n\n\n\n"
+				#print "\n\n\n\n"
+				print "---- Unit damage trace ---"
 				print "Unit is within DMGSQARE"
 				print unit.ID
 				print unit._pos
 				print dmgsquare
+				print "---- Unit damage trace ---"
 				if not self.dmgrelative:
 					unit.TakeDamage(self.dmgdrain)
 				else:

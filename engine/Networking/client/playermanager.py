@@ -28,6 +28,7 @@ class PlayerManager():
 		#Start thinking!
 		self.lastframe=time()
 		shared.render.Hook.Add("OnRenderFrame", self.ThinkPlayers)
+		debug.ACC("ply_info", self.getPlayerInfo, info="Get player info\nUsage: ply_info playerid", args=1)
 
 	def getFromUID(self, uid):
 		if int(uid)==int(shared.SelfPlayer.UID):
@@ -56,14 +57,34 @@ class PlayerManager():
 	def getPlayersInTeam(self, team):
 		for pid, player in self.PDict.iteritems():
 			if player.team == team:
+				print("Player: %s - %d=%d" % (player.username, player.team, team))
 				yield player
 
 	def recv_chteam(self, ID, team, Protocol=None):
 		player = self.getFromUID(ID)
+		previousTeam = player.team
+
 		if player == shared.SelfPlayer:
-			for player in self.getPlayersInTeam(team):
-				#NEED TO GET ALL NODES BELONGING TO PLAYER
-				shared.FowManager.convertNode()
+			for ply in self.getPlayersInTeam(team):
+				for unit in ply.Units:
+					shared.FowManager.convertNode(unit._fowview["node"])
+					unit._unitIndicator.update()
+					print("Converted unit from new team: %s" % str(unit))
+
+			for ply in self.getPlayersInTeam(previousTeam):
+				if ply != shared.SelfPlayer:
+					for unit in ply.Units:
+						shared.FowManager.convertNode(unit._fowview["node"])
+						unit._unitIndicator.update()
+						print("Converted unit from previous team: %s" % str(unit))
+
+		else:
+			for unit in player.Units:
+				if previousTeam != team:
+					if previousTeam == shared.SelfPlayer.team or team == shared.SelfPlayer.team:
+						shared.FowManager.convertNode(unit._fowview["node"])
+						unit._unitIndicator.update()
+						print("Converted unit: %s" % str(unit))
 
 		player.team = team
 		shared.DPrint("PlayerManager", 1, "Player "+player.username+" ("+str(ID)+")"+" changed team to "+str(player.team))
@@ -80,3 +101,8 @@ class PlayerManager():
 		shared.SelfPlayer.Think(deltatime)
 		for pid, player in self.PDict.iteritems():
 			player.Think(deltatime)
+
+	#### CLI
+	def getPlayerInfo(self, ID):
+		player = self.getFromUID(int(ID))
+		return (player.username, player.team, player.color, player.Extras)

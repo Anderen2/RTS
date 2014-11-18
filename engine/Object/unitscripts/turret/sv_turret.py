@@ -24,8 +24,8 @@ class Unit(BaseUnit):
 
 		self.SetMoveType(-1) #MOVETYPE_GROUND
 		self.SetMoveSpeed(0)
-		self.SetHealth(1000)
-		self.SetViewRange(1000)
+		self.SetHealth(800)
+		self.SetViewRange(800)
 
 		#Overwrite GlobalActions [This should be changed for an less hackishlike solution]
 		self._globalactions = [sv_fau.Action, sv_fau.Action, sv_const.Action]

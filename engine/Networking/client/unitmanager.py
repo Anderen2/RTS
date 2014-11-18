@@ -74,6 +74,7 @@ class UnitManager():
 			shared.FowManager.nodeUpdate(newunit._entity.node)
 
 			#Updating the minimap
+			print("Updating MinimapManager")
 			UI = shared.MinimapManager.newUnitIndicator()
 			UI.setUnit(newunit)
 

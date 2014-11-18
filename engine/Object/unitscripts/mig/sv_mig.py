@@ -25,7 +25,7 @@ class Unit(BaseUnit):
 		self.SetConstantAltitude(200)
 		self.SetMoveSpeed(100)
 		self.SetMaxHealth(100)
-		self.SetViewRange(450)
+		self.SetViewRange(500)
 
 		self.SetVehicleMaxForce(2)
 		self.SetVehicleMass(200)

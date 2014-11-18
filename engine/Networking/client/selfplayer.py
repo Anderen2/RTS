@@ -11,7 +11,7 @@ class SelfPlayer():
 		self.username="Anderen2"+str(randrange(0,100,1))
 		self.team=randrange(0,4)
 		self.color=(randrange(0,255), randrange(0,255), randrange(0,255))
-		self.Extras={"team":self.team, "land":"Of the dead", "color":self.color}
+		self.Extras={"land":"Of the dead", "color":self.color}
 		self.UID=None
 		self.yourself = True
 
@@ -24,7 +24,7 @@ class SelfPlayer():
 		shared.client.RetMeBack(self.recv_HI, "HI")
 
 		#Console Commands
-		debug.ACC("self_chteam", self.requestChangeTeam, info="Request to change team", args=1)
+		debug.ACC("self_chteam", self.requestChangeTeam, info="Request to change team\nUsage: self_chteam teamid", args=1)
 
 	def Think(self, delta):
 		for unit in self.Units:

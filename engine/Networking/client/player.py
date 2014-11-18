@@ -3,7 +3,7 @@ from engine import shared, debug
 
 class Player():
 	def __init__(self, UID, Username, Team, Extras):
-		self.PlayerInfo=Extras
+		self.Extras=Extras
 		self.team=Team
 		self.UID=UID
 		self.username=Username

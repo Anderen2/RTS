@@ -4,7 +4,7 @@ from engine import debug, shared
 
 class Player():
 	def __init__(self, UID, Username, Team, Extras, Protocol):
-		self.PlayerInfo=Extras
+		self.Extras=Extras
 		self.UID=UID
 		self.username=Username
 		self.team = Team
@@ -24,6 +24,7 @@ class Player():
 	def changeTeam(self, team):
 		self.team = team
 		shared.PlayerManager.Broadcast(2, "recv_chteam", [self.UID, self.team])
+		shared.ChatManager.systemSay("Player '%s' changed team to %d" % (self.username, self.team))
 
 	def Think(self, delta):
 		for unit in self.Units:

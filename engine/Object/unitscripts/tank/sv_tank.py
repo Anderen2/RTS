@@ -22,8 +22,8 @@ class Unit(BaseUnit):
 
 		self.SetMoveType(1) #MOVETYPE_GROUND
 		self.SetMoveSpeed(50)
-		self.SetHealth(50)
-		self.SetViewRange(200)
+		self.SetHealth(350)
+		self.SetViewRange(350)
 
 		self.SetVehicleMaxForce(1)
 		self.SetVehicleMass(10)
@@ -49,7 +49,7 @@ class Unit(BaseUnit):
 		self.Launcher1.SetMagasineCapasity(1)
 		self.Launcher1.CanReloadLive(True)
 		self.Launcher1.SetDamageRadius(200)
-		self.Launcher1.SetDamageHealth(25)
+		self.Launcher1.SetDamageHealth(50)
 		self.Launcher1.SetRelativeDamage(False)
 		self.Launcher1.SetAutomaticMoveRotate(True)
 

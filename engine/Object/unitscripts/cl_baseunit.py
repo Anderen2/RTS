@@ -162,6 +162,9 @@ class BaseUnit():
 		if debug.AABB:
 			self._entity.node.showBoundingBox(False)
 
+	def _hover(self):
+		self.Hook.call("OnMouseHover")
+
 	def _think(self, delta):
 		self.Hook.call("OnThink", delta) #Additional THINK Calls [??]
 		self._entity.Think(delta) #Additional THINK Calls [??]

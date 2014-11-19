@@ -211,6 +211,36 @@ class UnitGroup():
 		### Tempoary, does not yet get center position
 		return self.members[0].GetPosition()
 
+	def getAllCommonActions(self):
+		allUniqueActions=[]
+		aUAWithUnit={}
+		allCommonActions={}
+		ucount = 0
+		for unit in self.members:
+			allUnitActions = unit._getAllActions()
+			allUnitActionsDict = {}
+			for action in allUnitActions:
+				allUnitActionsDict[action.actionid] = action
+				if action.actionid not in allUniqueActions:
+					allUniqueActions.append(action.actionid)
+					aUAWithUnit[action.actionid]=(action, unit)
+				if ucount==0:
+					allCommonActions[action.actionid]=action
+
+			nonCommonActions = []
+			for actionName in allCommonActions:
+				if actionName not in allUnitActionsDict:
+					nonCommonActions.append(actionName)
+
+			for nonCommonAction in nonCommonActions:
+				del allCommonActions[nonCommonAction]
+
+			ucount+=1
+
+		self.allUniqueActions=allUniqueActions
+		self.allCommonActions=allCommonActions
+		self.allAvailibleActions=aUAWithUnit
+
 	def addUnit(self, unit):
 		self.members.append(unit)
 		unit._changegroup(self)
@@ -242,8 +272,13 @@ class UnitGroup():
 
 	def getActionByID(self, actionid):
 		## Algorithm to get all common actions here!
-		print(self.members)
-		return self.members[0]._getActionByID(actionid)
+		self.getAllCommonActions()
+		# print(self.members)
+		# return self.members[0]._getActionByID(actionid)
+		if actionid in self.allCommonActions:
+			return self.allCommonActions[actionid]
+		else:
+			return None
 
 	def actionIterator(self, action):
 		for action in self.actionQueue:

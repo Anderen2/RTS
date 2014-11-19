@@ -224,26 +224,35 @@ class UnitGroup():
 	## Group Functions
 
 	def getActionByID(self, actionid):
-		if actionid in self.allAvailibleActions:
-			return self.allAvailibleActions[actionid][0]
+		if actionid in self.allCommonActions:
+			return self.allCommonActions[actionid]
 		else:
 			return None
 
 	def getAllCommonActions(self):
 		allUniqueActions=[]
 		aUAWithUnit={}
-		allCommonActions=[]
+		allCommonActions={}
 		ucount = 0
 		for unit in self.members:
-			for action in unit._getAllActions():
+			allUnitActions = unit._getAllActions()
+			allUnitActionsDict = {}
+			for action in allUnitActions:
+				allUnitActionsDict[action.actionid] = action
 				if action.actionid not in allUniqueActions:
 					allUniqueActions.append(action.actionid)
 					aUAWithUnit[action.actionid]=(action, unit)
 				if ucount==0:
-					allCommonActions.append(action.actionid)
-				else:
-					if action.actionid not in allCommonActions:
-						allCommonActions.remove(action.actionid)
+					allCommonActions[action.actionid]=action
+
+			nonCommonActions = []
+			for actionName in allCommonActions:
+				if actionName not in allUnitActionsDict:
+					nonCommonActions.append(actionName)
+
+			for nonCommonAction in nonCommonActions:
+				del allCommonActions[nonCommonAction]
+
 			ucount+=1
 
 		self.allUniqueActions=allUniqueActions
@@ -323,8 +332,7 @@ class UnitGroup():
 	def updateSelectedVisuals(self):
 		if self.currentlyselected:
 			buttonlist = []
-			for actionid in self.allCommonActions:
-				action = self.getActionByID(actionid)
+			for actionid, action in self.allCommonActions.iteritems():
 				buttonlist.append((action.name, action.description, action.actguiPlacement, actionid))
 
 			shared.gui['unitopt'].updateActions(self, buttonlist)

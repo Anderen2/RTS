@@ -12,16 +12,16 @@ class Rectangle():
 
 	def __init__(self, a, b, c=None, d=None):
 		if c!=None and d!=None:
-			self.x = a
-			self.y = b
-			self.width = c
-			self.height = d
+			self.x = float(a)
+			self.y = float(b)
+			self.width = float(c)
+			self.height = float(d)
 
 		else:
-			self.width = a
-			self.height = b
-			self.x = 0
-			self.y = 0
+			self.width = float(a)
+			self.height = float(b)
+			self.x = float(0)
+			self.y = float(0)
 
 	def __getitem__(self,i):
 		return self.sides[i]
@@ -50,18 +50,18 @@ class Rectangle():
 		return False
 	
 	def __str__(self):
-		return "Rectangle: x:%d, y:%d (h:%d x w:%d)" % (self.x, self.y, self.height, self.width)
+		return "Rectangle: x:%f, y:%f (h:%f x w:%f)" % (self.x, self.y, self.height, self.width)
 
 	def getWidth(self):
 		#return (self.sides[3] - self.sides[1])
-		return self.width
+		return float(self.width)
 
 	def getHeight(self):
 		#return (self.sides[2] - self.sides[0])
-		return self.height
+		return float(self.height)
 
 	def getX(self):
-		return self.x
+		return float(self.x)
 
 	def getY(self):
-		return self.y
+		return float(self.y)

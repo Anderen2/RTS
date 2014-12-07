@@ -4,9 +4,9 @@
 from posalgo import Rectangle
 
 class QuadTree():
-	def __init__(self, plevel, rectangle):
-		self.max_objects = 10
-		self.max_levels = 5
+	def __init__(self, plevel, rectangle, max_objects=10, max_levels=5):
+		self.max_objects = max_objects
+		self.max_levels = max_levels
 
 		self.level = plevel
 		self.bounds = rectangle
@@ -41,6 +41,13 @@ class QuadTree():
 		self.nodes[1] = QuadTree(self.level+1, Rectangle(x + subWidth, y, subWidth, subHeight))
 		self.nodes[2] = QuadTree(self.level+1, Rectangle(x, y + subHeight, subWidth, subHeight))
 		self.nodes[3] = QuadTree(self.level+1, Rectangle(x + subWidth, y + subHeight, subWidth, subHeight))
+
+	def autoProvisionObjects(self):
+		for obj in self.objects:
+			for index in self.getIndexesByRectangle(obj._qt_rectangleSize):
+				self.nodes[index].insertObject(obj, obj._qt_rectangleSize)
+
+		self.objects=[]
 
 	#Get single Index
 
@@ -132,3 +139,36 @@ class QuadTree():
 
 
 		return index
+
+	def insertObject(self, obj, rectangleSize):
+		# print("Hello, I'm inserting at level: %d" % self.level)
+		obj._qt_rectangleSize = rectangleSize
+		
+		if not hasattr(obj, "_qt_memberof"):
+			obj._qt_memberof=[]
+
+		if self.nodes[0]==None:
+			#If this node is at the bottom of the tree, just insert the object. No need for unnessesary extra checks
+			self.objects.append(obj)
+			obj._qt_memberof.append(self)
+			# print("I am at the bottom, inserting at %s" % str(self.bounds))
+
+			if self.max_objects!=-1 and len(self.objects) > self.max_objects:
+				if self.level < self.max_levels or self.max_levels==-1:
+					self.split()
+					self.autoProvisionObjects()
+
+		else:
+			#If this node has subnodes, then search further down the tree.
+			for qt in self.getIndexesByRectangle(rectangleSize):
+				# print("Searching subnodes: %d" % qt)
+				self.nodes[qt].insertObject(obj, rectangleSize)
+
+	def getAllObjectsInSameArea(self, obj, objecttype=None):
+		for qt in obj._qt_memberof:
+			for otherobj in qt.objects:
+				if not objecttype:
+					yield otherobj
+				else:
+					if isinstance(otherobj, objecttype):
+						yield otherobj

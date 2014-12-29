@@ -26,11 +26,15 @@ class Unit(BaseUnit):
 		self.SetMoveSpeed(0)
 		self.SetHealth(800)
 		self.SetViewRange(800)
+		self.SetUnitAutoEngage(True)
 
 		#Overwrite GlobalActions [This should be changed for an less hackishlike solution]
 		self._globalactions = [sv_fau.Action, sv_fau.Action, sv_const.Action]
 
 		self.Hook.Add("OnCreation", self.OnCreation)
+		self.Hook.Add("OnThink", self.AutoFire)
+
+		# shared.VisionManager.addUnit(self, self._viewrange, self._viewrange)
 
 	def SetupProjectileLaunchers(self):
 		self.Launcher1 = self.CreateProjectileLauncher(shared.LauncherManager.UNITLAUNCHER)
@@ -97,3 +101,11 @@ class Unit(BaseUnit):
 		self.Launcher1.FireAtUnit(unit)
 		self.Launcher2.FireAtUnit(unit)
 		self.Launcher3.FireAtUnit(unit)
+
+	def AutoFire(self, delta):
+		pass
+		# self._aimnode.setPosition((self.GetPosition()[0], self.GetPosition()[2]))
+		# self._unitnode.setPosition((self.GetPosition()[0], self.GetPosition()[2]))
+		# #print("-"*10+"_qt_memberof"+"-*10")
+		# #print self._aimnode._qt_memberof
+		# 

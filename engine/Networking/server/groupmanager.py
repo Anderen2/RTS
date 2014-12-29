@@ -312,6 +312,14 @@ class UnitGroup():
 			print("I AM THE LAST ACTION!")
 			self.beginNextAction(doNotPop=True)
 
+	#instantAction makes the unit do the action instantly, but only if it has no other current actions in its queue
+	def instantAction(self, action, data):
+		if len(self.actionQueue)==0:
+			self.actionQueue.append((action, data))
+			self.beginNextAction(doNotPop=True)
+		else:
+			return False
+
 	def rmAction(self, queuedactionid):
 		if queuedactionid==0:
 			if self.actionQueue[0][0].abortable:

@@ -2,6 +2,7 @@
 #Module containing a quadtree manager
 
 from posalgo import Rectangle
+from traceback import print_exc
 
 class QuadTree():
 	def __init__(self, plevel, rectangle, max_objects=10, max_levels=5):
@@ -164,11 +165,21 @@ class QuadTree():
 				# print("Searching subnodes: %d" % qt)
 				self.nodes[qt].insertObject(obj, rectangleSize)
 
+	def removeObject(self, obj):
+		for qt in obj._qt_memberof:
+			try:
+				qt.objects.remove(obj)
+			except ValueError:
+				print_exc()
+		obj._qt_memberof = []
+
 	def getAllObjectsInSameArea(self, obj, objecttype=None):
 		for qt in obj._qt_memberof:
 			for otherobj in qt.objects:
 				if not objecttype:
 					yield otherobj
 				else:
+					# print("QuadTree: Found object, checking instance")
 					if isinstance(otherobj, objecttype):
+						# print("QuadTree: Correct instance")
 						yield otherobj

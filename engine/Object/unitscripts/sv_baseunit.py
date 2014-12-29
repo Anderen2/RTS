@@ -34,12 +34,18 @@ class BaseUnit():
 		self._constantaltitude = False
 		self._health = 100
 		self.steer_state = False
+		self._autoengage = False
+
 		self.pendingattrib={} #All attributes waiting to be sent
 		self.currentattrib={} #All current attributes (Used for gamestate syncing)
 
 		self.Initialize(self.ID)
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
 		self._setPosition(pos)
+
+		#QuadTree
+		shared.VisionManager.addUnit(self, self._viewrange)
+
 		self.Hook.call("OnCreation", self._pos)
 
 	def _inithooks(self):
@@ -151,6 +157,15 @@ class BaseUnit():
 		self._vehicle.max_avoid_force = maf
 		self._updateAttrib("vehicle.max_avoid_force", maf)
 
+	def SetUnitAutoEngage(self, autoengage):
+		self._autoengage = autoengage
+		self._updateAttrib("autoengage", autoengage)
+		#QuadTree
+		if autoengage:
+			shared.VisionManager.addAimNode(self, self._viewrange)
+		else:
+			shared.VisionManager.removeAimNode(self)
+
 	def CreateProjectileLauncher(self, type):
 		launcher = shared.LauncherManager.create(type, self)
 		return launcher
@@ -215,6 +230,9 @@ class BaseUnit():
 					if len(self._movetopoint) == 0:
 						self._movetopoint = None
 
+		#Quadtree
+		shared.VisionManager.unitUpdate(self)
+
 	def _actionfinish(self):
 		if self._group!=None:
 			self._group.unitActionDone(self)
@@ -249,6 +267,8 @@ class BaseUnit():
 
 	def _die(self):
 		self.Hook.call("OnDeath", "LastDamageType Here!")
+		shared.DPrint(0, "BaseUnit", "Unit %s:%s died" % (self._owner.username, self.UnitID))
+		shared.VisionManager.rmUnit(self)
 		if self._group!=None:
 			self._group.unitDown(self)
 		self._owner.Units.remove(self)

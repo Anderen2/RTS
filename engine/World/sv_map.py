@@ -4,6 +4,7 @@
 import pickle
 from time import sleep
 from engine import shared, debug
+from engine.Networking.server import vision
 from PIL import Image
 from string import split
 
@@ -80,6 +81,10 @@ class Map():
 				shared.DPrint("Map", 0, "Astar Grid Nodes could not be loaded from .nav file: "+str(NavFile))
 				shared.DPrint("Map", 0, "Generating new aStar Grid.. Please Wait..")
 				##GENERATE NEW GRID AND SAVE IT HERE!
+
+		#Setup QuadTree overlay
+		vision.VisionManager()
+		shared.VisionManager.mapInitialize(self.config["Terrain"]["Heightmap"]["Size"])
 
 		shared.PlayerManager.SetupMapUnits(self.config["Units"])
 

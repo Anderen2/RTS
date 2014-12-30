@@ -35,6 +35,7 @@ class Unit(BaseUnit):
 		self.SetVehicleSize(10)
 		self.SetVehicleMaxSeeAhead(50)
 		self.SetVehicleMaxAvoidForce(10)
+		self.SetUnitAutoEngage(True)
 
 		self.Hook.Add("OnCreation", self.OnCreation)
 
@@ -43,7 +44,7 @@ class Unit(BaseUnit):
 		self.Launcher1.SetPosition(10, 10, 0)
 		self.Launcher1.SetRotation(0, 0, 0)
 		self.Launcher1.SetProjectile("shell")
-		self.Launcher1.SetFireRange(500)
+		self.Launcher1.SetFireRange(100)
 		self.Launcher1.SetFiringSpeed(2)
 		self.Launcher1.SetReloadingSpeed(5)
 		self.Launcher1.SetMagasineCapasity(1)

@@ -19,7 +19,7 @@ class VisionManager():
 	def addUnit(self, unit, viewrange):
 		if not unit in self.Units:
 			self.Units[unit]={}
-		#self.Units[unit]["view"] = FOVNode(viewrange, unit)
+		self.Units[unit]["view"] = FOVNode(viewrange, unit)
 		self.Units[unit]["unit"] = UnitNode(unit)
 	
 	def addAimNode(self, unit, aimrange):
@@ -38,7 +38,7 @@ class VisionManager():
 
 	def unitUpdate(self, unit):
 		pos = unit.GetPosition()
-		# unit._fovnode.setPosition(pos)
+		unit._fovnode.setPosition((pos[0], pos[2]))
 		unit._unitnode.setPosition((pos[0], pos[2]))
 		if unit._autoengage:
 			unit._aimnode.setPosition((pos[0], pos[2]))
@@ -46,7 +46,7 @@ class VisionManager():
 			for oth in unit._aimnode.getAllInView():
 				if oth._owner.team != unit._owner.team:
 					if unit._group:
-						print("Attacking!")
+						print("AutoEngaging!")
 						unit._group.instantAction(unit._globalactions[1], {"unitid":oth.ID})
 			
 	def getVisibleByPlayer(self, ply):
@@ -57,7 +57,9 @@ class FOVNode():
 	def __init__(self, size, unit):
 		self.size = size
 		self.rectangle = posalgo.Rectangle(0, 0, size*2, size*2)
-		shared.VisionManager.qtroot.insertObject(self, rectangle)
+		shared.VisionManager.qtroot.insertObject(self, self.rectangle)
+		# print self._qt_memberof
+		# print len(self._qt_memberof)
 		self.unit = unit
 		self.unit._fovnode=self
 		
@@ -66,15 +68,20 @@ class FOVNode():
 		center_pos = [self.rectangle.x + (self.rectangle.width / 2), self.rectangle.y + (self.rectangle.height / 2)]
 
 		for obj in shared.VisionManager.qtroot.getAllObjectsInSameArea(self, objecttype=UnitNode):
-			pos = obj.getPosition()
-			if posalgo.in_circle(center_pos[0], center_pos[1], size, pos[0], pos[1]):
-				inview.append(obj)
+			# print("AimRangeNode: Found object in QT-sector")
+			pos = obj.unit.GetPosition()
+			if posalgo.in_circle(center_pos[0], center_pos[1], self.size, pos[0], pos[2]):
+				# print("AimRangeNode: Found object in circle")
+				inview.append(obj.unit)
 
 		return inview
 
 	def setPosition(self, newpos):
 		self.rectangle.x = newpos[0] - (self.rectangle.width / 2)
 		self.rectangle.y = newpos[1] - (self.rectangle.height / 2)
+		## HACKISH/SLOW: Reinsert object
+		shared.VisionManager.qtroot.removeObject(self)
+		shared.VisionManager.qtroot.insertObject(self, self.rectangle)
 
 	def remove(self):
 		self.unit._fovnode = None
@@ -132,3 +139,4 @@ class UnitNode():
 	def remove(self):
 		self.unit._unitnode=None
 		shared.VisionManager.qtroot.removeObject(self)
+

@@ -25,6 +25,7 @@ unitHandeler=unitManager #Dirty Lazy Temporary Shitty Bad Workaround (Switched n
 propManager=None
 zoneManager=None
 DirectorManager=None
+MinimapManager=None
 
 decHandeler=None
 

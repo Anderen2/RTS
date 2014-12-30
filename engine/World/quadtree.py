@@ -45,6 +45,7 @@ class QuadTree():
 
 	def autoProvisionObjects(self):
 		for obj in self.objects:
+			obj._qt_memberof.remove(self)
 			for index in self.getIndexesByRectangle(obj._qt_rectangleSize):
 				self.nodes[index].insertObject(obj, obj._qt_rectangleSize)
 
@@ -167,10 +168,10 @@ class QuadTree():
 
 	def removeObject(self, obj):
 		for qt in obj._qt_memberof:
-			try:
-				qt.objects.remove(obj)
-			except ValueError:
-				print_exc()
+			# try:
+			qt.objects.remove(obj)
+			# except ValueError:
+				# print_exc()
 		obj._qt_memberof = []
 
 	def getAllObjectsInSameArea(self, obj, objecttype=None):

@@ -15,27 +15,25 @@ class Unit(BaseUnit):
 	Cost = 500
 
 	def Initialize(self, ID):
-		self.SetEntity("tank")
-		self.SetSolid(True)
-
 		self.Actions=[]
 
-		self.SetMoveType(1) #MOVETYPE_GROUND
-		self.SetMoveSpeed(50)
-		self.SetHealth(350)
-		self.SetViewRange(350)
-
-		self.SetVehicleMaxForce(1)
-		self.SetVehicleMass(10)
-		self.SetVehiclePathNodeRadius(50)
-		self.SetVehicleArriveBreakingRadius(50)
-		self.SetVehicleMaxVelocity(2.5)
-		self.SetVehicleMaxSpeed(1.5)
-		self.SetVehicleBreakingForce(0.8)
-		self.SetVehicleSize(10)
-		self.SetVehicleMaxSeeAhead(50)
-		self.SetVehicleMaxAvoidForce(10)
-		self.SetUnitAutoEngage(True)
+		self.setAttributeInitial("entity.name", "tank")
+		self.setAttributeInitial("entity.solid", True)
+		self.setAttributeInitial("movement.movetype", 1)
+		self.setAttributeInitial("movement.movespeed", 50)
+		self.setAttributeInitial("unit.health", 350)
+		self.setAttributeInitial("unit.viewrange", 350)
+		self.setAttributeInitial("unit.autoengage", False)
+		self.setAttributeInitial("vehicle.size", 10)
+		self.setAttributeInitial("vehicle.max_force", 1)
+		self.setAttributeInitial("vehicle.mass", 10)
+		self.setAttributeInitial("vehicle.path_node_radius", 50)
+		self.setAttributeInitial("vehicle.arrive_breaking_radius", 50)
+		self.setAttributeInitial("vehicle.max_velocity", 2.5)
+		self.setAttributeInitial("vehicle.max_speed", 1.5)
+		self.setAttributeInitial("vehicle.breaking_force", 0.8)
+		self.setAttributeInitial("vehicle.max_see_ahead", 50)
+		self.setAttributeInitial("vehicle.max_avoid_force", 10)
 
 		self.Hook.Add("OnCreation", self.OnCreation)
 

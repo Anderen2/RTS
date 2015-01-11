@@ -52,6 +52,13 @@ class Rectangle():
 	def __str__(self):
 		return "Rectangle: x:%f, y:%f (h:%f x w:%f)" % (self.x, self.y, self.height, self.width)
 
+	def pointWithin(self, x, y):
+		if x >= self.x and x <= (self.x+self.width):
+			if y >= self.y and y <= (self.y + self.height):
+				return True
+
+		return False
+
 	def getWidth(self):
 		#return (self.sides[3] - self.sides[1])
 		return float(self.width)

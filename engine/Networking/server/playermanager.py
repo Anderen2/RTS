@@ -75,8 +75,8 @@ class PlayerManager():
 		if shared.UnitManager.unitcount!=0:
 			shared.ChatManager.systemSay("Player %s joined the game late, syncing state.." % ply.username)
 			for unit in shared.UnitManager.generateAllUnits():
-				attrib = unit.currentattrib.copy()
-				attrib["pos"] = unit.GetPosition()
+				unit.setAttribute("unit.position", unit.GetPosition(), mark=False) #Running bare to force current pos
+				attrib = unit.attributes["current"].copy()
 				ply.Protocol.sendMethod(4, "build", [unit.UnitID, unit._owner.UID, unit.ID, attrib])
 
 	def SetupMapUnits(self, mapconfig):
@@ -90,13 +90,11 @@ class PlayerManager():
 			attributes = {}
 
 			if attribs!="":
-				print attribs
 				attribs=split(attribs,";")
-				print attribs
+				shared.DPrint("playermanager", 0, "Map attributes: (%s:%i) %s" % (name, ID, str(attribs)))
 				for attrib in attribs:
 					if attrib!="":
 						foo = split(attrib, "=")
-						print foo
 						try:
 							attributes[foo[0]]=int(foo[1])
 						except:
@@ -121,9 +119,8 @@ class PlayerManager():
 				unit._owner=player
 				player.addUnit(unit)
 
-				attrib = unit.currentattrib.copy()
-				attrib["pos"] = unit.GetPosition()
-				# player.Protocol.sendMethod(4, "build", [unit.UnitID, unit._owner.UID, unit.ID, attrib])
+				unit.setAttribute("unit.position", unit.GetPosition(), mark=False) #Running bare to force current pos
+				attrib = unit.attributes["current"].copy()
 				self.Broadcast(4, "build", [unit.UnitID, unit._owner.UID, unit.ID, attrib])
 
 	def PlayerDisconnect(self, player, reason):

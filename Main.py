@@ -23,7 +23,7 @@ from engine.Game import gamemanager
 shared.DPrint("Main",1,"Initializing Networking...")
 shared.client=client.Service()
 shared.reactor=client.reactor
-shared.client.Connect("192.168.1.112", 1337)
+shared.client.Connect("192.168.1.108", 1337)
 
 #Render
 shared.DPrint("Main",1,"Initializing Render...")

@@ -70,6 +70,9 @@ class Hook():
 			self.grapplinghooks[hook]["listeners"] = []
 		print self.grapplinghooks
 
+	def doesExist(self, hookname):
+		return hookname in self.grapplinghooks
+
 	def printNiceProfile(self, hookprofile):
 		sortlist = []
 		if type(hookprofile) != bool:

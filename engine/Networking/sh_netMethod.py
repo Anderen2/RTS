@@ -55,6 +55,8 @@ class AMPMethod(amp.AMP):
 
 	#Send
 	def sendMethod(self, obj, func, arg):
+		# print ("Sending:")
+		# print (obj, func, arg)
 		pickledarg = pickle.dumps(arg)
 		d = self.callRemote(Method, obj=obj, func=func, arg=pickledarg)
 

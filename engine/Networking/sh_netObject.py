@@ -37,6 +37,7 @@ class ObjectManager():
 		except KeyError:
 			try:
 				print(self.olist[obj])
+				print_exc()
 				return 1
 			except:
 				print("Invalid object: "+str(obj))

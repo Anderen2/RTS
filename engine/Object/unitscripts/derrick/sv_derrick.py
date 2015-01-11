@@ -17,15 +17,14 @@ class Unit(BaseUnit):
 	Cost = 800
 
 	def Initialize(self, ID):
-		self.SetEntity("derrick")
-		self.SetSolid(True)
-
 		self.Actions=[]
 
-		self.SetMoveType(-1) #MOVETYPE_NONE
-		self.SetMoveSpeed(0)
-		self.SetMaxHealth(200)
-		self.SetViewRange(200)
+		self.setAttributeInitial("entity.name", "derrick")
+		self.setAttributeInitial("entity.solid", True)
+		self.setAttributeInitial("movement.movetype", -1)
+		self.setAttributeInitial("movement.movespeed", 0)
+		self.setAttributeInitial("unit.health", 200)
+		self.setAttributeInitial("unit.viewrange", 200)
 
 		self.Destination = None
 

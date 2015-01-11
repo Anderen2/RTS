@@ -71,5 +71,9 @@ def generate(uid, desc=None, abort=True, placement=None):
 
 		def update(self):
 			pass
+
+		def netupdate(self, state, data):
+			if state=="toofar":
+				self.unit._moveto(data)
 			
 	return BaseAction

@@ -42,9 +42,16 @@ class BaseUnit():
 		self._currentmoveeff = None
 
 		#State
-		self._constantaltitude = False
 		self._health=100 #Bogus value, Getting this from attributes instead See: UnitManager
 		self.steer_state = False
+
+		self.attributes={} #All current attributes (Used for gamestate syncing)
+		self.attributes["default"] = {}
+		self.attributes["current"] = {}
+		self.attributes["readonly"] = {}
+		self._attributehook = Hook(self.attributes)
+
+		self.addAttributeListener("unit.health", self._setHealth)
 
 		self.Initialize(self.ID)
 
@@ -115,10 +122,10 @@ class BaseUnit():
 		return self._solidentity
 
 	def GetMoveType(self):
-		return self._movetype
+		return self.getAttribute("movement.movetype")
 
 	def GetMoveSpeed(self):
-		return self._movespeed
+		return self.getAttribute("movement.movespeed")
 
 	def GetHealth(self):
 		return self._health
@@ -171,9 +178,9 @@ class BaseUnit():
 		if self._currentaction!=None:
 			self._currentaction.update() #Additional THINK Calls [??]
 
-		if self._vehicle!=None and self._movetype!=-1:
+		if self._vehicle!=None and self.getAttribute("movement.movetype")!=-1:
 			if self.steer_state == "path":
-				self._vehicle.followPath(delta, towards=self._movetype==0)
+				self._vehicle.followPath(delta, towards=self.getAttribute("movement.movetype")==0)
 
 			elif self.steer_state == "seek":
 				self._vehicle.seekPos(self.steer_target)
@@ -192,10 +199,10 @@ class BaseUnit():
 
 				self._entity.RotateTowardsDirection(newdir[0], 0, newdir[2])
 
-				if not self._constantaltitude:
+				if not self.getAttribute("movement.constantaltitude"):
 					y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2])+1
 				else:
-					y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2]) + self._constantaltitude
+					y = shared.render3dTerrain.getHeightAtPos(newpos[0], newpos[2]) + self.getAttribute("movement.constantaltitude")
 
 				self._setPosition((newpos[0], y, newpos[2]))
 				
@@ -207,14 +214,14 @@ class BaseUnit():
 
 		if self._movetopoint!=None:
 			if type(self._movetopoint)!=list:
-				dist, pos = movetypes.Move(self._pos, self._movetopoint, self._movespeed*delta, self._movetype)
+				dist, pos = movetypes.Move(self._pos, self._movetopoint, self.getAttribute("movement.movespeed")*delta, self.getAttribute("movement.movetype"))
 				self._setPosition(pos)
 				print self._pos
 
 				if dist<1:
 					self._movetopoint=None
 			else:
-				dist, self._pos = movetypes.Move(self._pos, self._movetopoint[0], self._movespeed*delta, self._movetype)
+				dist, self._pos = movetypes.Move(self._pos, self._movetopoint[0], self.getAttribute("movement.movespeed")*delta, self.getAttribute("movement.movetype"))
 
 				if dist<1:
 					self._movetopoint.pop(0)
@@ -291,7 +298,7 @@ class BaseUnit():
 	def _steerToPath(self, path):
 		#self._movetopoint=pos
 		#self._look(self._movetopoint)
-		if self._movetype!=0:
+		if self.getAttribute("movement.movetype")!=0:
 			for node in path:
 				self._vehicle.addPosToPath((node[0], self._pos[1], node[1]))
 			self.steer_state = "path"
@@ -309,7 +316,7 @@ class BaseUnit():
 
 	def _moveto(self, pos):
 		#Calculates an correct path, and moves according to this
-		self._movetopoint = movetypes.Path(self._pos, pos, self._movetype)
+		self._movetopoint = movetypes.Path(self._pos, pos, self.getAttribute("movement.movetype"))
 
 	def _movetowards(self, pos):
 		#Moves straight towards position, ignores obstacles
@@ -404,20 +411,60 @@ class BaseUnit():
 		self._group=newgroup
 
 	#Attributes
-	def _attribUpdate(self, updated):
-		self.Hook.call("OnServerUpdate", updated)
-		if "pos" in updated:
-			self._setPosition(self._pos)
+	def setAttribute(self, attribname, value):
+		#Request server modify of attribute
+		pass
 
-		if "viewrange" in updated:
-			if shared.FowManager!=None and shared.FowManager!=True:
-				shared.FowManager.chViewSize(self._entity.node, self._viewrange)
+	def getAttribute(self, attribname):
+		return self.attributes["current"][attribname]
 
-		if "entityname" in updated:
-			pass #out
+	def resetAttribute(self, attribname):
+		#Request server reset of attribute
+		pass
 
-		if "vehicle" in updated:
-			print(self._vehicle.mass)
+	def addAttributeListener(self, attribname, func):
+		if self._attributehook.doesExist(attribname):
+			self._attributehook.Add(attribname, func)
+		else:
+			self._attributehook.new(attribname, 1)
+			self._attributehook.Add(attribname, func)
+
+	def fullAttributeResync(self):
+		#Request an full resync of all attributes
+		pass
+
+	def _serverAttributeSync(self, attributes, inital=False):
+		self.attributes["current"].update(attributes)
+		for attribname, value in attributes.iteritems():
+			shared.DPrint("baseunit", 0, "Attribute S(%s:%i): %s = %s" % (self.UnitID, self.ID, attribname, str(value)))
+			self._actOnAttribute(attribname)
+			if self._attributehook.doesExist(attribname):
+				self._attributehook.call(attribname, value)
+
+	def _actOnAttribute(self, attribname): #Needed?
+		attrib = attribname.split(".")
+
+		if attrib[0]=="vehicle":
+			if attrib[1]=="size": self._vehicle.size = self.getAttribute(attribname)
+			elif attrib[1]=="max_force": self._vehicle.max_force = self.getAttribute(attribname)
+			elif attrib[1]=="mass": self._vehicle.mass = self.getAttribute(attribname)
+			elif attrib[1]=="path_node_radius": self._vehicle.path_node_radius = self.getAttribute(attribname)
+			elif attrib[1]=="arrive_breaking_radius": self._vehicle.arrive_breaking_radius = self.getAttribute(attribname)
+			elif attrib[1]=="max_velocity": self._vehicle.max_velocity = self.getAttribute(attribname)
+			elif attrib[1]=="max_speed": self._vehicle.max_speed = self.getAttribute(attribname)
+			elif attrib[1]=="breaking_force": self._vehicle.breaking_force = self.getAttribute(attribname)
+			elif attrib[1]=="max_see_ahead": self._vehicle.max_see_ahead = self.getAttribute(attribname)
+			elif attrib[1]=="max_avoid_force": self._vehicle.max_avoid_force = self.getAttribute(attribname)
+
+		if attrib[0]=="unit":
+			if attrib[1]=="position": 
+				self._setPosition(self.getAttribute(attribname))
+			elif attrib[1]=="viewrange":
+				print("Setting viewrange")
+				if shared.FowManager!=None and shared.FowManager!=True:
+					shared.FowManager.chViewSize(self._entity.node, self.getAttribute(attribname))
+
+
 	#Other
 	def _randomCallback(self, tmin, tmax, call):
 		reactor.callLater(randrange(tmin, tmax, 1), call)

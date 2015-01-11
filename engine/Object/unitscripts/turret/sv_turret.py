@@ -17,16 +17,15 @@ class Unit(BaseUnit):
 	Cost = 1000
 
 	def Initialize(self, ID):
-		self.SetEntity("turret")
-		self.SetSolid(True)
-
 		self.Actions=[]
 
-		self.SetMoveType(-1) #MOVETYPE_GROUND
-		self.SetMoveSpeed(0)
-		self.SetHealth(800)
-		self.SetViewRange(800)
-		self.SetUnitAutoEngage(True)
+		self.setAttributeInitial("entity.name", "turret")
+		self.setAttributeInitial("entity.solid", True)
+		self.setAttributeInitial("movement.movetype", -1)
+		self.setAttributeInitial("movement.movespeed", 0)
+		self.setAttributeInitial("unit.health", 800)
+		self.setAttributeInitial("unit.viewrange", 800)
+		self.setAttributeInitial("unit.autoengage", True)
 
 		#Overwrite GlobalActions [This should be changed for an less hackishlike solution]
 		self._globalactions = [sv_fau.Action, sv_fau.Action, sv_const.Action]

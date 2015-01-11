@@ -6,7 +6,7 @@ I0
 (dp3
 S'attribs'
 p4
-S'health=10;'
+S'unit.health=10;'
 p5
 sS'name'
 p6
@@ -175,9 +175,9 @@ p50
 S'Heightmap'
 p52
 (dp53
-S'Size'
+S'TileSize'
 p54
-I5000
+I129
 sS'Heightmap File'
 p55
 S'TriMapHei.png'
@@ -185,9 +185,9 @@ p56
 sS'Height'
 p57
 I2000
-sS'TileSize'
+sS'Size'
 p58
-I129
+I5000
 ssS'Water'
 p59
 (dp60
@@ -201,13 +201,13 @@ p63
 ssS'Texture'
 p64
 (dp65
-S'Alpha Splatmaps'
+S'Base Texture'
 p66
-S'None'
-p67
-sS'Base Texture'
-p68
 S'TriMapTex.png'
+p67
+sS'Alpha Splatmaps'
+p68
+S'None'
 p69
 sS'Alpha SplatTextures'
 p70

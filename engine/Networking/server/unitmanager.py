@@ -48,8 +48,8 @@ class UnitManager():
 		unitid = self.unitcount
 		newunit = self.create(player, name, unitid, pos)
 		if newunit:
-			attribs = newunit.pendingattrib.copy()
-			newunit.pendingattrib = {}
+			attribs = newunit.attributes["current"].copy()
+
 			shared.PlayerManager.Broadcast(4, "build", [name, userid, unitid, attribs])
 			self.unitcount+=1
 
@@ -100,7 +100,9 @@ class UnitManager():
 				self.unitcount+=1
 
 				if attribs!=None:
-					newunit.currentattrib.update(attribs)
+					for name, value in attribs.iteritems():
+						newunit.setAttribute(name, value, mark=False)
+					
 
 				return newunit
 
@@ -112,6 +114,23 @@ class UnitManager():
 		else:
 			shared.DPrint(0, "netUnitManager", "Unitscript for unit :"+str(name)+" does not exsist!")
 			return False
+
+	def req_attrex(self, unitid, Protocol=None):
+		#Request unit attribute extras
+		player = shared.PlayerManager.getFromProto(Protocol)
+		unit = self.getFromUID(unitid)
+
+		Protocol.sendMethod(4, "recv_attrex", [unitid, {"default": unit.attributes["default"], "readonly": unit.attributes["readonly"]}])
+
+	def req_setattr(self, unitid, attribute, value, Protocol=None):
+		player = shared.PlayerManager.getFromProto(Protocol)
+		unit = self.getFromUID(unitid)
+
+		if player == unit._owner:
+			if not unit.attributes["readonly"][attribute]:
+				unit.setAttribute(attribute, value)
+			else:
+				shared.DPrint("netUnitManager", 1, "Player %s tried to set readonly attribute %s to %s !" % (player.username, str(attribute), str(value)))
 
 	### UnitGetters
 

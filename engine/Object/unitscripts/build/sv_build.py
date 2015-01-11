@@ -16,15 +16,14 @@ class Unit(BaseUnit):
 	Cost = 1500
 
 	def Initialize(self, ID):
-		self.SetEntity("command")
-		self.SetSolid(True)
-
 		self.Actions=[sv_unitbuild.generate("mig"), sv_unitbuild.generate("tank"), sv_unitbuild.generate("robot")]
 
-		self.SetMoveType(-1) #MOVETYPE_NONE
-		self.SetMoveSpeed(0)
-		self.SetMaxHealth(1000)
-		self.SetViewRange(500)
+		self.setAttributeInitial("entity.name", "command")
+		self.setAttributeInitial("entity.solid", True)
+		self.setAttributeInitial("movement.movetype", -1)
+		self.setAttributeInitial("movement.movespeed", 0)
+		self.setAttributeInitial("unit.health", 1000)
+		self.setAttributeInitial("unit.viewrange", 500)
 
 		self.Destination = None
 

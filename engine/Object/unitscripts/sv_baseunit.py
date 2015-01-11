@@ -31,22 +31,56 @@ class BaseUnit():
 		self.__oldsteeringpos = (0,0,0)
 
 		#State
-		self._constantaltitude = False
+		self._autoengage = False #LEGACY Support for vision.py
 		self._health = 100
 		self.steer_state = False
-		self._autoengage = False
 
-		self.pendingattrib={} #All attributes waiting to be sent
-		self.currentattrib={} #All current attributes (Used for gamestate syncing)
+		self.attributes={} #All current attributes (Used for gamestate syncing)
+		self.attributes["default"] = {}
+		self.attributes["current"] = {}
+		self.attributes["readonly"] = {}
+
+		self._pendingattributes = []
+
+		self._attributehook = Hook(self.attributes) #Hook for listening after attribute changes
+
+		#Attributes
+		self.newAttribute("entity.name", "")
+		self.newAttribute("entity.solid", False)
+		self.newAttribute("movement.constantaltitude", False)
+		self.newAttribute("movement.movetype", 1) #Pathfinding algorthim
+		self.newAttribute("movement.movespeed", 0) #Pathfinding modespeed
+		self.newAttribute("unit.position", (0,0,0))
+		self.newAttribute("unit.health", 192)
+		self.newAttribute("unit.viewrange", 192)
+		self.newAttribute("unit.autoengage", False, readonly=False)
+		self.newAttribute("vehicle.size", 1)
+		self.newAttribute("vehicle.max_force", 1)
+		self.newAttribute("vehicle.mass", 1)
+		self.newAttribute("vehicle.path_node_radius", 1)
+		self.newAttribute("vehicle.arrive_breaking_radius", 1)
+		self.newAttribute("vehicle.max_velocity", 1)
+		self.newAttribute("vehicle.max_speed", 1)
+		self.newAttribute("vehicle.breaking_force", 1)
+		self.newAttribute("vehicle.max_see_ahead", 1)
+		self.newAttribute("vehicle.max_avoid_force", 1)
+
+		self.addAttributeListener("unit.health", self._sethealth)
+		self.addAttributeListener("unit.autoengage", self._setAutoengage)
+
+		self.Hook.Add("OnAttributeModified", self._actOnAttribute)
 
 		self.Initialize(self.ID)
 		shared.DPrint(0, "BaseUnit", "Initialized "+str(self.ID))
+
+		#All under is after initialization!
 		self._setPosition(pos)
 
 		#QuadTree
-		shared.VisionManager.addUnit(self, self._viewrange)
+		shared.VisionManager.addUnit(self, self.getAttribute("unit.viewrange"))
 
 		self.Hook.call("OnCreation", self._pos)
+
 
 	def _inithooks(self):
 		#Add OnBuild hook
@@ -67,108 +101,26 @@ class BaseUnit():
 		self.Hook.new("OnMoveStop", 1)
 		self.Hook.new("OnConvertStart", 1)
 		self.Hook.new("OnConverted", 1)
+		self.Hook.new("OnAttributeNew", 1)
+		self.Hook.new("OnAttributeModified", 1)
+		self.Hook.new("OnAttributeMarked", 1)
 
 
 	### UnitScript Functions
 	def SetPosition(self, x, y, z):
 		self._setPosition((x,y,z))
-		self._updateAttrib("pos", (x,y,z))
+		self.setAttribute("unit.position", (x,y,z), mark=False)
 
 	def GetPosition(self):
 		return self._pos
 
-	def SetEntity(self, ent):
-		#Setup Pathfinding variables here (sizes, etc)
-		self._entityname = ent
-		shared.DPrint(0, "BaseUnit", "UnitID: "+str(self.ID)+" = "+str(ent))
-		self._updateAttrib("entityname", ent)
-
-	def SetSolid(self, yn):
-		self._solidentity=yn
-		self._updateAttrib("solidentity", yn)
-
-	def SetConstantAltitude(self, altitude):
-		self._constantaltitude = altitude
-		self._updateAttrib("constantaltitude", altitude)
-
-	def SetMoveType(self, movetype):
-		#Setup Pathfinding algorthim based on the movetype here
-		self._movetype = movetype
-		self._updateAttrib("movetype", movetype)
-
-	def SetMoveSpeed(self, speed):
-		#Setup Pathfinding movespeed here
-		self._movespeed = speed
-		self._updateAttrib("movespeed", speed)
-
-	def SetMaxHealth(self, health):
-		self._health = health
-		self._updateAttrib("health", health)
-
-	def SetHealth(self, health):
-		self.Hook.call("OnHealthChange", health)
-		self._sethealth(health)
-
-	def TakeDamage(self, damage):
-		self.Hook.call("OnDamage", damage, "DamageType Here!")
-		self._sethealth(self._health-damage)
-
-	def SetViewRange(self, viewrange):
-		self._viewrange = viewrange
-		self._updateAttrib("viewrange", viewrange)
-
-	def SetVehicleSize(self, size):
-		self._vehicle.size = size
-		self._updateAttrib("vehicle.size", size)
-
-	def SetVehicleMaxForce(self, maxforce):
-		self._vehicle.max_force = maxforce
-		self._updateAttrib("vehicle.max_force", maxforce)
-
-	def SetVehicleMass(self, mass):
-		self._vehicle.mass = mass
-		self._updateAttrib("vehicle.mass", mass)
-
-	def SetVehiclePathNodeRadius(self, pnr):
-		self._vehicle.path_node_radius = pnr
-		self._updateAttrib("vehicle.path_node_radius", pnr)
-
-	def SetVehicleArriveBreakingRadius(self, abr):
-		self._vehicle.arrive_breaking_radius = abr
-		self._updateAttrib("vehicle.arrive_breaking_radius", abr)
-
-	def SetVehicleMaxVelocity(self, maxvelocity):
-		self._vehicle.max_velocity = maxvelocity
-		self._updateAttrib("vehicle.max_velocity", maxvelocity)
-
-	def SetVehicleMaxSpeed(self, maxspeed):
-		self._vehicle.max_speed = maxspeed
-		self._updateAttrib("vehicle.max_speed", maxspeed)
-
-	def SetVehicleBreakingForce(self, breaks):
-		self._vehicle.breaking_force = breaks
-		self._updateAttrib("vehicle.breaking_force", breaks)
-
-	def SetVehicleMaxSeeAhead(self, msa):
-		self._vehicle.max_see_ahead = msa
-		self._updateAttrib("vehicle.max_see_ahead", msa)
-
-	def SetVehicleMaxAvoidForce(self, maf):
-		self._vehicle.max_avoid_force = maf
-		self._updateAttrib("vehicle.max_avoid_force", maf)
-
-	def SetUnitAutoEngage(self, autoengage):
-		self._autoengage = autoengage
-		self._updateAttrib("autoengage", autoengage)
-		#QuadTree
-		if autoengage:
-			shared.VisionManager.addAimNode(self, self._viewrange)
-		else:
-			shared.VisionManager.removeAimNode(self)
-
 	def CreateProjectileLauncher(self, type):
 		launcher = shared.LauncherManager.create(type, self)
 		return launcher
+
+	def TakeDamage(self, damage):
+		self.setAttribute("unit.health", self._health-damage)
+		self.Hook.call("OnDamage", damage, "DamageType Here!")
 
 	def SetAction(self, action, data):
 		self._setAction(action, data)
@@ -189,7 +141,7 @@ class BaseUnit():
 
 		if self._vehicle!=None:
 			if self.steer_state == "path":
-				self._vehicle.followPath(delta, towards=self._movetype==0)
+				self._vehicle.followPath(delta, towards=self.getAttribute("movement.movetype")==0)
 
 			elif self.steer_state == "seek":
 				self._vehicle.seekPos(self.steer_target)
@@ -207,22 +159,22 @@ class BaseUnit():
 				if newpos!=self.__oldsteeringpos:
 					self.__oldsteeringpos = newpos
 
-					if not self._constantaltitude:
+					if not self.getAttribute("movement.constantaltitude"):
 						y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2])+1
 					else:
-						y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2]) + self._constantaltitude
+						y = shared.Map.Terrain.getHeightAtPos(newpos[0], newpos[2]) + self.getAttribute("movement.constantaltitude")
 
 					self._setPosition((newpos[0], y, newpos[2]))
 
 		if self._movetopoint!=None:
 			if type(self._movetopoint)!=list:
-				dist, self._pos = movetypes.Move(self._pos, self._movetopoint, self._movespeed*delta, self._movetype)
+				dist, self._pos = movetypes.Move(self._pos, self._movetopoint, self.getAttribute("movement.movespeed")*delta, self.getAttribute("movement.movetype"))
 				print(self._pos)
 
 				if dist<1:
 					self._movetopoint=None
 			else:
-				dist, self._pos = movetypes.Move(self._pos, self._movetopoint[0], self._movespeed*delta, self._movetype)
+				dist, self._pos = movetypes.Move(self._pos, self._movetopoint[0], self.getAttribute("movement.movespeed")*delta, self.getAttribute("movement.movetype"))
 
 				if dist<1:
 					self._movetopoint.pop(0)
@@ -233,6 +185,9 @@ class BaseUnit():
 		#Quadtree
 		shared.VisionManager.unitUpdate(self)
 
+		#Attributes
+		self._syncAttributes()
+
 	def _actionfinish(self):
 		if self._group!=None:
 			self._group.unitActionDone(self)
@@ -242,30 +197,123 @@ class BaseUnit():
 	## Networked
 
 	#Unit Attributes
-	def _updateAttrib(self, attribname, data):
-		if len(self.pendingattrib)==0:
-			#The reason for why we do this is to collect all attribute changes in one frame and send them all in one package.
-			#As the client seemly only could recieve 60 pkgs each secound [With the current transferring method], we keep the packagequeue from getting too big
-			reactor.callLater(0.1, self._broadcastAttrib)
-		self.pendingattrib[attribname]=data
-		self.currentattrib[attribname]=data
+	def newAttribute(self, attribname, default, readonly=True):
+		self.attributes["default"][attribname] = default
+		self.attributes["current"][attribname] = default
+		self.attributes["readonly"][attribname] = readonly
+		self.Hook.call("OnAttributeNew", attribname)
 
-	def _broadcastAttrib(self):
-		if len(self.pendingattrib)!=0:
-			self.Hook.call("OnServerUpdate", self.pendingattrib.copy())
-			shared.PlayerManager.Broadcast(4, "recv_attrib", [self.ID, self.pendingattrib.copy()])
-			self.pendingattrib={}
+	def delAttribute(self, attribname):
+		del self.attributes["default"][attribname]
+		del self.attributes["current"][attribname]
+		del self.attributes["readonly"][attribname]
+
+	def setAttribute(self, attribname, value, mark=True):
+		shared.DPrint("baseunit", 0, "Attribute S(%s:%i): %s = %s" % (self.UnitID, self.ID, attribname, str(value)))
+		if attribname not in self.attributes["current"]:
+			shared.DPrint("baseunit", 2, "Attribute (%s:%i): %s does not exist, creating it!" % (self.UnitID, self.ID, attribname))
+			self.newAttribute(attribname, value)
+		else:
+			self.attributes["current"][attribname] = value
+
+		if mark:
+			self.markAttribute(attribname)
+
+		if self._attributehook.doesExist(attribname):
+			self._attributehook.call(attribname, value)
+
+		self.Hook.call("OnAttributeModified", attribname)
+
+	def getAttribute(self, attribname):
+		return self.attributes["current"][attribname]
+
+	def resetAttribute(self, attribname, mark=True):
+		self.attributes["current"][attribname] = self.attributes["default"][attribname]
+
+		if mark:
+			self.markAttribute(attribname)
+
+		if self._attributehook.doesExist(attribname):
+			self._attributehook.call(attribname, value)
+
+		self.Hook.call("OnAttributeModified", attribname)
+
+	def setAttributeInitial(self, attribname, value):
+		#Set attribute "inital" value
+		shared.DPrint("baseunit", 0, "Attribute I(%s:%i): %s = %s" % (self.UnitID, self.ID, attribname, str(value)))
+		self.attributes["current"][attribname] = value
+		self.attributes["default"][attribname] = value
+
+		if self._attributehook.doesExist(attribname):
+			self._attributehook.call(attribname, value)
+
+	def setAttributeDefault(self, attribname, value):
+		self.attributes["default"][attribname] = value
+
+	def setAttributeReadonly(self, attribname, value):
+		self.attributes["readonly"][attribname] = value
+
+	def markAttribute(self, attribname):
+		#Mark attribute as modified
+		self._pendingattributes.append(attribname)
+		self.Hook.call("OnAttributeMarked", attribname)
+
+	def addAttributeListener(self, attribname, func):
+		if self._attributehook.doesExist(attribname):
+			self._attributehook.Add(attribname, func)
+		else:
+			self._attributehook.new(attribname, 1)
+			self._attributehook.Add(attribname, func)
+		
+	def _syncAttributes(self):
+		if len(self._pendingattributes)!=0:
+			self._broadcastAttributes()
+
+	def _broadcastAttributes(self):
+		diff = {}
+		for attribname in self._pendingattributes:
+			diff[attribname] = self.attributes["current"][attribname]
+
+		self.Hook.call("OnServerUpdate", diff.copy())
+		shared.PlayerManager.Broadcast(4, "recv_attrib", [self.ID, diff.copy()])
+		self._pendingattributes = []
+
+	# Attribute actions
+	def _actOnAttribute(self, attribname): #Needed?
+		attrib = attribname.split(".")
+		if attrib[0]=="vehicle":
+			if attrib[1]=="size": self.vehicle.size = self.getAttribute(attribname)
+			elif attrib[1]=="max_force": self.vehicle.max_force = self.getAttribute(attribname)
+			elif attrib[1]=="mass": self.vehicle.mass = self.getAttribute(attribname)
+			elif attrib[1]=="path_node_radius": self.vehicle.path_node_radius = self.getAttribute(attribname)
+			elif attrib[1]=="arrive_breaking_radius": self.vehicle.arrive_breaking_radius = self.getAttribute(attribname)
+			elif attrib[1]=="max_velocity": self.vehicle.max_velocity = self.getAttribute(attribname)
+			elif attrib[1]=="max_speed": self.vehicle.max_speed = self.getAttribute(attribname)
+			elif attrib[1]=="breaking_force": self.vehicle.breaking_force = self.getAttribute(attribname)
+			elif attrib[1]=="max_see_ahead": self.vehicle.max_see_ahead = self.getAttribute(attribname)
+			elif attrib[1]=="max_avoid_force": self.vehicle.max_avoid_force = self.getAttribute(attribname)
+
+	def _setAutoengage(self, enabled):
+		self._autoengage = enabled #LEGACY Support for vision.py
+		if enabled:
+			shared.VisionManager.addAimNode(self, self.getAttribute("unit.viewrange"))
+		else:
+			shared.VisionManager.removeAimNode(self)
 
 	#Health
 	def _sethealth(self, health):
 		if health != self._health:
 			self._health = health
-			shared.PlayerManager.Broadcast(4, "recv_unithealth", [self.ID, self._health])
+			# shared.PlayerManager.Broadcast(4, "recv_unithealth", [self.ID, self._health])
 
 		if health<1:
 			self._die()
 
 	def _die(self):
+		# print(self.attributes)
+		# print("\n\n")
+		# print(self._pendingattributes)
+		self._syncAttributes() #Sync all last attributes
 		self.Hook.call("OnDeath", "LastDamageType Here!")
 		shared.DPrint(0, "BaseUnit", "Unit %s:%s died" % (self._owner.username, self.UnitID))
 		shared.VisionManager.rmUnit(self)
@@ -292,7 +340,7 @@ class BaseUnit():
 	def _steerToPath(self, path):
 		# self._movetopoint=pos
 		# self._look(self._movetopoint)
-		if self._movetype!=0: #MOVETYPE_AIR
+		if self.getAttribute("movement.movetype")!=0: #MOVETYPE_AIR
 			for node in path:
 				self._vehicle.addPosToPath((node[0], self._pos[1], node[1]))
 			self.steer_state = "path"
@@ -310,7 +358,7 @@ class BaseUnit():
 
 	def _moveto(self, pos):
 		#Calculates an correct path, and moves according to this
-		self._movetopoint = movetypes.Path(self._pos, pos, self._movetype)
+		self._movetopoint = movetypes.Path(self._pos, pos, self.getAttribute("movement.movetype"))
 
 	def _movetowards(self, pos):
 		#Moves straight towards position, ignores obstacles
@@ -341,8 +389,6 @@ class BaseUnit():
 		self._lookpos = pos
 
 	# ACTIONS
-	def _loadActions(self):
-		pass
 
 	def _getActionByID(self, aid):
 		for action in self._globalactions:

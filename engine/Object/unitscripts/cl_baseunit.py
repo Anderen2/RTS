@@ -118,21 +118,6 @@ class BaseUnit():
 	def SetSelectedText(self, text):
 		self._text=text
 
-	def GetSolid(self):
-		return self._solidentity
-
-	def GetMoveType(self):
-		return self.getAttribute("movement.movetype")
-
-	def GetMoveSpeed(self):
-		return self.getAttribute("movement.movespeed")
-
-	def GetHealth(self):
-		return self._health
-
-	def GetViewRange(self):
-		return self._viewrange
-
 	def GetState(self):
 		if self._movetopoint!=None:
 			return "Moving"
@@ -412,15 +397,13 @@ class BaseUnit():
 
 	#Attributes
 	def setAttribute(self, attribname, value):
-		#Request server modify of attribute
-		pass
+		shared.unitManager.setAttribute(self, attribname, value)
 
 	def getAttribute(self, attribname):
 		return self.attributes["current"][attribname]
 
 	def resetAttribute(self, attribname):
-		#Request server reset of attribute
-		pass
+		shared.unitManager.setAttribute(self, attribname, self.attributes["default"][attribname])
 
 	def addAttributeListener(self, attribname, func):
 		if self._attributehook.doesExist(attribname):
@@ -430,8 +413,7 @@ class BaseUnit():
 			self._attributehook.Add(attribname, func)
 
 	def fullAttributeResync(self):
-		#Request an full resync of all attributes
-		pass
+		shared.protocol.sendMethod(4, "req_attrresync", [unit.ID])
 
 	def _serverAttributeSync(self, attributes, inital=False):
 		self.attributes["current"].update(attributes)

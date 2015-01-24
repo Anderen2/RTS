@@ -34,7 +34,7 @@ class Action():
 	def begin(self):
 		shared.DPrint("UnitAction - Move", 0, "Action begun!")
 		self.aborted=False
-		if not self.targetunit.GetHealth()<1:
+		if not self.targetunit.getAttribute("unit.health")<1:
 			self.unit.AimAtUnit(self.targetunit)
 		self.unit.OnPrimaryAction(self.targetunit)
 

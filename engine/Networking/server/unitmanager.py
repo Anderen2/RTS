@@ -122,6 +122,16 @@ class UnitManager():
 
 		Protocol.sendMethod(4, "recv_attrex", [unitid, {"default": unit.attributes["default"], "readonly": unit.attributes["readonly"]}])
 
+	def req_attrresync(self, unitid, Protocol=None):
+		#Request an full attribute resync
+		player = shared.PlayerManager.getFromProto(Protocol)
+		unit = self.getFromUID(unitid)
+
+		#Mark all attributes as modified
+		if player == unit._owner:
+			for attribname in unit.attributes["current"]:
+				unit.markAttribute(attribname)
+
 	def req_setattr(self, unitid, attribute, value, Protocol=None):
 		player = shared.PlayerManager.getFromProto(Protocol)
 		unit = self.getFromUID(unitid)

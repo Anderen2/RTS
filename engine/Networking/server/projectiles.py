@@ -166,9 +166,23 @@ class UnitLauncher():
 	def isAbleToFireAtUnit(self, unit):
 		return True
 
+	def isCloseEnough(self, pos):
+		a = shared.Vector3D((self.pos[0], 0, self.pos[2]))
+		print a
+		b = shared.Vector3D((pos[0], 0, pos[2]))
+		print b
+		Dist = shared.Vector3D(a - b).length()
+		print "%d<%d" % (Dist, self.firerange)
+		return Dist<self.firerange
+
 	def isAbleToFire(self, pos):
 		#If free line of fire:
-		if posalgo.in_circle(self.pos[0], self.pos[2], self.firerange, pos[0], pos[2]):
+		# if posalgo.in_circle(self.pos[0], self.pos[2], self.firerange, pos[0], pos[2]):
+		
+		if self.isCloseEnough(pos):
+			if self.unit._currentaction.currentlyMoving:
+				self.unit._currentaction.closeEnough()
+
 			if (time()-self.lastfired)>self.firespeed:
 				self.lastfired=time()
 				if self.magazine>0:
@@ -178,14 +192,11 @@ class UnitLauncher():
 					return self.Reload()
 		else:
 			if self.moverot:
-				print("\n\n Too Far Away!")
-				print(self.firerange)
-				a = shared.Vector(self.pos[0], self.pos[2])
-				b = shared.Vector(pos[0], pos[2])
-				Dist = abs(shared.Vector(a-b).sum()) - self.firerange
-				print(Dist)
-				print("Too Far Away END \n\n")
-				self.unit._currentaction.tooFar(self.firerange - (self.firerange/3.14))
+				if not self.unit._currentaction.currentlyMoving:
+					print("\n\n Too Far Away!")
+					print(self.firerange)
+					print("Too Far Away END \n\n")
+					self.unit._currentaction.tooFar(self.firerange)
 
 		return False
 

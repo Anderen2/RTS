@@ -4,7 +4,7 @@
 from engine import shared, debug
 
 class Action():
-	actionid = "pri"
+	actionid = "suw"
 	name = "Set Unit Waypoint"
 	description = "This action sets default waypoint for new units"
 
@@ -17,6 +17,7 @@ class Action():
 
 	def __init__(self, unit, evt):
 		self.data = evt
+		print evt
 		self.targetunitid = evt["unitid"]
 		self.targetunit = shared.netUnitManager.getFromUID(self.targetunitid)
 

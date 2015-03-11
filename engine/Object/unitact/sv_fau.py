@@ -49,42 +49,58 @@ class Action():
 
 	def update(self):
 		if not self.aborted:
-			if not self.currentlyMoving:
-				if self.targetunit:
-					if shared.UnitManager.getIfActionPossible(self.unit, self.targetunit, True, False):
-						if self.targetunit._health<1:
-							self.unit._actionfinish()
-
-						if self.fire == True:
-							self.unit.PrimaryFire(self.targetunit)
-					else:
-						print("Action is not possible!")
+			if self.targetunit:
+				if shared.UnitManager.getIfActionPossible(self.unit, self.targetunit, True, False):
+					if self.targetunit._health<1:
 						self.unit._actionfinish()
+
+					if self.fire == True:
+						self.unit.PrimaryFire(self.targetunit)
 				else:
-					print("Target Unit does not exsist!")
+					print("Action is not possible!")
 					self.unit._actionfinish()
 			else:
-				if self.unit._movetopoint==None:
-					print("Done!")
-					self.currentlyMoving=False
+				print("Target Unit does not exsist!")
+				self.unit._actionfinish()
+
+	def pathEnd(self, lastpath):
+		self.unit._sendActionState("close", self.unitpath)
+		self.currentlyMoving=False
+		self.unit._finishedmove()
+		self.unit._vehicle.Hook.RM("OnPathEnd", self.pathEnd)
+
+	def closeEnough(self):
+		self.currentlyMoving = False
+		self.unit._sendActionState("close", self.unitpath)
+		self.unit._vehicle.clearPath()
+		self.unit._finishedmove()
+		self.unit._vehicle.Hook.RM("OnPathEnd", self.pathEnd)
+
 
 	def tooFar(self, maxdist):
 		"""Custom event provided by projectiles.py"""
 		if not self.currentlyMoving:
-			self.waypointPos = self.targetunit.GetPosition()
+			self.targetpos = self.targetunit.GetPosition()
 			newpos = self.unit.GetPosition()
 
-			while True:
-				#print("\ttarget: "+str(self.waypointPos))
-				#print(newpos)
-				dist, newpos = movetypes.Move(newpos, self.waypointPos, 5, 0)
-				#simdist, newpos = self.unit._simulateMoveStep((self.waypointPos[0], self.waypointPos[2]), 2, src=(newpos[0], newpos[2]))
-				print(str(dist)+"<"+str(maxdist))
+			#Get position close enough to target
+			# maxdist = maxdist - 150 #Add a margin of 150 to make sure we are within range HARDCODE (Should be calculated according to A* Node space)
+			# while True:
+			# 	dist, newpos = movetypes.Move(newpos, self.targetpos, 5, 0)
+			# 	print(str(dist)+"<"+str(maxdist))
 
-				if dist<maxdist:
-					break
+			# 	if dist<maxdist:
+			# 		break
 
-			self.currentlyMoving = True
-			newpos = shared.Vector(newpos).net() #Optimalize the position for Networked usage
-			self.unit._sendActionState("toofar", newpos)
-			self.unit._moveto(newpos)
+			#Calculate A* Path from unit to newpos
+			self.unitpath = shared.Pathfinder.aStarPath.Graph.Search2((self.unit._pos[0], self.unit._pos[2]), (self.targetpos[0], self.targetpos[2]))
+			if self.unitpath == None:
+				print("Impossible path requested by player!")
+				return False
+
+			self.currentlyMoving = maxdist
+			# newpos = shared.Vector(newpos).net() #Optimalize the position for Networked usage
+			self.unit._sendActionState("toofar", self.unitpath)
+			self.unit._steerToPath(list(self.unitpath))
+			self.unit._vehicle.Hook.Add("OnPathEnd", self.pathEnd)
+			# self.unit._vehicle.Hook.Add("OnStep", self.onStep)

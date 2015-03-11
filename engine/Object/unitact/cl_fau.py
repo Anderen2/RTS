@@ -52,4 +52,9 @@ class Action():
 
 	def netupdate(self, state, data):
 		if state=="toofar":
-			self.unit._moveto(data)
+			self.unitpath = data
+			self.unit._steerToPath(list(self.unitpath))
+
+		if state=="close":
+			self.unit._vehicle.clearPath()
+			self.unit._finishedmove()

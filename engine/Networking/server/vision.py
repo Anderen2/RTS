@@ -28,7 +28,8 @@ class VisionManager():
 		self.Units[unit]["aim"] = AimRangeNode(aimrange, unit)
 
 	def removeAimNode(self, unit):
-		del self.Units[unit]["aim"]
+		if unit in self.Units:
+			del self.Units[unit]["aim"]
 
 	def rmUnit(self, unit):
 		for stuff in self.Units[unit]:

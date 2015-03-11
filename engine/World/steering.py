@@ -225,6 +225,8 @@ class Vehicle():
 
 	def followPath(self, delta, towards=False):
 		towards = False
+		print "followPath"
+		print self.path
 		if len(self.path)!=0:
 			if self.seekToNode(self.path[0], towards):
 				self.path.pop(0)
@@ -236,6 +238,7 @@ class Vehicle():
 					pass
 
 		else:
+			print("I am the one who knocks.")
 			self.Hook.call("OnPathEnd", None)
 			if not towards:
 				self.Break()
@@ -244,6 +247,7 @@ class Vehicle():
 		print("Target added! -------------------------------")
 		print(pos)
 		self.path.append(pos)
+		print self.path
 		self.Hook.call("OnPathAdded", pos)
 
 	def clearPath(self):

@@ -168,7 +168,10 @@ class BaseUnit():
 				self._vehicle.followPath(delta, towards=self.getAttribute("movement.movetype")==0)
 
 			elif self.steer_state == "seek":
-				self._vehicle.seekPos(self.steer_target)
+				if isinstance(self.steer_target, self.__class__):
+					self._vehicle.seekPos(self.steer_target._pos)
+				else:
+					self._vehicle.seekPos(self.steer_target)
 
 			elif self.steer_state == None:
 				#print("Should stop here")
@@ -220,7 +223,7 @@ class BaseUnit():
 				self._currentmoveeff=None
 
 	def _updateText(self):
-		self._entity.text.setText(self._text+": HP "+str(self.GetHealth()))
+		self._entity.text.setText(self._text+": HP "+str(self.getAttribute("unit.health")))
 
 	### Internal Functions
 
@@ -437,6 +440,8 @@ class BaseUnit():
 			elif attrib[1]=="breaking_force": self._vehicle.breaking_force = self.getAttribute(attribname)
 			elif attrib[1]=="max_see_ahead": self._vehicle.max_see_ahead = self.getAttribute(attribname)
 			elif attrib[1]=="max_avoid_force": self._vehicle.max_avoid_force = self.getAttribute(attribname)
+
+			print "Vehicle Attributes Changed!"
 
 		if attrib[0]=="unit":
 			if attrib[1]=="position": 

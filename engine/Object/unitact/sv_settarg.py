@@ -4,7 +4,7 @@
 from engine import shared, debug
 
 class Action():
-	actionid = "fau"
+	actionid = "suw"
 	name = "Set Unit Waypoint"
 	description = "This action sets default waypoint for new units"
 

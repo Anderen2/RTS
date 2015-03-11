@@ -87,6 +87,7 @@ class UnitManager():
 		unit = self.getFromUID(unitid)
 		if unit._currentaction!=None:
 			unit._currentaction.netupdate(state, data)
+			shared.DPrint(0, "netUnitManager", "Recieved ActionState update '%s' from server" % state)
 		else:
 			shared.DPrint(5, "netUnitManager", "Server sent actionupdate for unit without any action!")
 
@@ -94,6 +95,7 @@ class UnitManager():
 		unit = self.getFromUID(unitid)
 		if unit:
 			unit._serverAttributeSync(attributes)
+			shared.DPrint(0, "netUnitManager", "Recieved Attribute update from server")
 		else:
 			shared.DPrint(5, "netUnitManager", "Server sent attributeupdate for non-exsistant unit!")
 

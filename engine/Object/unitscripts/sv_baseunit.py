@@ -144,7 +144,10 @@ class BaseUnit():
 				self._vehicle.followPath(delta, towards=self.getAttribute("movement.movetype")==0)
 
 			elif self.steer_state == "seek":
-				self._vehicle.seekPos(self.steer_target)
+				if isinstance(self.steer_target, self.__class__):
+					self._vehicle.seekPos(self.steer_target._pos)
+				else:
+					self._vehicle.seekPos(self.steer_target)
 
 			elif self.steer_state == None and self._vehicle.velocity.length()!=0:
 				#print("Should stop here")
@@ -247,6 +250,8 @@ class BaseUnit():
 		if self._attributehook.doesExist(attribname):
 			self._attributehook.call(attribname, value)
 
+		self.Hook.call("OnAttributeModified", attribname)
+
 	def setAttributeDefault(self, attribname, value):
 		self.attributes["default"][attribname] = value
 
@@ -282,16 +287,18 @@ class BaseUnit():
 	def _actOnAttribute(self, attribname): #Needed?
 		attrib = attribname.split(".")
 		if attrib[0]=="vehicle":
-			if attrib[1]=="size": self.vehicle.size = self.getAttribute(attribname)
-			elif attrib[1]=="max_force": self.vehicle.max_force = self.getAttribute(attribname)
-			elif attrib[1]=="mass": self.vehicle.mass = self.getAttribute(attribname)
-			elif attrib[1]=="path_node_radius": self.vehicle.path_node_radius = self.getAttribute(attribname)
-			elif attrib[1]=="arrive_breaking_radius": self.vehicle.arrive_breaking_radius = self.getAttribute(attribname)
-			elif attrib[1]=="max_velocity": self.vehicle.max_velocity = self.getAttribute(attribname)
-			elif attrib[1]=="max_speed": self.vehicle.max_speed = self.getAttribute(attribname)
-			elif attrib[1]=="breaking_force": self.vehicle.breaking_force = self.getAttribute(attribname)
-			elif attrib[1]=="max_see_ahead": self.vehicle.max_see_ahead = self.getAttribute(attribname)
-			elif attrib[1]=="max_avoid_force": self.vehicle.max_avoid_force = self.getAttribute(attribname)
+			if attrib[1]=="size": self._vehicle.size = self.getAttribute(attribname)
+			elif attrib[1]=="max_force": self._vehicle.max_force = self.getAttribute(attribname)
+			elif attrib[1]=="mass": self._vehicle.mass = self.getAttribute(attribname)
+			elif attrib[1]=="path_node_radius": self._vehicle.path_node_radius = self.getAttribute(attribname)
+			elif attrib[1]=="arrive_breaking_radius": self._vehicle.arrive_breaking_radius = self.getAttribute(attribname)
+			elif attrib[1]=="max_velocity": self._vehicle.max_velocity = self.getAttribute(attribname)
+			elif attrib[1]=="max_speed": self._vehicle.max_speed = self.getAttribute(attribname)
+			elif attrib[1]=="breaking_force": self._vehicle.breaking_force = self.getAttribute(attribname)
+			elif attrib[1]=="max_see_ahead": self._vehicle.max_see_ahead = self.getAttribute(attribname)
+			elif attrib[1]=="max_avoid_force": self._vehicle.max_avoid_force = self.getAttribute(attribname)
+
+			print "Vehicle Attributes Changed!"
 
 	def _setAutoengage(self, enabled):
 		self._autoengage = enabled #LEGACY Support for vision.py
@@ -370,7 +377,6 @@ class BaseUnit():
 		self.Hook.call("OnMoveStop", self._movetopoint)
 		self._movetopoint=None
 		if self._vehicle:
-			self._vehicle.Break()
 			self._vehicle.clearPath()
 			self.steer_state = None
 			self.steer_target = None

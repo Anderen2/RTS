@@ -27,7 +27,7 @@ class Action():
 	def begin(self):
 		shared.DPrint("UnitAction - Move", 0, "Action begun!")
 		self.aborted=False
-		
+
 		self.unit._steerToPath(list(self.path))
 	
 	def abort(self):
@@ -36,9 +36,9 @@ class Action():
 		self.unit._stopmove()
 
 	def finish(self):
-		print("I should have stopped here!")
+		print("\nI should have stopped here!")
 		self.unit._finishedmove()
-		self.unit._setPosition((self.data["3dMouse"][0], self.unit.GetPosition()[1], self.data["3dMouse"][2]))
+		self.unit._setPosition((self.data["path"][self.unit.ID][-1][0], self.unit.GetPosition()[1], self.data["path"][self.unit.ID][-1][1]))
 
 	def update(self):
 		# if self.aborted==False:

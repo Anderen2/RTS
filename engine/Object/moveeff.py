@@ -22,3 +22,27 @@ def globDiveDie(Entity, delta):
 			Entity.node.pitch(ogre.Degree(rotspeed))
 			return False
 	return True
+
+# def globPlaneCircle(Entity, delta):
+	# speed = 150 #Forward momentumvelocity
+	# time = 1 #Turnrate/Time/ 
+	# testrad = 100
+
+	# MovementDirection = Entity.lastMovementDirection
+	# Position = Entity.GetPosition()
+
+	# try:
+	# 	if not Entity.__globPlaneCircleDir:
+	# 		Entity.__globPlaneCircleDir = Position
+
+	# 	else:
+	# 		if (shared.Vector3D(Position) - shared.Vector3D(__globPlaneCircleDir)).length() > testrad:
+
+
+	# except:
+	# 	Entity.__globPlaneCircleDir = Position
+
+
+
+	# self.GetEntity().node.rotate((0,1,0), ogre.Radian(float(time)/float(testrad)))
+	# self.GetEntity().node.translate(self.GetEntity().node.getOrientation() * (0,1,speed) * delta)

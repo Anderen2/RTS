@@ -140,6 +140,9 @@ class Vector3D():
 			self.V=tuple([x*fInvLength for x in self.V])
 			return fLength
 		return 0
+
+	def absolute(self):
+		return Vector3D(abs(self.V)[0], abs(self.V)[1], abs(self.V)[2])
 	
 	def crossProduct(self,V):
 		return Vector3D(tuple([self.V[1] * V[2] - self.V[2] * V[1],\

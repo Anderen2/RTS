@@ -1,6 +1,8 @@
 #MIG - Air Unit
 #Clientside Unit Script File
 
+import ogre.renderer.OGRE as ogre
+
 from engine import shared, debug
 from engine.Object.unitscripts.cl_baseunit import BaseUnit
 import cl_act
@@ -23,10 +25,12 @@ class Unit(BaseUnit):
 		self.Hook.Add("OnDeath", self.OnDie)
 		self.Hook.Add("OnMoveEffectDone", self.OnMoveEffectDone)
 		self.Hook.Add("OnMove", self.OnMove)
+		self.Hook.Add("OnThink", self.OnThink)
 
 	def OnCreation(self, pos):
 		#self.PlayAnim("TakeOff") #Create a function/Class for simple movement animations
 		self.GetEntity().actMove(True)
+		# self.GetEntity().node.translate(0, 500, 0)
 
 	def OnDie(self, cause):
 		self.GetEntity().actNone()
@@ -47,6 +51,9 @@ class Unit(BaseUnit):
 
 	def OnMove(self, pos):
 		self.GetEntity().actMove(True)
+
+	def OnThink(self, delta):
+		pass
 
 	#Action Triggers
 	def OnPrimaryAction(self, unit):

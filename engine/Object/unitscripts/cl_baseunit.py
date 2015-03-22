@@ -173,9 +173,17 @@ class BaseUnit():
 				else:
 					self._vehicle.seekPos(self.steer_target)
 
-			elif self.steer_state == None:
-				#print("Should stop here")
-				self._vehicle.Break()
+			elif self.steer_state == "circle":
+				self._vehicle.followCircleAroundPoint(self.steer_circle_pos, 300)
+
+			elif self.steer_state == None and self._vehicle.velocity.length()!=0:
+				if self.getAttribute("movement.movetype")==0:
+					self.steer_state = "circle"
+					self.steer_circle_pos = self._pos
+
+				else:
+					#print("Should stop here")
+					self._vehicle.Break()
 
 			if self.steer_state == None and self._vehicle.velocity.length()==0:
 				#print("\nStopped entirely!\n")

@@ -1,5 +1,5 @@
 #Vehicle-Abstract / Steeringfunctions
-from math import sqrt, acos
+from math import sqrt, acos, cos, sin, atan2, pi
 from engine import shared, debug
 from engine.Lib.hook import Hook
 
@@ -78,6 +78,7 @@ class Vehicle():
 		self.path_node_radius = 50
 
 		self.path = []
+		self._circlestate = None
 
 		#Hooks:
 		self.Hook = Hook(self)
@@ -242,6 +243,50 @@ class Vehicle():
 			self.Hook.call("OnPathEnd", None)
 			if not towards:
 				self.Break()
+
+	def followCircleAroundPoint(self, pos, radius, precicion=50):
+		centerpoint = Vector(pos)
+		circleradius = radius
+
+		if not self._circlestate:
+			print (centerpoint - self.position).length()
+
+		if (centerpoint - self.position).length() >= radius and not self._circlestate:
+			print "We've reached the end of the circle, lets start moving around it"
+			#We've reached the end of the circle, lets start moving around it
+			difference = (centerpoint - self.position).asTuple()
+			circleRadian = atan2(difference[0], difference[2])
+			x = centerpoint[0] + radius * cos(circleRadian)
+			y = centerpoint[2] + radius * sin(circleRadian)
+			self._circlestart = (x, self.position[1], y)
+			self._circlenext = self._circlestart
+			self._circleradian = circleRadian
+			self._circlestate = True
+			self._previous_path_node_radius = self.path_node_radius
+			self.path_node_radius = self.path_node_radius + precicion
+			self.seekToNode(self._circlestart)
+
+		elif self._circlestate:
+			if self.seekToNode(self._circlenext):
+				dg = ((self._circleradian * 180) / pi) + precicion
+				print "%d*" % dg
+				if dg > 360:
+					self._circleradian = (0 * (pi/180))
+
+				else:
+					self._circleradian = (dg * (pi/180))
+
+				x = centerpoint[0] + radius * cos(self._circleradian)
+				y = centerpoint[2] + radius * sin(self._circleradian)
+
+				self._circlenext = (x, self.position[1], y)
+
+			
+		else:
+			#We have not reached the end of the circle yet. Keep current velocity. 
+			self._circlestate = False
+			
+
 
 	def addPosToPath(self, pos):
 		print("Target added! -------------------------------")

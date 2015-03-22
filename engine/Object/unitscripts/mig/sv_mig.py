@@ -28,7 +28,7 @@ class Unit(BaseUnit):
 		self.setAttributeInitial("vehicle.size", 10)
 		self.setAttributeInitial("vehicle.max_force", 2)
 		self.setAttributeInitial("vehicle.mass", 200)
-		self.setAttributeInitial("vehicle.path_node_radius", 50)
+		self.setAttributeInitial("vehicle.path_node_radius", 100)
 		self.setAttributeInitial("vehicle.arrive_breaking_radius", 50)
 		self.setAttributeInitial("vehicle.max_velocity", 3)
 		self.setAttributeInitial("vehicle.max_speed", 2)

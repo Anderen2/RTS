@@ -6,6 +6,7 @@ import shared
 #DEBUG OPTIONS:
 AABB=True
 GUISTATS=True
+GHOST_SYNC=True
 
 #COMMAND OPTIONS:
 CDict={}

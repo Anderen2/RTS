@@ -9,8 +9,8 @@ from twisted.protocols import amp
 from string import split
 from engine import shared, debug
 
-VERBOSE=True
-PVERBOSE=True
+VERBOSE=False
+PVERBOSE=False
 
 class Method(amp.Command):
 	arguments = [('obj', amp.Integer()),
@@ -38,8 +38,9 @@ class AMPMethod(amp.AMP):
 
 	#Recieve
 	def method(self, obj, func, arg):
-		print 'method'
-		print (obj, func, arg)
+		if VERBOSE:
+			print 'method'
+			print (obj, func, arg)
 		unpickledarg = pickle.loads(arg)
 		shared.objectManager.runMethod(self, obj, func, unpickledarg)
 

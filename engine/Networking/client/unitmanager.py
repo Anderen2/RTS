@@ -95,7 +95,7 @@ class UnitManager():
 		unit = self.getFromUID(unitid)
 		if unit:
 			unit._serverAttributeSync(attributes)
-			shared.DPrint(0, "netUnitManager", "Recieved Attribute update from server")
+			# shared.DPrint(0, "netUnitManager", "Recieved Attribute update from server")
 		else:
 			shared.DPrint(5, "netUnitManager", "Server sent attributeupdate for non-exsistant unit!")
 
@@ -107,18 +107,15 @@ class UnitManager():
 		if not Player:
 			UnitID=int(UnitID)
 			for Unit in shared.SelfPlayer.Units:
-				print("UID: "+str(UnitID)+" / "+str(Unit.ID))
 				if Unit.ID == UnitID:
 					return Unit
 
 			for PID, player in shared.PlayerManager.PDict.iteritems():
 				for Unit in player.Units:
-					print("UID: "+str(UnitID)+" / "+str(Unit.ID))
 					if Unit.ID == UnitID:
 						return Unit
 
 		if Player:
-			print("PLAYER: "+str(Player.Units))
 			for unit in Player.Units:
 				if int(unit.ID)==int(UnitID):
 					return unit
@@ -127,7 +124,6 @@ class UnitManager():
 
 	def getUnit(self, UnitID):
 		if UnitID in self.unitscripts:
-			print("UnitID: "+UnitID)
 			return self.unitscripts[UnitID]
 		else:
 			print("UnitID: "+UnitID+" not here!")

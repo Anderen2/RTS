@@ -64,6 +64,7 @@ class BaseUnit():
 		self.newAttribute("vehicle.breaking_force", 1)
 		self.newAttribute("vehicle.max_see_ahead", 1)
 		self.newAttribute("vehicle.max_avoid_force", 1)
+		self.newAttribute("debug.ghostposition", (0,0,0))
 
 		self.addAttributeListener("unit.health", self._sethealth)
 		self.addAttributeListener("unit.autoengage", self._setAutoengage)
@@ -139,6 +140,10 @@ class BaseUnit():
 		if self._currentaction!=None:
 			self._currentaction.update()
 
+		if self.steer_state != "circle" and self._vehicle._previous_path_node_radius:
+			self._vehicle.path_node_radius = self._vehicle._previous_path_node_radius
+			self._vehicle._previous_path_node_radius = None
+
 		if self._vehicle!=None and self.getAttribute("movement.movetype")!=-1:
 			if self.steer_state == "path":
 				self._vehicle.followPath(delta, towards=self.getAttribute("movement.movetype")==0)
@@ -154,15 +159,16 @@ class BaseUnit():
 
 			elif self.steer_state == None and self._vehicle.velocity.length()!=0:
 				if self.getAttribute("movement.movetype")==0:
+					self._vehicle._circlestate = None
 					self.steer_state = "circle"
 					self.steer_circle_pos = self._pos
 					
 				else:
-					#print("Should stop here")
+					print("Should stop here")
 					self._vehicle.Break()
 
 			if self.steer_state == None and self._vehicle.velocity.length()==0:
-				#print("\nStopped entirely!\n")
+				# print("\nStopped entirely!\n")
 				pass
 
 			else:
@@ -196,6 +202,10 @@ class BaseUnit():
 		#Quadtree
 		shared.VisionManager.unitUpdate(self)
 
+		#Server "ghost"
+		if debug.GHOST_SYNC:
+			self.setAttribute("debug.ghostposition", self._pos)
+
 		#Attributes
 		self._syncAttributes()
 
@@ -220,7 +230,7 @@ class BaseUnit():
 		del self.attributes["readonly"][attribname]
 
 	def setAttribute(self, attribname, value, mark=True):
-		shared.DPrint("baseunit", 0, "Attribute S(%s:%i): %s = %s" % (self.UnitID, self.ID, attribname, str(value)))
+		# shared.DPrint("baseunit", 0, "Attribute S(%s:%i): %s = %s" % (self.UnitID, self.ID, attribname, str(value)))
 		if attribname not in self.attributes["current"]:
 			shared.DPrint("baseunit", 2, "Attribute (%s:%i): %s does not exist, creating it!" % (self.UnitID, self.ID, attribname))
 			self.newAttribute(attribname, value)
@@ -385,6 +395,7 @@ class BaseUnit():
 		self.Hook.call("OnMoveStop", self._movetopoint)
 		self._movetopoint=None
 		if self._vehicle:
+			self._vehicle.Break()
 			self._vehicle.clearPath()
 			self.steer_state = None
 			self.steer_target = None

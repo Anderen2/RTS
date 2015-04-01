@@ -79,6 +79,7 @@ class Vehicle():
 
 		self.path = []
 		self._circlestate = None
+		self._previous_path_node_radius = None
 
 		#Hooks:
 		self.Hook = Hook(self)
@@ -95,6 +96,7 @@ class Vehicle():
 	def Stop(self):
 		self.Hook.call("OnStop", self.velocity)
 		self.velocity = Vector()
+		print("Stopping!")
 
 	def Break(self):
 		self.Hook.call("OnBreaking", self.velocity)
@@ -103,7 +105,10 @@ class Vehicle():
 			self.Stop()
 			return True
 
+		# print("Breaking!")
+
 	def towardsPos(self, target):
+		# print("TowardsPos!")
 		if type(target) != Vector:
 			target = Vector(target)
 
@@ -112,6 +117,7 @@ class Vehicle():
 		self.velocity = self.velocity * self.max_velocity
 
 	def seekPos(self, target):
+		# print("seekPos!")
 		if type(target) != Vector:
 			target = Vector(target)
 
@@ -129,6 +135,7 @@ class Vehicle():
 		self.velocity = self.velocity + self.steering
 		
 	def fleePos(self, target):
+		# print("fleePos!")
 		if type(target) != Vector:
 			target = Vector(target)
 
@@ -143,6 +150,7 @@ class Vehicle():
 		self.velocity = self.velocity + self.steering
 
 	def arrivePos(self, target):
+		# print("arrivePos!")
 		if type(target) != Vector:
 			target = Vector(target)
 
@@ -169,6 +177,7 @@ class Vehicle():
 		self.velocity = self.velocity + self.steering
 
 	def pursueVehicle(self, target):
+		# print("pursueVehicle!")
 		if type(target) != Vector:
 			target = Vector(target)
 
@@ -179,6 +188,7 @@ class Vehicle():
 		self.arrivePos(prediction)
 
 	def evadeVehicle(self, target):
+		# print("evadeVehicle!")
 		if type(target) != Vector:
 			target = Vector(target)
 
@@ -189,6 +199,7 @@ class Vehicle():
 		self.fleePos(prediction)
 
 	def avoidCollision(self):
+		# print("avoidCollision!")
 		## UNCOMPLETE!
 		ahead = self.position + Vector(self.velocity.asTuple()).normalize() * self.max_see_ahead
 		ahead2 = self.position + Vector(self.velocity.asTuple()).normalize() * (self.max_see_ahead * 0.5)
@@ -199,6 +210,7 @@ class Vehicle():
 		avoidance_force = avoidance_force * self.max_avoid_force
 
 	def seekToNode(self, target, towards=False):
+		# print("seekToNode!")
 		"""This is similar to seek, but its more natural looking than seek when operating with path-nodes"""
 		"""This also returns True when the nodes radius is reached, promting the seeker to seek for the next node"""
 
@@ -225,9 +237,10 @@ class Vehicle():
 			self.towardsPos(target)
 
 	def followPath(self, delta, towards=False):
-		towards = False
-		print "followPath"
-		print self.path
+		# print("followPath!")
+		# towards = False
+		# print "followPath"
+		# print self.path
 		if len(self.path)!=0:
 			if self.seekToNode(self.path[0], towards):
 				self.path.pop(0)
@@ -244,7 +257,11 @@ class Vehicle():
 			if not towards:
 				self.Break()
 
+		
+
 	def followCircleAroundPoint(self, pos, radius, precicion=50):
+		# print("followCircleAroundPoint!")
+		# print(pos)
 		centerpoint = Vector(pos)
 		circleradius = radius
 
@@ -255,16 +272,21 @@ class Vehicle():
 			print "We've reached the end of the circle, lets start moving around it"
 			#We've reached the end of the circle, lets start moving around it
 			difference = (centerpoint - self.position).asTuple()
+			print difference
 			circleRadian = atan2(difference[0], difference[2])
+			print circleRadian
 			x = centerpoint[0] + radius * cos(circleRadian)
 			y = centerpoint[2] + radius * sin(circleRadian)
 			self._circlestart = (x, self.position[1], y)
+			print self._circlestart
 			self._circlenext = self._circlestart
 			self._circleradian = circleRadian
 			self._circlestate = True
 			self._previous_path_node_radius = self.path_node_radius
 			self.path_node_radius = self.path_node_radius + precicion
 			self.seekToNode(self._circlestart)
+
+			print "="*10
 
 		elif self._circlestate:
 			if self.seekToNode(self._circlenext):
@@ -281,12 +303,12 @@ class Vehicle():
 
 				self._circlenext = (x, self.position[1], y)
 
+				print self._circlenext
+
 			
 		else:
 			#We have not reached the end of the circle yet. Keep current velocity. 
 			self._circlestate = False
-			
-
 
 	def addPosToPath(self, pos):
 		print("Target added! -------------------------------")
@@ -297,6 +319,8 @@ class Vehicle():
 
 	def clearPath(self):
 		self.path = []
+
+		print("clearPath!")
 
 	def step(self, delta):
 		self.Hook.call("OnStep", delta)

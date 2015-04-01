@@ -59,6 +59,10 @@ class BaseUnit():
 		self._setPosition(pos)
 		self.Hook.call("OnCreation", pos)
 
+		if debug.GHOST_SYNC:
+			self._initializeGhost()
+			self.addAttributeListener("debug.ghostposition", self._updateGhost)
+
 	def _inithooks(self):
 		self.Hook = Hook(self)
 		#Shared
@@ -163,6 +167,10 @@ class BaseUnit():
 		if self._currentaction!=None:
 			self._currentaction.update() #Additional THINK Calls [??]
 
+		if self.steer_state != "circle" and self._vehicle._previous_path_node_radius:
+			self._vehicle.path_node_radius = self._vehicle._previous_path_node_radius
+			self._vehicle._previous_path_node_radius = None
+
 		if self._vehicle!=None and self.getAttribute("movement.movetype")!=-1:
 			if self.steer_state == "path":
 				self._vehicle.followPath(delta, towards=self.getAttribute("movement.movetype")==0)
@@ -178,6 +186,7 @@ class BaseUnit():
 
 			elif self.steer_state == None and self._vehicle.velocity.length()!=0:
 				if self.getAttribute("movement.movetype")==0:
+					self._vehicle._circlestate = None
 					self.steer_state = "circle"
 					self.steer_circle_pos = self._pos
 
@@ -362,6 +371,13 @@ class BaseUnit():
 		else:
 			self._entity.LookAtZ(pos[0], self._getPosition()[1], pos[1])
 
+	def _initializeGhost(self):
+		self._ghostEntity=shared.EntityHandeler.Create(self.ID, self._entityname, "ghost_unit", self.GetTeam())
+		self._ghostEntity.mesh.setMaterialName("RTS/BuildHolo")
+
+	def _updateGhost(self, position):
+		self._ghostEntity.SetPosition(position[0], position[1], position[2])
+
 	# ACTIONS
 	def _loadActions(self):
 		pass
@@ -429,7 +445,8 @@ class BaseUnit():
 	def _serverAttributeSync(self, attributes, inital=False):
 		self.attributes["current"].update(attributes)
 		for attribname, value in attributes.iteritems():
-			shared.DPrint("baseunit", 0, "Attribute S(%s:%i): %s = %s" % (self.UnitID, self.ID, attribname, str(value)))
+			if attribname!="debug.ghostposition":
+				shared.DPrint("baseunit", 0, "Attribute S(%s:%i): %s = %s" % (self.UnitID, self.ID, attribname, str(value)))
 			self._actOnAttribute(attribname)
 			if self._attributehook.doesExist(attribname):
 				self._attributehook.call(attribname, value)
@@ -454,6 +471,7 @@ class BaseUnit():
 		if attrib[0]=="unit":
 			if attrib[1]=="position": 
 				self._setPosition(self.getAttribute(attribname))
+				print("POS SET! " + "="*50)
 			elif attrib[1]=="viewrange":
 				print("Setting viewrange")
 				if shared.FowManager!=None and shared.FowManager!=True:

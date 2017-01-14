@@ -1,3 +1,6 @@
-This is the repo for the WIP most awesome RTS game ever made in python!
+An 3D LAN-Multiplayer RTS game-engine written in Python using pyOrge for rendering and twisted for networking. 
 
-Sit back, code some lines, and enjoy the ride
+Mainly written as a way to learn myself Python some years ago while I was still in high school.
+Therefore do expect wildly varying code quality, lots of unprofessional code / comments and strange/interesting/original solutions.
+
+I'm not actively working on this, however I may toss a commit on it now and then when I'm in the mood. 

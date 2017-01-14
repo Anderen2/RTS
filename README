@@ -1,4 +1,4 @@
-An 3D LAN-Multiplayer RTS game-engine written in Python using pyOrge for rendering and twisted for networking. 
+An 3D LAN-Multiplayer RTS (C&C Generals style) game-engine written in Python using pyOrge for rendering and twisted for networking. 
 
 Mainly written as a way to learn myself Python some years ago while I was still in high school.
 Therefore do expect wildly varying code quality, lots of unprofessional code / comments and strange/interesting/original solutions.
